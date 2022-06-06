@@ -1,13 +1,16 @@
-<!-- README.md is generated from README.Rmd. Please edit that file -->
+<p align="center">
+  <img src="img/logo-factor-data-solo.jpg"/>
+</p>
 
-# dataviz
 
-<!-- badges: start -->
-<!-- badges: end -->
+## Docentes
 
-Estas clases están basadas en el material de 2021 realizado por Antonio
-Vázquez Brust. [Aquí](https://github.com/bitsandbricks/dataviz)
-encontrarán el material original.
+- [Laia Domenech]()
+- [Tomás Maguire]()
+
+# Presentación
+Estas clases están basadas en el material de 2021 realizado por Antonio Vázquez Brust. [Aquí](https://github.com/bitsandbricks/dataviz) encontrarán el material original.
+
 
 ## Programa
 
