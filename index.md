@@ -1,37 +1,36 @@
-## Welcome to GitHub Pages
+<!-- README.md is generated from README.Rmd. Please edit that file -->
 
-You can use the [editor on GitHub](https://github.com/DCSCyHD/modulo_2/edit/gh-pages/index.md) to maintain and preview the content for your website in Markdown files.
+# dataviz
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+<!-- badges: start -->
+<!-- badges: end -->
 
-### Markdown
+Estas clases están basadas en el material de 2021 realizado por Antonio
+Vázquez Brust. [Aquí](https://github.com/bitsandbricks/dataviz)
+encontrarán el material original.
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+## Programa
 
-```markdown
-Syntax highlighted code block
+A continuación están los materiales para la cursada estructurados por
+clases. Encontrarán en para clase un botón de descarga de los
+contenidos.
 
-# Header 1
-## Header 2
-### Header 3
+-   **Clase 1:** Asignando propiedades estéticas a los datos
 
-- Bulleted
-- List
+[![](img/Download.png)](/clase1/clase1.zip)
 
-1. Numbered
-2. List
+-   **Clase 2:** Puliendo gráficos para publicar
 
-**Bold** and _Italic_ and `Code` text
+[![](img/Download.png)](/clase2/clase2.zip)
 
-[Link](url) and ![Image](src)
-```
+-   **Clase 3:** Visualizando cantidades, proporciones y distribuciones
 
-For more details see [Basic writing and formatting syntax](https://docs.github.com/en/github/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax).
+[![](img/Download.png)](/clase3/clase3.zip)
 
-### Jekyll Themes
+-   **Clase 4:** Visualizando información geográfica
 
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/DCSCyHD/modulo_2/settings/pages). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
+[![](img/Download.png)](/clase4/clase4.zip)
 
-### Support or Contact
+-   **Clase 5:** Agregando interactividad y animación
 
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://support.github.com/contact) and we’ll help you sort it out.
+[![](img/Download.png)](/clase5/clase5.zip)
