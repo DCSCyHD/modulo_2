@@ -20,7 +20,7 @@ contenidos.
 
 -   **Clase 1:** Asignando propiedades estéticas a los datos
 
-[clase1.zip](/clase1/clase1.zip)
+[![Boton de descarga](/img/Download.png)](/clase1/clase1.zip)
 
 -   **Clase 2:** Puliendo gráficos para publicar
 
