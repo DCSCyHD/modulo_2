@@ -24,16 +24,16 @@ contenidos.
 
 -   **Clase 2:** Puliendo gráficos para publicar
 
-[![Boton de descarga](/img/Download.png)](/modulo_2/clase1/clase2.zip)
+[![Boton de descarga](/img/Download.png)](/modulo_2/clase2/clase2.zip)
 
 -   **Clase 3:** Visualizando cantidades, proporciones y distribuciones
 
-[![Boton de descarga](/img/Download.png)](/modulo_2/clase1/clase3.zip)
+[![Boton de descarga](/img/Download.png)](/modulo_2/clase3/clase3.zip)
 
 -   **Clase 4:** Visualizando información geográfica
 
-[![Boton de descarga](/img/Download.png)](/modulo_2/clase1/clase4.zip)
+[![Boton de descarga](/img/Download.png)](/modulo_2/clase4/clase4.zip)
 
 -   **Clase 5:** Agregando interactividad y animación
 
-[![Boton de descarga](/img/Download.png)](/modulo_2/clase1/clase5.zip)
+[![Boton de descarga](/img/Download.png)](/modulo_2/clase5/clase5.zip)
