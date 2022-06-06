@@ -20,20 +20,20 @@ contenidos.
 
 -   **Clase 1:** Asignando propiedades estéticas a los datos
 
-[Slides - pdf](/clase1/clase1.zip)
+[clase1.zip](/clase1/clase1.zip)
 
 -   **Clase 2:** Puliendo gráficos para publicar
 
-[![](img/Download.png)](/clase2/clase2.zip)
+[clase2.zip](/clase2/clase2.zip)
 
 -   **Clase 3:** Visualizando cantidades, proporciones y distribuciones
 
-[![](img/Download.png)](/clase3/clase3.zip)
+[clase3.zip](/clase3/clase3.zip)
 
 -   **Clase 4:** Visualizando información geográfica
 
-[![](img/Download.png)](/clase4/clase4.zip)
+[clase4.zip](/clase4/clase4.zip)
 
 -   **Clase 5:** Agregando interactividad y animación
 
-[![](img/Download.png)](/clase5/clase5.zip)
+[clase5.zip](/clase5/clase5.zip)
