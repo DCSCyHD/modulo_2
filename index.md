@@ -20,7 +20,7 @@ contenidos.
 
 -   **Clase 1:** Asignando propiedades estéticas a los datos
 
-[![](https://github.com/DCSCyHD/modulo_2/blob/main/img/Download.png)](/clase1/clase1.zip)
+[![](img/Download.png)](/clase1/clase1.zip)
 
 -   **Clase 2:** Puliendo gráficos para publicar
 
