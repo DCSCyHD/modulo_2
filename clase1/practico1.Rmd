@@ -1,0 +1,53 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+Carguemos primero la librería con la que vamos a trabajar (`ggplot`)
+
+```{r}
+
+```
+
+Usando *ggplot2*, investigá el dataset [*mpg*](https://ggplot2.tidyverse.org/reference/mpg.html) que viene incluido al cargar la librería *ggplot2*. El mismo tiene información sobre consumo de gasolina de autos entre 1999 y 2008. 
+
+```{r}
+```
+
+
+## Práctico 1
+
+## Ejercicio 1
+
+¿Cómo graficarías la relación entre `cty` (millas en ciudad por galón consumido) y `hwy` (millas en autopista por galón consumido)? ¿Cómo describirias esta relación?
+
+```{r}
+
+```
+
+## Ejercicio 2
+
+Graficá la relación entre las variables `cty` y `displ` (cilindrada de motor). Realizá una descripción de la relación que la visualización te está ayudando a realizar.
+
+```{r}
+```
+
+## Ejercicio 3
+
+Experimentá con el color, la forma y el tamaño de la estética. ¿Que pasa cuando las mapeas a variables continuas? ¿Qué sucede cuando usamos variables categóricas?
+
+```{r}
+# Map color to continuous value
+```
+
+
+```{r}
+# Map color to categorical value
+```
+## Ejercicio 4
+
+Realizá un boxplot utilizando el dataset *mpg* ¿Qué relación entre variables nos está ayudando a comprender? ¿Es posible hacer una descripción de su relación?
+
+```{r}
+
+```
+

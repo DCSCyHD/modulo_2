@@ -1,0 +1,53 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+## Práctico 3
+
+Usando *ggplot2*, Vamos a explorar un set de datos para indagar sobre cantidades, proporciones y distribuciones. Como lo venimos haciendo, te dejamos un dataset con el que podés trabajar el ejercicio, pero si querés usar uno de tu interés particular lo podés hacer. 
+
+En esta ocasión vamos a trabajar con una versión "recortada" de la EPH individual del primer trimestre de 2019. Esta está guaradada en la carpeta `data` con el nombre `eph_2019_limpia.rda`. 
+
+Primero, importá las liberías `ggplot` y `dplyr`. Luego importá la base. 
+
+```{r}
+```
+
+
+## Ejercicio 1
+
+¿Cómo se distribuyen los estados ocupacionales por género? Realizá un gráfico de barras, utilizá colores y funciones necesarias para formatear los datos logrando su correcta visualización. Tené en cuenta que hay que filtrar aquellos casos que no corresponden (los menores de 10 años).
+
+```{r}
+
+```
+
+## Ejercicio 2
+
+Mostrá en un gráfico la distribución de probabilidad de la variable ingresos de asalariados (PP08D1) según región. De nuevo, tené en cuenta con filtrar aquellos casos que no corresponden (los no-asalariados).
+
+```{r}
+
+```
+
+
+
+## Ejercicio 3
+
+Escapando a las barras: utilizá un boxplot para describir la relación entre el nivel de ingresos de los asalariados por región y sexo. Describí estas relaciones.
+
+```{r}
+
+
+```
+
+
+
+## Ejercicio 4
+
+Experimentá con otros recursos: “treemaps”, “enjambres de abejas”, gráficos de waffle, gráficos de violín, “ridgeline plots”, mapas de calor o el recurso que consideres aporta insights de interés sobre nuestro conjunto de datos. 
+
+```{r}
+
+```
+

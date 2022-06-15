@@ -182,7 +182,8 @@ Lo activamos con:
 library(leaflet)
 ```
 
-Y traemos nuestro dataset de delitos, que incluye sus coordenadas, para mapear.
+Para practicar, trabajaremos con un dataset publicado por la Ciudad Autónoma de Buenos Aires, con delitos registrados durante el 2020. Los datos fueron publicados por en el _Mapa del delito_ de la Ciudad (https://mapa.seguridadciudad.gob.ar/). Este incluye información acerca de los distintos tipos de delito, y las coordenadas donde sucedieron. 
+
 
 ```{r}
 head(delitos)

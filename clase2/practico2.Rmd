@@ -1,0 +1,44 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+## Práctico 2
+
+Usando *ggplot2*, vamos a seguir jugando con gapminder. Esta vez, vamos a explorar la relación entre la tasa de fertilidad, la expectativa de vida y el tamaño de la población. 
+
+Primero, importamos las librerías `ggplot` y `dplyr`. También, vamos a leer el archivo `clean_gapminder.csv` que está en la carpeta `data`. 
+
+```{r}
+```
+
+
+## Ejercicio 1
+
+Realizá un gráfico que muestre la relación entre la tasa de fertilidad y la expectativa de vida en el año 2007 para todos los continentes. 
+
+```{r}
+```
+
+## Ejercicio 2
+
+Introducí en el gráfico las variables de `continent` y `pop` (tamaño de la población). Pensá: ¿qué atributos estéticos puedo utilizar para mostrar los valores según el tipo de variable? Luego ploteá un gráfico de muestra.
+
+```{r}
+```
+
+## Ejercicio 3
+
+Modificá manualmente los colores de los continentes. Queremos que Europa tenga el tono "darkorange", Asia "red", África "blue", las Américas "yellow" y Oceanía "purple". 
+
+```{r}
+```
+
+
+
+## Ejercicio 4
+
+Realizá limpieza y ordenamiento finales, asegurate de que las labels describan debidamente su elemento asignado. 
+
+```{r}
+```
+
