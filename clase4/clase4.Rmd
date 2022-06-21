@@ -118,7 +118,6 @@ Ahora usemos el atributo estético "fill" para pintar el interior de cada políg
 ggplot(radios) + 
   geom_sf(aes(fill = POBLACION)) 
 ```
-Antes de seguir, probemos usar "color" en lugar de "fill" para mostrar la población. ¿Cual funciona mejor?
 
 Continuemos puliendo el gráfico. Cuando usamos pintamos polígonos para mostrar datos, el grosor de la línea que traza las fronteras a veces hace difícil determinar el color de relleno. Esto suele pasar cuando se muestra información geográfica intrincada como la de los radios censales. Una solución es definir el color de la línea como `NA`, que para `ggplot` significa "ninguno". Como siempre que queremos modificar un atributo estético en forma arbitraria -un valor fijo, que no dependa de los datos- debemos hacerlo por fuera de `aes()`:
 

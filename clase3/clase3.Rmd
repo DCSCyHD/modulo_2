@@ -272,7 +272,7 @@ ggplot(gapminder_2007_americas, aes(x = expVida, y = fct_reorder(pais, expVida))
 
 Volvamos a nuestras visualizaciones de distribución. Ya hicimos histogramas (con `geom_histogram()`) y gráficos de densidad (con `geom_density()`), pero ahora vamos a usar un "boxplot". Los boxplots pueden interpretarse como un histograma al que se lo ha colgado "de cabeza", y luego resumido mostrando su hitos:
 
-![](./img/leer_un_boxplot.png){width = 60%}
+![](./img/leer_un_boxplot.png){width=90%}
 
 Para hacer un boxplot básico, alcanza con definir un atributo estético: el eje sobre el cual se representarán los valores de la variable de interés; el de las $x$ para que el boxplot se oriente en forma horizontal, o el de las $y$ para el más usado formato vertical. Visualicemos entonces entonces el PBI ("PBIpc") de los países en el eje de las $y$, llamando a `geom_boxplot()`
 
