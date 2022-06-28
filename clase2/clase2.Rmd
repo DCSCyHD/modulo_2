@@ -21,7 +21,7 @@ color_continentes <- c("Europe" = "darkorange", "Asia" = "red", "Africa" = "blue
 
 Cuando genera un gráfico, ggplot nos hace la vida más fácil tomando un montón de decisiones por nosotros: el color de los ítems con los que representamos los datos, el rango numérico de los ejes (en que número empiezan y terminan), el color de fondo, etc. Esto nos permite ver como lucen los datos tipeando lo menos posible, pero a la hora de compartir nuestras visualizaciones con el mundo vale la pena hacer ajustes para obtener aún mejores mejores resultados.
 
-![](./img/ggplot.png){width=50%}
+![](./img/ggplot.png){width=80%}
 
 Ahora iremos más allá del aspecto que tienen los gráficos de ggplot _por defecto_, puliéndolos para para su publicación.
 
@@ -43,7 +43,7 @@ Los gráficos de dispersión, o _scatterplots_, son quizás el tipo de visualiza
 
 Por ejemplo, podríamos comparar la relación entre la riqueza de los países (medida como PBI per capita) y la salud de sus habitantes (como expectativa de años de vida). Esa es la visualización de datos que popularizó Hans Rosling.
 
-![](./img/hans.png){width=50%}
+![](./img/hans.png){width=80%}
 
 Hans Rosling fue el médico, fanático de la estadística, optimista y entusiasta comunicador que fundó el proyecto Gapminder,  cuya misión declarada es "luchar contra la ignorancia devastadora con una visión del mundo basada en hechos, que todo el mundo pueda entender".
 
