@@ -21,7 +21,7 @@ color_continentes <- c("Europe" = "darkorange", "Asia" = "red", "Africa" = "blue
 
 Cuando genera un gráfico, ggplot nos hace la vida más fácil tomando un montón de decisiones por nosotros: el color de los ítems con los que representamos los datos, el rango numérico de los ejes (en que número empiezan y terminan), el color de fondo, etc. Esto nos permite ver como lucen los datos tipeando lo menos posible, pero a la hora de compartir nuestras visualizaciones con el mundo vale la pena hacer ajustes para obtener aún mejores mejores resultados.
 
-![](./img/ggplot.png){width=50%}
+![](./img/ggplot.png){width=80%}
 
 Ahora iremos más allá del aspecto que tienen los gráficos de ggplot _por defecto_, puliéndolos para para su publicación.
 
@@ -43,7 +43,7 @@ Los gráficos de dispersión, o _scatterplots_, son quizás el tipo de visualiza
 
 Por ejemplo, podríamos comparar la relación entre la riqueza de los países (medida como PBI per capita) y la salud de sus habitantes (como expectativa de años de vida). Esa es la visualización de datos que popularizó Hans Rosling.
 
-![](./img/hans.png){width=50%}
+![](./img/hans.png){width=80%}
 
 Hans Rosling fue el médico, fanático de la estadística, optimista y entusiasta comunicador que fundó el proyecto Gapminder,  cuya misión declarada es "luchar contra la ignorancia devastadora con una visión del mundo basada en hechos, que todo el mundo pueda entender".
 
@@ -59,7 +59,7 @@ ggplot(gapminder, aes(x = PBIpc, y = expVida)) +
 Hmmm... ¡no se ve muy parecido!. Lo que ocurre es que Rosling utiliza un truco : usa una escala logarítmica. Si revisamos la imagen de Rosling presentando que aparece más arriba, vemos que en el eje de las $y$ la escala salta de 400 a 4.000, y luego a 40.000: en segmentos del mismo largo, los valores no crecen proporcionalmente sino en potencias de 10. Esto se logra tomando el logaritmo en base 10 de los datos antes de proyectarlos, con lo cual lo que estamos mostrando es 4 x 10^1^, 4 x 10^2^, 4 x 10^3^, etc. 
 ¿Para que sirve esto? Para visualizar datos en los que existen grandes disparidades en una variable, porque permite que los valores pequeños tengan espacio para diferenciarse, y a la vez que los muy grandes no aparezcan tan alejados, logrando un gráfico más compacto y en general más legible. Cuando hay dinero involucrado, suele ser necesario invocar a la escala logarítmica para mejorar la legibilidad... ¡las grandes disparidades abundan! 
 
-En todo caso, `ggplot2` incluye varias funciones para transformar las escala de las $x$ o de las $y$, entre ellas las que pasan las variables a escala logarítmica de base 10: `scale_x_log10()` y `scale_x_log10()`. ¿Cual usaríamos aquí?
+En todo caso, `ggplot2` incluye varias funciones para transformar las escala de las $x$ o de las $y$, entre ellas las que pasan las variables a escala logarítmica de base 10: `scale_x_log10()` y `scale_y_log10()`. ¿Cual usaríamos aquí?
 
 ```{r}
 ggplot(gapminder, aes(x = PBIpc, y = expVida)) +

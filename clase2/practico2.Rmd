@@ -6,7 +6,7 @@ output: html_notebook
 
 Usando *ggplot2*, vamos a seguir jugando con gapminder. Esta vez, vamos a explorar la relación entre la tasa de fertilidad, la expectativa de vida y el tamaño de la población. 
 
-Primero, importamos las librerías `ggplot` y `dplyr`. También, vamos a leer el archivo `clean_gapminder.csv` que está en la carpeta `data`. 
+Primero, importamos las librerías `ggplot` y `dplyr`. También, vamos a leer el archivo `gapminder.rda` que está en la carpeta `data`. 
 
 ```{r}
 ```
