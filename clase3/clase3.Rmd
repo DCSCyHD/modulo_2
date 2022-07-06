@@ -235,12 +235,14 @@ ggplot(gapminder_2007, aes(x = PBIpc, fill = continente)) +
 ggplot(gapminder_2007, aes(x = PBIpc, fill = continente)) +
   geom_histogram(position = "dodge")
 ```
+
 Probemos ahora usando `geom_density()`:
 
 ```{r}
 ggplot(gapminder_2007, aes(x = PBIpc, fill = continente)) +
   geom_density()
 ```
+
 El resultado es mucho más interpretable. Por ejemplo, por como salta a la vista la bimodalidad de Oceanía, que tiene exactamente dos países en la data. Para revelar cualquier "sorpresa" que pudiera haber quedado oculta en las distribuciones tapadas por otras, ajustamos el atributo de `alpha`, que por cierto puede usarse con cualquier geometría de ggplot para controlar su grado de transparencia. Intentemos asignando una transparencia del 50% con `alpha = 0.5`,:
 
 ```{r}
@@ -290,9 +292,9 @@ ggplot(gapminder_2007, aes(x = continente, y = PBIpc)) +
 
 Usando como guía el ejemplo la "anatomía de un boxplot" que mostramos antes, deberíamos ser capaces de describir:
 
--   ¿Cuáles son los continentes con mayor y menor PBI per cápita medio?
+-   ¿Cuáles son los continentes con mayor y menor mediana de PBI per cápita?
 -   ¿Cuáles son los continentes con mayor dispersión en los valores del PBI de sus países?
--   ¿Los continentes de mayor dispersión tienen valores medios similares?
+-   ¿Los continentes de mayor dispersión tienen medianas similares?
 -   ¿Qué continentes tienen países cuyo PBI resulta un *outlier* (valor extremo) en comparación con el resto?
 
 Mientras nos entusiasmamos con tanta información útil y fácilmente legible para el ojo entrenado, vale una aclaración: quienes tienen afinidad con la estadística o la visualización de datos se llevan muy bien con los boxplots, pero para el público general suelen ser indigestos. Y bueno... cuando haga falta ser simples y directos siempre tendremos a nuestras barras.
