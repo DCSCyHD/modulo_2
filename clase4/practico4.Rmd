@@ -1,0 +1,60 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+## Práctico 4
+
+Trabajaremos con datos geográficos, iniciemos cargando las librerías:
+
+```{r}
+
+```
+
+
+## Ejercicio 1
+
+Carguemos la base con datos georeferenciados de los polígonos de CABA (https://bitsandbricks.github.io/data/CABA_rc.geojson) y hagamos un plot de tales datos. 
+
+```{r}
+
+```
+
+```{r}
+head()
+```
+
+```{r}
+```
+
+## Ejercicio 2
+
+Carguemos la base de datos `espacios_culturales.geojson` con información sobre los barrios de la Ciudad de Buenos Aires. Luego realicemos un plot agregando información sobre la localización de bares sobre el mapa como capa.
+
+```{r}
+```
+
+```{r}
+
+```
+
+
+## Ejercicio 3
+
+Al mapa previo de bares: 
+
+- Agregale otro tipo de espacio cultural que quieras (librería, biblioteca, espacio escénico, etc.)
+- Sumale más formato e información. Jugá e investigá parámetros para enriquecer la visualización.
+
+```{r}
+
+```
+
+
+
+## Ejercicio 4
+
+En https://data.buenosaires.gob.ar/dataset/ hay varios archivos geojson para experimentar. Descargá uno de interés y plotealo en un gráfico informativo.
+
+```{r}
+
+```
