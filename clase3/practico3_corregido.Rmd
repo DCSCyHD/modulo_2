@@ -41,13 +41,27 @@ df_filt_1 %>%
 
 Mostrá en un gráfico la distribución de probabilidad de la variable ingresos de asalariados (PP08D1) según región. De nuevo, tené en cuenta con filtrar aquellos casos que no corresponden (los no-asalariados).
 
+- Opción 1: filtro NR en salarios y outliers "a ojo"
+
 ```{r}
-options(scipen = 999)
+options(scipen = 999) #Saco notación científica
+
 df_filt_2 <- df %>% filter(CAT_OCUP == "Empleado" & PP08D1 > 0 & PP08D1 < 150000)
 
 ggplot(df_filt_2, aes(x = PP08D1, fill = REGION))+
   geom_density(alpha = 0.5)
+```
 
+- Opción 2: si quiero mantener los outliers para quedarme con las distribuciones de probabilidad originales pero hacer un "zoom" en los valores donde se concentran la mayoría de los casos, puedo usar la función `facet_zoom()` del paquete `ggforce`.
+
+```{r}
+library(ggforce)
+
+df_filt_3 <- df %>% filter(CAT_OCUP == "Empleado" & PP08D1 > 0) 
+
+ggplot(df_filt_2, aes(x = PP08D1, fill = REGION))+
+  geom_density(alpha = 0.6)+
+  facet_zoom(xlim = c(0, 50000))
 ```
 
 
