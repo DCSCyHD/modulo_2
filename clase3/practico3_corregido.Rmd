@@ -59,12 +59,31 @@ library(ggforce)
 
 df_filt_3 <- df %>% filter(CAT_OCUP == "Empleado" & PP08D1 > 0) 
 
-ggplot(df_filt_2, aes(x = PP08D1, fill = REGION))+
+ggplot(df_filt_3, aes(x = PP08D1, fill = REGION))+
   geom_density(alpha = 0.6)+
   facet_zoom(xlim = c(0, 50000))
 ```
 
+Los facets son formas de facetar gráficos en distintos paneles. Son otra buena forma de agregar una capa más de información en el gráfico y que aún se vea de manera organizada. Uno los puede utilizar con la función `facet_wrap()`, colocando adentro el parámetro `vars()` con la variable de interés que queremos facetar.   Por ejemplo, supongamos que quisiera mostrar un `geom_histogram()` del ingreso de asalariades según género y por región:
 
+```{r}
+ggplot(df_filt_3, aes(x = PP08D1, fill = SEXO))+
+  geom_density(alpha=0.5)+
+  facet_wrap(vars(REGION))+
+  theme_minimal()
+```
+
+Puedo controlar la cantidad de filas y columnas de las facetas con el parámetro `nrow` y `ncol`.
+
+```{r}
+ggplot(df_filt_3, aes(x = PP08D1, fill = SEXO))+
+  geom_density(alpha=0.5)+
+  facet_wrap(vars(REGION), nrow = 6)+
+  theme_minimal()
+
+```
+
+Puedo ver que las distribuciones de ingresos entre varones y entre mujeres de distintas provincias es bastante parecida, excepto por la región de la Patagonia donde los salarios masculinos se concentran alrededor de valores más altos. Además, podemos ver que las mujeres de Cuyo tienen la probabilidad de tener los salarios más bajos  de entre todos los grupos.
 
 ## Ejercicio 3
 
