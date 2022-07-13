@@ -41,7 +41,7 @@ df_filt_1 %>%
 
 Mostrá en un gráfico la distribución de probabilidad de la variable ingresos de asalariados (PP08D1) según región. De nuevo, tené en cuenta con filtrar aquellos casos que no corresponden (los no-asalariados).
 
-- Opción 1: filtro NR en salarios y outliers "a ojo"
+- Opción 1: filtro NR en salarios y outliers "a ojo".
 
 ```{r}
 options(scipen = 999) #Saco notación científica
@@ -64,7 +64,7 @@ ggplot(df_filt_3, aes(x = PP08D1, fill = REGION))+
   facet_zoom(xlim = c(0, 50000))
 ```
 
-Los facets son formas de facetar gráficos en distintos paneles. Son otra buena forma de agregar una capa más de información en el gráfico y que aún se vea de manera organizada. Uno los puede utilizar con la función `facet_wrap()`, colocando adentro el parámetro `vars()` con la variable de interés que queremos facetar.   Por ejemplo, supongamos que quisiera mostrar un `geom_histogram()` del ingreso de asalariades según género y por región:
+Los facets son formas de facetar gráficos en distintos paneles. Son otra buena forma de agregar una capa más de información en el gráfico y que aún se vea de manera organizada. Uno los puede utilizar con la función `facet_wrap()`, colocando adentro el parámetro `vars()` con la variable de interés que queremos facetar. Por ejemplo, supongamos que quisiera mostrar un `geom_density()` del ingreso de asalariades según género y por región:
 
 ```{r}
 ggplot(df_filt_3, aes(x = PP08D1, fill = SEXO))+
@@ -78,12 +78,11 @@ Puedo controlar la cantidad de filas y columnas de las facetas con el parámetro
 ```{r}
 ggplot(df_filt_3, aes(x = PP08D1, fill = SEXO))+
   geom_density(alpha=0.5)+
-  facet_wrap(vars(REGION), nrow = 6)+
+  facet_wrap(vars(REGION), nrow = 3)+
   theme_minimal()
-
 ```
 
-Puedo ver que las distribuciones de ingresos entre varones y entre mujeres de distintas provincias es bastante parecida, excepto por la región de la Patagonia donde los salarios masculinos se concentran alrededor de valores más altos. Además, podemos ver que las mujeres de Cuyo tienen la probabilidad de tener los salarios más bajos  de entre todos los grupos.
+Puedo ver que las distribuciones de ingresos entre varones y entre mujeres de distintas provincias es bastante parecida, excepto por la región de la Patagonia donde los salarios masculinos se distribuyen entre valores un poco más altos. Además, podemos ver que las mujeres de Cuyo tienen la probabilidad de tener los salarios más bajos  de entre todos los grupos.
 
 ## Ejercicio 3
 

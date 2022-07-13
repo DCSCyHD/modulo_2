@@ -280,8 +280,13 @@ Cuando disponemos de un daataframe georreferenciado, obtener la _bounding box_ d
 
 ```{r}
 bbox <- st_bbox(radios)
-names(bbox) <- c("left", "bottom", "right", "top")
+bbox
 ```
+```{r}
+names(bbox) <- c("left", "bottom", "right", "top")
+bbox
+```
+
 
 Ahora si, a por ese mapa base.
 
