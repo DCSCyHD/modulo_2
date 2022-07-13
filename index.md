@@ -32,7 +32,7 @@ contenidos.
 
 -   **Clase 4:** Visualizando información geográfica
 
-[![Boton de descarga](/img/Download.png)](/modulo_2/clase4/clase4.rar)
+[![Boton de descarga](/img/Download.png)](/modulo_2/clase4/clase4.zip)
 
 -   **Clase 5:** Agregando interactividad y animación
 
