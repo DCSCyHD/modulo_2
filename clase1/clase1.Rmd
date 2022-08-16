@@ -11,10 +11,6 @@ output:
 library(tidyverse)
 library(ggplot2)
 
-# Datos de temperatura, cortesía de https://www.kaggle.com/sudalairajkumar/daily-temperature-of-major-cities
-load(file='./data/temps.rda')
-temps_beirut <- temps[temps$city == "Beirut",]
-
 menstru <- readRDS('./data/menstru_data.RDS')
 
 resumen_menstru <- menstru %>% group_by(fecha) %>%

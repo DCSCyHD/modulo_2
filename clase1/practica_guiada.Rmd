@@ -1,0 +1,44 @@
+---
+title: "Práctico clase 1"
+author: "Diplomatura CSSyHD"
+date: '2022-08-16'
+output: html_document
+---
+
+Carguemos primero las librerías con la que vamos a trabajar (`ggplot2` y `tidyverse`)
+
+```{r}
+```
+
+Usando *ggplot2*, investigá el dataset *menstru_data.RDS* que está en la carpeta data. 
+
+```{r}
+
+```
+
+
+## Práctico 1
+
+## Ejercicio 1
+
+¿Cómo graficarías la relación entre `unidades` y `precio_unidad`? ¿Cómo describirias esta relación?
+
+```{r}
+
+```
+
+## Ejercicio 2
+
+Graficá la relación entre las variables `Categoría` y `precio_unidad`. Realizá una descripción de la relación que la visualización te está ayudando a realizar.
+
+```{r}
+```
+
+## Ejercicio 3
+
+Utilizando el atributo estético del color, agregá al gráfico anterior la variable `Region`. ¿Qué podemos observar en el gráfico?
+
+```{r}
+```
+
+
