@@ -119,7 +119,7 @@ ggplot(menstru, aes(x = precio_unidad, y = as.character(fecha))) +
 
 Ahora bien, ¿qué quiere decirnos este gráfico? Si bien los vamos a volver a ver en profundidad un par de clases más adelante, a priori podemos decir que es un gráfico que nos permite ver de manera rápida la distribución de los valores de una variable. 
 
-![](./img/boxplot.png){height="80%"}
+![](./img/boxplot.png){width="70%"}
 
 
 ## Agregando color
