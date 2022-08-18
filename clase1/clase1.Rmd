@@ -87,7 +87,7 @@ Pueden elegir entre una variada colección de geoms para hacer toda clase de gr�
 En esta ocasión, vamos a trabajar con el dataframe completo de los precios de toallitas y tampones. Démosle un vistazo:
 
 ```{r}
-head(df)
+head(menstru)
 ```
 
 Como pueden ver, tiene muchas más variables que el primer dataset que tarbajamos. Contiene el tipo de producto, la marca, el comercio donde se vende a ese precio, la provincia, el precio de lista, la región... y muchas otras variables más. En nuestro boxplot, vamos a explorar cómo evoluciona el precio por unidad de los productos a lo largo de las fechas disponibles. 
@@ -113,7 +113,7 @@ ggplot(menstru, aes(x = precio_unidad, y = as.character(fecha))) +
   geom_boxplot()
 ```
 
-Ahora bien, ¿qué quiere decirnos este gráfico? Si bien los vamos a volver a ver en profundidad un par de clases más adelante, a priori podemos decir que es un gráfico que nos permite ver de manera rápida la distribución de los valores de una variable. 
+Ahora bien, ¿qué quiere decirnos este gráfico? Si bien los vamos a volver a ver en profundidad un par de clases más adelante, a priori podemos decir que es un gráfico que nos permite ver de manera rápida la distribución de los valores de una variable. La caja nos muestra entre qué valores se encuentra el rango intercuartílico de la variable, y la línea que corta la caja nos muestra cuál es la mediana. Las dos líneas nos muestran cuáles son los valores mínimo y máximo "corregidos", es decir, aquellos que están 1,5 desvíos intercuartílicos por abajo o por arriba del primer y tercer cuartil. Los puntitos que restan son los outliers. 
 
 ![](./img/boxplot.png){width="70%"}
 
