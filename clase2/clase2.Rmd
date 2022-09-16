@@ -59,7 +59,7 @@ ggplot(gapminder, aes(x = PBIpc, y = expVida)) +
 Hmmm... ¡no se ve muy parecido!. Lo que ocurre es que Rosling utiliza un truco : usa una escala logarítmica. Si revisamos la imagen de Rosling presentando que aparece más arriba, vemos que en el eje de las $y$ la escala salta de 400 a 4.000, y luego a 40.000: en segmentos del mismo largo, los valores no crecen proporcionalmente sino en potencias de 10. Esto se logra tomando el logaritmo en base 10 de los datos antes de proyectarlos, con lo cual lo que estamos mostrando es 4 x 10^1^, 4 x 10^2^, 4 x 10^3^, etc. 
 ¿Para que sirve esto? Para visualizar datos en los que existen grandes disparidades en una variable, porque permite que los valores pequeños tengan espacio para diferenciarse, y a la vez que los muy grandes no aparezcan tan alejados, logrando un gráfico más compacto y en general más legible. Cuando hay dinero involucrado, suele ser necesario invocar a la escala logarítmica para mejorar la legibilidad... ¡las grandes disparidades abundan! 
 
-En todo caso, `ggplot2` incluye varias funciones para transformar las escala de las $x$ o de las $y$, entre ellas las que pasan las variables a escala logarítmica de base 10: `scale_x_log10()` y `scale_x_log10()`. ¿Cual usaríamos aquí?
+En todo caso, `ggplot2` incluye varias funciones para transformar las escala de las $x$ o de las $y$, entre ellas las que pasan las variables a escala logarítmica de base 10: `scale_x_log10()` y `scale_y_log10()`. ¿Cual usaríamos aquí?
 
 ```{r}
 ggplot(gapminder, aes(x = PBIpc, y = expVida)) +

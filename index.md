@@ -6,9 +6,10 @@
 ## Docentes
 
 - [Laia Domenech]()
-- [Tomás Maguire]()
+- [Florencia Piñeyrúa]()
 
 # Presentación
+
 Estas clases están basadas en el material de 2021 realizado por Antonio Vázquez Brust. [Aquí](https://github.com/bitsandbricks/dataviz) encontrarán el material original.
 
 

@@ -391,15 +391,13 @@ Con la data que tenemos entre manos, queda claro que vamos a usar `transition_st
 Veanse las dos últimas líneas, que contienen el código nuevo, y el resultado:
 
 ```{r}
-gapminder_anim1 <- ggplot(gapminder_ranking) +
+gapminder_anim1 <- ggplot(gapminder_ranking, aes(group = pais)) +
   geom_col(aes(x = pobl / 1000000, y = factor(ranking), fill = continente)) +
   geom_text(aes(x = pobl / 1000000, y = factor(ranking), label = pais)) +
   scale_fill_manual(values = color_continentes) +
   theme_minimal() +
   transition_time(año) +
   labs(title = "Año: {frame_time}", y = NULL, x = "población (millones)")
-
-gapminder_anim1
 ```
 
 Por último, un detalle más: vean que en la primera línea agregamos `aes(group = pais)`. Esto sirve para que `gganimate` entienda que los valores de la esa variable representan a la misma entidad a lo largo de los años, haciendo que cuando un pais gana o pierde puestos esto se refleje en un desplazamiento de su barra. Para ver lo que pasaría si no agregáramos `aes(group = pais)`, ejecuten el código borrando esa parte y revisen los resultados.
@@ -438,7 +436,7 @@ ggplot(gapminder,
        size = "población (millones)", 
        x = "PBI per capita (USD)", y = "expectativa de vida en años",
        caption = "fuente: Gapminder, www.gapminder.com") +
-  transition_time(año, transition_length = 10)
+  transition_time(año)
 ```
 
 Y con eso terminamos esta breve introducción a las visualizaciones animadas. Para continuar explorando las muchísimas opciones disponibles con `gganimate()` el mejor mejor recurso -al momento de escribir estas líneas- es el [sitio oficial del paquete](https://gganimate.com/).

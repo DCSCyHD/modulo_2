@@ -6,7 +6,7 @@ output: html_notebook
 
 Usando *ggplot2*, vamos a seguir jugando con gapminder. Esta vez, vamos a explorar la relación entre la tasa de fertilidad, la expectativa de vida y el tamaño de la población. 
 
-Primero, importamos las librerías `ggplot` y `dplyr`. También, vamos a leer el archivo `clean_gapminder.csv` que está en la carpeta `data`. 
+Primero, importamos las librerías `ggplot` y `dplyr`. También, vamos a leer el archivo `gapminder_clean.csv` que está en la carpeta `data`. 
 
 ```{r}
 ```
@@ -14,7 +14,7 @@ Primero, importamos las librerías `ggplot` y `dplyr`. También, vamos a leer el
 
 ## Ejercicio 1
 
-Realizá un gráfico que muestre la relación entre la tasa de fertilidad y la expectativa de vida en el año 2007 para todos los continentes. 
+Realizá un gráfico que muestre la relación entre la tasa de fertilidad y la expectativa de vida en el año 2007 para todos los países. 
 
 ```{r}
 ```
@@ -32,8 +32,6 @@ Modificá manualmente los colores de los continentes. Queremos que Europa tenga 
 
 ```{r}
 ```
-
-
 
 ## Ejercicio 4
 
