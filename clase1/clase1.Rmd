@@ -103,7 +103,6 @@ Más adelante vamos a regresar a los boxplots, explicando cómo se interpretan.
 
 ## Agregando color
 
-
 Ahora pasamos a trabajar con el dataset `temps`, que es similar a `temps_beirut` pero contiene registros para tres ubicaciones adicionales:
 
 
@@ -112,7 +111,6 @@ temps
 ```
 
 Hagamos un gráfico de líneas mostrando `temperature` para cada `day_of_year`, usando el atributo estético _color_ para diferencias las líneas según la ciudad que representan.
-
 
 ```{r}
 ggplot(temps, aes(x = day_of_year, y = temperature, color = city)) +
@@ -126,6 +124,27 @@ ggplot(temps, aes(x = day_of_year, y = city, color = temperature)) +
   geom_point()
 ```
 
+En estos dos ejemplos utilizamos el color como atributo estético para mostrar información. Sin embargo, lo estamos haciendo de dos formas muy distintas. En el gráfico de líneas, usamos el color como una herramienta para *distinguir* variables categóricas. Mientras que en el gráfico de puntos, lo usamos para representar una escala secuencial de valores. Dicha escala permite indicar de manera clara qué valores son más grandes que otros, y qué tan distantes son los valores entre sí. 
+
+La teoría del color es un tema en si mismo. Debido a las complejidades subyacentes en esta teoría (implicaría ponernos a hablar de la visión humana, el cerebro y la percepción), podríamos dedicar una clase entera a ello, pero como no tenemos ese tiempo vamos a mencionar únicamente que es importante tener en cuenta que los colores que elijamos en un gráfico van a transmitir un mensaje, y que tienen poder ser interpretados para el público general. Por ejemplo, no es lo mismo si en un gráfico pinto la barra de mujeres de rosa y la de varones de azul; que si las pinto naranja y verde. Por otro lado, hay ciertos colores que dificultan la interpretación para las personas con daltonismo. 
+
+Por suerte, R tiene paquetes con paletas de colores que nos permiten resolver algunas de estas cuestiones. El más popular (o por lo menos, mi favorito) es `viridis`. Las paletas de viridis están diseñadas para ser: 
+
+- coloridas: brindando una paleta amplia para mostrar diferencias con claridad,
+- perceptualmente uniformes: lo que significa que los valores más cercanos entre ellos tendrán colores más parecidos, y los  que están más alejados tendrán colores distintos de manera consistente,
+- interpretados fácilmente por personas con daltonismo, 
+- interpretables si se imprimen en escala de grises, 
+- y LINDOS.
+
+Usar las paletas viridis es tan simple como añadir una línea de código: 
+
+```{r message=FALSE, warning=FALSE}
+library(viridis)
+
+ggplot(temps, aes(x = day_of_year, y = city, color = temperature)) +
+  geom_point()+
+  scale_color_viridis_c()
+```
 
 ## Usando el atributo estético `fill` 
 
@@ -136,11 +155,20 @@ ggplot(temps, aes(x = month, y = temperature, fill = city)) +
   geom_boxplot()
 ```
 
+¿Cómo nos quedaría con la paleta viridis? 
+
+```{r}
+ggplot(temps, aes(x = month, y = temperature, fill = city)) +
+  geom_boxplot()+
+  scale_fill_viridis_d()
+```
+
 ¿Podemos pintar las líneas de las cajas según el mes, y pintar el interior según la ubicación? Veamos.
 
 ```{r}
 ggplot(temps, aes(x = month, y = temperature, color = month, fill = city)) +
-  geom_boxplot()
+  geom_boxplot()+
+  scale_fill_viridis_d()
 ```
 
 El gráfico que obtuvimos funciona como recordatorio de que en muchas ocasiones la cantidad de recursos visuales volcados resulta inversamente proporcional a su legibilidad. En general, simple es bueno... pero también conviene saber que podemos combinar varias estéticas dentro de `aes()` cuando resulte necesario.
@@ -162,5 +190,7 @@ Ahora al revés. Asignemos la variable `city` al color de las líneas, pero deje
 ggplot(temps, aes(x = month, y = temperature, color = city)) +
   geom_boxplot(fill = "navyblue")
 ```
+
+Por último, vale la pena aclarar que si bien este módulo presenta un sesgo importante de preferencia frente a las paletas viridis, existe una amplia variedad de paquetes con paletas de colores. [`wesanderson`](https://github.com/karthik/wesanderson), con colores de películas de Wes Anderson, o [`SailorMoonR`](https://github.com/morgansleeper/SailorMoonR) con colores de Sailor Moon. 
 
 ¡Y con eso terminamos!
