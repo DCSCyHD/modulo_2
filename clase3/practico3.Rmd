@@ -26,6 +26,8 @@ Primero, importá las liberías `ggplot` y `dplyr`. Luego importá la base.
 
 Mostrá en un gráfico la distribución de probabilidad de la variable ingresos de asalariados (PP08D1) según región. De nuevo, tené en cuenta con filtrar aquellos casos que no corresponden (los no-asalariados).
 
+¿Qué opinás de este gráfico? ¿Te parece que muestra la información de manera clara? 
+
 ```{r}
 
 ```
