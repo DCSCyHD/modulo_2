@@ -10,28 +10,30 @@ output:
 ```{r setup, include=FALSE}
 library(ggplot2)
 library(dplyr)
+library(lubridate)
 
-load("./data/gapminder.rda")
+menstru <- readRDS('./data/menstru_data.RDS')
 
-# asignando nivel de ingresos en base a
-# https://blogs.worldbank.org/es/opendata/nueva-clasificacion-de-los-paises-segun-el-nivel-de-ingresos-para-2019-y-2020
-# y ajuste por inflación
-gapminder_2007 <- gapminder %>% 
-  # uso across(3, ) en lugar del mas legible "año == 2007" para no escribir "ñ", que causa error en Windows :(
-  filter(across(3, ~ . == 2007)) %>% 
-    mutate(nivIngreso = case_when(PBIpc > 12375 * 0.8 ~ "alto",
-                                  PBIpc > 3996 * 0.8  ~ "medio alto",
-                                  PBIpc > 1026 * 0.8  ~ "medio bajo",
-                                  TRUE                ~ "bajo"),
-           nivIngreso = ordered(nivIngreso, levels = rev(c("bajo", "medio bajo", "medio alto", "alto"))))
+menstru_21 <- menstru %>% filter(year(fecha) == 2021)
 
-gapminder_2007_americas <- gapminder_2007 %>% 
-  filter(continente == "Americas")
+menstru_21_toallitas <- menstru_21 %>% filter(Categoría == "toallitas")
 
-paises_longevos <- gapminder_2007 %>% 
-  group_by(continente) %>% 
-  filter(expVida == max(expVida)) %>% 
-  select(pais, continente, expVida)
+
+menstru_anios <- menstru %>% group_by(year(fecha), Provincia)%>%
+summarise(median_precio = median(precio_unidad)) %>%
+rename(
+anio = "year(fecha)"
+)
+
+menstru_top <- menstru_21_toallitas %>% 
+group_by(Provincia, Region)  %>%
+summarise(median_precio = median(precio_unidad))%>%
+arrange(desc(median_precio))%>%
+ungroup()%>%
+slice_head(n = 5)
+
+menstru_provs_toallitas <- menstru_21_toallitas %>% group_by(Provincia, Region)  %>%
+summarise(median_precio = median(precio_unidad))
 ```
 
 ## Introducción
@@ -68,85 +70,85 @@ Para disponer de las funciones de visualización, activamos [**ggplot2**](https:
 library(ggplot2)
 ```
 
-Volvamos a nuestros datos de Gapminder. Tenemos aquí los países con mayor expectativa de vida en 2007, por cada continente:
+Volvamos a nuestros datos de #MenstruAcción. En este caso tenemos el dataframe menstru_top, que tiene los datos de las provincias con la mediana de precios precios de toallitas más caras: 
 
 ```{r }
-head(paises_longevos)
+head(menstru_top)
 ```
 
-Tenemos una variable numérica a representar con barras, asi que usamos `geom_col()`. Hgamaos un gráfico de barras de `expVida` versus `pais`. O sea, que `expVida` va en el eje de las $y$ y `pais` en el de las $x$:
+Tenemos una variable numérica a representar con barras, asi que usamos `geom_col()`. Hgamaos un gráfico de barras de `median_precio` versus `Provincia`. O sea, que `median_precio` va en el eje de las $y$ y `Provincia` en el de las $x$:
 
 ```{r}
-ggplot(paises_longevos, aes(x = pais, y = expVida)) +
+ggplot(menstru_top, aes(x = Provincia, y = median_precio)) +
   geom_col()
 ```
 
-Los resultados son bastante parejos. Si quisiéramos mostrar a que continente pertenece cada país (cada barra) con un color distinto, intuitivamente pensamos en asignar el atributo estético de "color" al continente. Probemos:
+Los resultados son bastante parejos. Si quisiéramos mostrar a que región pertenece cada provincia (cada barra) con un color distinto, intuitivamente pensamos en asignar el atributo estético de "color" al continente. Probemos:
 
 ```{r}
-ggplot(paises_longevos, aes(x = pais, y = expVida, color = continente)) +
+ggplot(menstru_top, aes(x = Provincia, y = median_precio, color = Region)) +
   geom_col()
 ```
 
 ¡Ups! Cuando usamos el atributo "color" con geometrías de área (como las barras), lo que controlamos es el color de su línea externa. Si bien el recurso funciona para diferenciar categorías, es poco legible. El atributo que necesitamos aquí es "fill", el color de relleno para nuestras barras. Vamos:
 
 ```{r}
-ggplot(paises_longevos, aes(x = pais, y = expVida, fill = continente)) +
+ggplot(menstru_top, aes(x = Provincia, y = median_precio, fill = Region)) +
   geom_col()
 
 ```
 
 Así está mejor.
 
-Veamos que pasa cuando tenemos una cantidad bastante mayor de barras. Por ejemplo, para comprarar la expectativa de vida para todos los países en las Américas. En este caso, mostramos las barras en forma horizontal poniendo la variable categórica en las $y$ y la numérica en las $x$:
+Veamos que pasa cuando tenemos una cantidad bastante mayor de barras. Por ejemplo, para comparar la mediana de precios de toallitas para todas las provincias. En este caso, mostramos las barras en forma horizontal poniendo la variable categórica en las $y$ y la numérica en las $x$:
 
 ```{r}
-ggplot(gapminder_2007_americas, aes(x = expVida, y = pais)) +
+ggplot(menstru_provs_toallitas, aes(x = median_precio, y = Provincia)) +
   geom_col()
 ```
 
 (prueben invertir las variables asignadas a `x` e `y` para ver como vambia la orientación de las barras pero no la información mostrada)
 
-Aquí los valores desordenados (o en todo caso, ordenados por país al que corresponden y no por magnitud) hacen difícil leer el gráfico.
+Aquí los valores desordenados (o en todo caso, ordenados la provincia a la que corresponden y no por magnitud) hacen difícil leer el gráfico.
 
-Por suerte este tipo de problema tiene arreglo inmediato: hay que ordenar las barras por tamaño. Una forma de hacerlo es con la función `fct_reorder()`, incluida en el paquete [forcats](https://forcats.tidyverse.org/) que trae toda clase de herramientas para trabajar con data categórica. Usando la función con ggplot, usamos dos parámetros: una variable a mostrar, y otra variable por la cual reordenar la variable a mostrar. Para que los países se grafiquen en el orden de expectativa de vida, sería:
+Por suerte este tipo de problema tiene arreglo inmediato: hay que ordenar las barras por tamaño. Una forma de hacerlo es con la función `fct_reorder()`, incluida en el paquete [forcats](https://forcats.tidyverse.org/) que trae toda clase de herramientas para trabajar con data categórica. Usando la función con ggplot, usamos dos parámetros: una variable a mostrar, y otra variable por la cual reordenar la variable a mostrar. Para que las provincias se grafiquen en el orden de la mediana de precios, sería:
 
 ```{r echo=TRUE}
 # Activamos el paquete que incluye la función fct_reorder()
 library(forcats)
 
-ggplot(gapminder_2007_americas, aes(x = expVida, y = fct_reorder(pais, expVida))) +
+ggplot(menstru_provs_toallitas, aes(x = median_precio, y = fct_reorder(Provincia, median_precio))) +
   geom_col()
 ```
 
 Ahora, vamos a un caso en el cual no queremos mostrar una variable numérica, sino conteos: cuantas veces aparece cada valor en en una variable categórica. Este es el dominio de `geom_bar()`.
 
-Para practicar, aquí tenemos los datos de Gapminder para 200. Aquí aparecen con una variable adicional, "nivel de ingreso", que usaremos luego para visualizar subcategorías.
+Para practicar, aquí tenemos los datos de precios de productos menstruales en marzo de 2021 completos. 
 
 ```{r}
-head(gapminder_2007)
+head(menstru_21)
 ```
 
-Visualicemos la cantidad de países en cada continente. O dicho de otra forma, cuantas veces aparece registrado cada continente. Para usar `geom_bar()` asignamos a las $x$ la variable a contar. No hace falta asignar una variable a las $y$, porque la altura de cada barra no depende de los valores de alguna otra columna, sino del conteo de subcategorías en la variable de las $x$.
+Visualicemos la cantidad de observaciones que tiene cada región. Para usar `geom_bar()` asignamos a las $x$ la variable a contar. No hace falta asignar una variable a las $y$, porque la altura de cada barra no depende de los valores de alguna otra columna, sino del conteo de subcategorías en la variable de las $x$.
 
 ```{r}
-ggplot(gapminder_2007, aes(x = continente)) +
+ggplot(menstru_21, aes(x = Region)) +
   geom_bar()
 ```
 
-Vemos que `geom_bar()` se encarga de contar cuantas veces aparece cada categoría de la variable de interés. Pero eso no es todo: también podemos mostrar la distribución de sub-categorías. Para hacerlo mas claro con un ejemplo: mostrar cuantos países hay por continente, y además cuantos de cada categoría de ingresos por continente.
+Vemos dos cosas. A nivel analítico, el GBA está sobrerrepresentado en la muestra. Por otro lado, podemos observar que `geom_bar()` se encarga de contar cuantas veces aparece cada categoría de la variable de interés. Pero eso no es todo: también podemos mostrar la distribución de sub-categorías. Para hacerlo mas claro con un ejemplo: mostrar cuántos registros de toallitas y tampones hay por región.
 
-Para mostrar la composición de grupos y subgrupos, usamos de nuevo `geom_bar()` y asignamos el grupo adicional al atributo estético fill. Para nuestro ejemplo, volvemos a usar "continente" para las $x$, y asignamos "nivIngreso" a "fill".
+Para mostrar la composición de grupos y subgrupos, usamos de nuevo `geom_bar()` y asignamos el grupo adicional al atributo estético fill. Para nuestro ejemplo, volvemos a usar "Region" para las $x$, y asignamos "Categoría" a "fill".
 
 ```{r}
-ggplot(gapminder_2007, aes(x = continente, fill = nivIngreso)) +
+ggplot(menstru_21, aes(x = Region, fill = Categoría)) +
   geom_bar()
 ```
 
-Si no aclaramos nada, geom\_bar() apila las cantidades de cada subgrupo en la categoría que les corresponda. Para mostrar las subcategorías en barras separadas, usamos la opción `position = "dodge"`
+Si no aclaramos nada, geom_bar() apila las cantidades de cada subgrupo en la categoría que les corresponda. Para mostrar las subcategorías en barras separadas, usamos la opción `position = "dodge"`
 
 ```{r}
-ggplot(gapminder_2007, aes(x = continente, fill = nivIngreso)) +
+ggplot(menstru_21, aes(x = Region, fill = Categoría)) +
   geom_bar(position = "dodge")
 ```
 
@@ -154,27 +156,27 @@ ggplot(gapminder_2007, aes(x = continente, fill = nivIngreso)) +
 
 Podemos usar `geom_col` y `geom_bar()` para que muestren partes de un todo en lugar de cantidades o conteos de frecuencia.
 
-Por ejemplo, nuestro gráfico con la cantidad de países observados por cada continente lucía así:
+Por ejemplo, nuestro gráfico con la cantidad de observaciones por región lucía así:
 
 ```{r }
-ggplot(gapminder_2007, aes(x = continente)) +
+ggplot(menstru_21, aes(x = Region)) +
   geom_bar()
 ```
 
 Para convertirlo en uno que muestre la proporción de países en el total, hacemos dos ajustes:
 
 -   A `x` ya no le asignamos una variable, sino un nombre arbitrario (en texto). El texto es libre y va entre comillas, por ejemplo "proporción", o un texto vacío como "".
--   La variable de interés (en este caso, "continente") se asigna al atributo estético "fill"
+-   La variable de interés (en este caso, "Region") se asigna al atributo estético "fill"
 
 ```{r}
-ggplot(gapminder_2007, aes(x = "", fill = continente)) +
+ggplot(menstru_21, aes(x = "", fill = Region)) +
   geom_bar(position = "fill")
 ```
 
 Aquí podemos aprovechar para mostrar como controlar la orientación de las barras (horizontales vs. verticales) y su ancho. Para que las barras se dibujen en forma horizontal usamos "y" en lugar de "x". Para controlar su tamaño, usamos el parámetro `width`. Con valores de `width` menores a 1 se dibujan barras más delgadas, y con mayores a 1 se generan barras más gruesas. Por ejemplo, hagamos que width adopte el valor 0.5:
 
 ```{r}
-ggplot(gapminder_2007, aes(y = "", fill = continente)) +
+ggplot(menstru_21, aes(y = "", fill = Region)) +
   geom_bar(position = "fill", width = 0.5)
 
 ```
@@ -183,7 +185,7 @@ ggplot(gapminder_2007, aes(y = "", fill = continente)) +
 Convertir nuestro gráfico con subgrupos para que pase de mostrar cantidades a proporciones es aún más directo: basta con usar el parámetro `position = "fill"`. Intentémoslo:
 
 ```{r}
-ggplot(gapminder_2007, aes(x = continente, fill = nivIngreso)) +
+ggplot(menstru_21, aes(x = Region, fill = Categoría)) +
   geom_bar(position = "fill")
 ```
 
@@ -193,21 +195,21 @@ ggplot(gapminder_2007, aes(x = continente, fill = nivIngreso)) +
 
 La visualización por excelencia para mostrar distribuciones es el histograma, que en la práctica es una variante de... ¡gráfico de barras!.
 
-Hacer un histograma es simple. Por ejemplo, para mostrar cómo se distribuye la variable "PBIpc" (PBI per cápita), la asignamos a las `x` y usamos `geom_histogram()`:
+Hacer un histograma es simple. Por ejemplo, para mostrar cómo se distribuye la variable "precio_unidad", la asignamos a las `x` y usamos `geom_histogram()`:
 
 ```{r}
-ggplot(gapminder_2007, aes(x = PBIpc)) +
+ggplot(menstru_21_toallitas, aes(x = precio_unidad)) +
   geom_histogram()
 ```
 
-El histograma muestra el rango que toman los valores (del mínimo al máximo que alcanzan), y con que frecuencia se los observa en cada rango. Por ejemplo, el PBI per cápita de las naciones en 2007 llegar hasta casi 50.000 USD en algún caso, pero los casos por encima de 10.000 USD son infrecuentes. Y de hecho, los valores más comunes rondan los 2.500 USD por habitante.
+El histograma muestra el rango que toman los valores (del mínimo al máximo que alcanzan), y con que frecuencia se los observa en cada rango. Por ejemplo, el precio por unidad en 2021 puede llegar hasta casi los 60 pesos en algún caso, pero los casos por encima de 20 pesos son infrecuentes. Y de hecho, los valores más comunes rondan los 15$ por unidad.
 
 Algo para advertir sobre los histogramas es que su aspecto (y con ello, el mensaje que dan) puede cambiar de acuerdo a la cantidad de intervalos que se usen. Por defecto `geom_histogram()` divide al rango de valores en 30 "bins", o intervalos iguales (por ejemplo "de 0 a 10", "de 10 a 20", etc) y cuenta cuántas observaciones caen en cada uno. Podemos controlar la cantidad de intervalos con el parámetro `bins`. podemos aumentar el nivel de detalle del histograma incrementando la cantidad de intervalos, a costa de perder generalización. Y a la inversa: si reducimos el nivel de intervalos, mostramos una distribución más resumida de la data, a costa de perder detalle.
 
 Juguemos con los valores de `bins` para ver como cambia el resultado. ¿Y cual es el número ideal de intervalos? Depende de las características de cada dataset, y de lo que queremos mostrar... ¡no hay una sola respuesta correcta! Para este caso, probemos 50 bins:
 
 ```{r}
-ggplot(gapminder_2007, aes(x = PBIpc, fill = continente)) +
+ggplot(menstru_21_toallitas, aes(x = precio_unidad)) +
   geom_histogram(bins = 50)
 ```
 
@@ -215,36 +217,38 @@ ggplot(gapminder_2007, aes(x = PBIpc, fill = continente)) +
 
 Los gráficos de densidad son descendientes directos de los histogramas. Pero en lugar de conteos de observaciones por rango de valores, lo que muestran es la distribución de *probabilidad* de la variable, es decir que tan probable es encontrar un valor determinado si tomaramos al azar una de las observaciones. A diferencia de los histogramas, que llevan un par de siglos en uso porque porque son relativamente fáciles de hacer a mano, los (antes) trabajosos gráficos de densidad se han popularizado con la llegada de software y computadoras capaces de realizarlos en un instante.
 
-Los gráficos de densidad se hacen de forma análoga a los histogramas, reemplazando `geom_histogram()` `geom_density()`. Probemos con los valores de "PBIpc"
+Los gráficos de densidad se hacen de forma análoga a los histogramas, reemplazando `geom_histogram()` `geom_density()`. Probemos con los valores de "precio_unidad"
 
 ```{r}
-ggplot(gapminder_2007, aes(x = PBIpc)) +
+ggplot(menstru_21_toallitas, aes(x = precio_unidad)) +
   geom_density()
 ```
 
-Los resultados de `geom_density()` se interpretan de forma similar a los de `geom_density()`: Notamos el rango que toman los datos, y que tan comunes son en un rango en comparación con otro. Una ventaja de usar densidad en lugar de histograma se pone de relieve al comparar resultados según categorías internas de la data. Por ejemplo, si queremoos mostrar las distintas distribuciones de PBI según continente, usamos el atributo estético "fill" igual que con los gráficos de barras. Con histogramas, sería así.
+Los resultados de `geom_density()` se interpretan de forma similar a los de `geom_density()`: Notamos el rango que toman los datos, y que tan comunes son en un rango en comparación con otro. Una ventaja de usar densidad en lugar de histograma se pone de relieve al comparar resultados según categorías internas de la data. Por ejemplo, si queremoos mostrar las distintas distribuciones de precio según región, usamos el atributo estético "fill" igual que con los gráficos de barras. Con histogramas, sería así.
 
 ```{r}
-ggplot(gapminder_2007, aes(x = PBIpc, fill = continente)) +
+ggplot(menstru_21_toallitas, aes(x = precio_unidad, fill = Region)) +
   geom_histogram()
 ```
 
 ¡El resultado es un lío! Las barras apiladas no son ideales para interpretar distribuciones. Las cosas mejoran un poco si usamos `position = "dodge"`, pero no mucho:
 
 ```{r, echo=TRUE}
-ggplot(gapminder_2007, aes(x = PBIpc, fill = continente)) +
+ggplot(menstru_21_toallitas, aes(x = precio_unidad, fill = Region)) +
   geom_histogram(position = "dodge")
 ```
+
 Probemos ahora usando `geom_density()`:
 
 ```{r}
-ggplot(gapminder_2007, aes(x = PBIpc, fill = continente)) +
+ggplot(menstru_21_toallitas, aes(x = precio_unidad, fill = Region)) +
   geom_density()
 ```
-El resultado es mucho más interpretable. Por ejemplo, por como salta a la vista la bimodalidad de Oceanía, que tiene exactamente dos países en la data. Para revelar cualquier "sorpresa" que pudiera haber quedado oculta en las distribuciones tapadas por otras, ajustamos el atributo de `alpha`, que por cierto puede usarse con cualquier geometría de ggplot para controlar su grado de transparencia. Intentemos asignando una transparencia del 50% con `alpha = 0.5`,:
+
+El resultado es mucho más interpretable. Por ejemplo, salta a la vista que en la región de Cuyo tenemos una distribución de precios alrededor de los valores más bajos Para revelar cualquier "sorpresa" que pudiera haber quedado oculta en las distribuciones tapadas por otras, ajustamos el atributo de `alpha`, que por cierto puede usarse con cualquier geometría de ggplot para controlar su grado de transparencia. Intentemos asignando una transparencia del 50% con `alpha = 0.5`,:
 
 ```{r}
-ggplot(gapminder_2007, aes(x = PBIpc, fill = continente)) +
+ggplot(menstru_21_toallitas, aes(x = precio_unidad, fill = Region)) +
   geom_density(alpha = 0.5)
 ```
 
@@ -254,17 +258,17 @@ Así como el gráfico de densidad reemplaza las barras por curvas, existen otros
 
 ### "Dotplots"
 
-Los *dotplots* son el equivalente a marcar con un punto donde termina cada barra... y luego borrar las barras. Expresan la misma información de forma más minimalista. Son útiles como reemplazo a gráficos de barras que muestran una gran cantidad de categorías y resultan visualmente "pesados". Recordemos el gráfico con el que mostramos la expectativa de vida en los países de las Américas:
+Los *dotplots* son el equivalente a marcar con un punto donde termina cada barra... y luego borrar las barras. Expresan la misma información de forma más minimalista. Son útiles como reemplazo a gráficos de barras que muestran una gran cantidad de categorías y resultan visualmente "pesados". Recordemos el gráfico con el que mostramos la mediana de precios de toallitas por región:
 
 ```{r}
-ggplot(gapminder_2007_americas, aes(x = expVida, y = fct_reorder(pais, expVida))) +
+ggplot(menstru_provs_toallitas, aes(x = median_precio, y = fct_reorder(Provincia, median_precio))) +
   geom_col()
 ```
 
 Un problema que no atendimos antes es que la gran cantidad de barras ocupa casi toda el área disponible, distrayendo del objetivo del gráfico que es resaltar las diferencias entre países. La versión "dotplot" del gráfico resuelve ese problema, y se obtiene con sólo usar `geom_point()` en lugar de `geom_col()`:
 
 ```{r}
-ggplot(gapminder_2007_americas, aes(x = expVida, y = fct_reorder(pais, expVida))) +
+ggplot(menstru_provs_toallitas, aes(x = median_precio, y = fct_reorder(Provincia, median_precio))) +
   geom_point()
 ```
 
@@ -274,28 +278,71 @@ Volvamos a nuestras visualizaciones de distribución. Ya hicimos histogramas (co
 
 ![](./img/leer_un_boxplot.png){width=90%}
 
-Para hacer un boxplot básico, alcanza con definir un atributo estético: el eje sobre el cual se representarán los valores de la variable de interés; el de las $x$ para que el boxplot se oriente en forma horizontal, o el de las $y$ para el más usado formato vertical. Visualicemos entonces entonces el PBI ("PBIpc") de los países en el eje de las $y$, llamando a `geom_boxplot()`
+Para hacer un boxplot básico, alcanza con definir un atributo estético: el eje sobre el cual se representarán los valores de la variable de interés; el de las $x$ para que el boxplot se oriente en forma horizontal, o el de las $y$ para el más usado formato vertical. Visualicemos entonces entonces el precio_unidad en el eje de las $y$, llamando a `geom_boxplot()`
 
 ```{r}
-ggplot(gapminder_2007, aes(y = PBIpc)) +
+ggplot(menstru_21_toallitas, aes(y = precio_unidad)) +
   geom_boxplot()
 ```
 
-La gracia de los boxplots es que permiten mostrar diferencias por categoría de forma más prolija que los histogramas, e incluso que los gráficos de densidad. Para separar por categorías, asignemos una variable categórica, "continente" al eje de las $x$:
+La gracia de los boxplots es que permiten mostrar diferencias por categoría de forma más prolija que los histogramas, e incluso que los gráficos de densidad. Para separar por categorías, asignemos una variable categórica, "Región" al eje de las $x$:
 
 ```{r}
-ggplot(gapminder_2007, aes(x = continente, y = PBIpc)) +
+ggplot(menstru_21_toallitas, aes(x = Region, y = precio_unidad)) +
   geom_boxplot()
 ```
 
 Usando como guía el ejemplo la "anatomía de un boxplot" que mostramos antes, deberíamos ser capaces de describir:
 
--   ¿Cuáles son los continentes con mayor y menor PBI per cápita medio?
--   ¿Cuáles son los continentes con mayor dispersión en los valores del PBI de sus países?
--   ¿Los continentes de mayor dispersión tienen valores medios similares?
--   ¿Qué continentes tienen países cuyo PBI resulta un *outlier* (valor extremo) en comparación con el resto?
+-   ¿Hay diferencias entre los precios medios de toallitas entre las regiones?
+-   ¿Tienen poca dispersión los precios de la toallitas?
 
 Mientras nos entusiasmamos con tanta información útil y fácilmente legible para el ojo entrenado, vale una aclaración: quienes tienen afinidad con la estadística o la visualización de datos se llevan muy bien con los boxplots, pero para el público general suelen ser indigestos. Y bueno... cuando haga falta ser simples y directos siempre tendremos a nuestras barras.
+
+### Facetados
+
+Otra manera de mostrar comparaciones entre categorías es a través de los facetados, con las variantes de la función `facet_wrap()`. La función original, provista por ggplot, nos permite seleccionar una variable para desagruparla y graficarla en varios paneles. Pero a partir de esta función original se crearon otras variantes que nos permiten, por ejemplo, hacer zoom en un área determinada del gráfico. Recordemos nuestro gráfico de densidad de los precios de toallitas:
+
+```{r}
+ggplot(menstru_21_toallitas, aes(x = precio_unidad, fill = Region)) +
+  geom_density(alpha = 0.5)
+```
+
+Es difícil ver las diferencias entre los precios con mayor probabilidad ya que algunos outliers me achican el gráfico. Para hacer un zoom entre los precios más comunes, puedo usar la función `facet_zoom()` del paquete `ggforce`. Sólo tengo que pasarle al parámetro `xlim` la región donde quiero que haga ese zoom. 
+
+```{r}
+library(ggforce)
+
+ggplot(menstru_21_toallitas, aes(x = precio_unidad, fill = Region)) +
+  geom_density(alpha = 0.5)+
+  facet_zoom(xlim = c(0, 30))
+```
+
+Ahora bien, supongamos que quisiera ver la distribución de probabilidad para toallitas y tampones, para ver si ambas tienen una dispersión similar. Puedo usar la función `facet_wrap()`, a la cual le tengo que pasar con la función `vars()` el nombre de la variable por la cual se va a ordenar el facetado. En este caso, "Categoría". 
+
+```{r}
+ggplot(menstru_21, aes(x = precio_unidad, fill = Region)) +
+  geom_density(alpha = 0.8)+
+  facet_wrap(vars(Categoría))
+```
+
+A este gráfico se le pueden hacer varias mejoras. 
+
+- En primer lugar, podemos controlar la cantidad de filas y columnas que tiene el facetado con el parámetro `nrow` o `ncol`. Como aquí nos interesa más que se vea de forma clara el "largo" de la distribución de precios, vamos a decirle a ggplot que queremos que nuestro gráfico tenga dos filas con `nrow = 2`.
+- Por default, el facetado me pone la misma escala para los ejes x e y. Es decir que para ambos paneles tendré en el eje x el valor máximo entre las dos categorías, es decir, los 60 $ de las toallitas. Como no queremos que esto suceda, vamos a poner el parámetro `scales = "free"`. 
+- Y vamos a pasarle `theme_minimal()` para limpiar la apariencia del gráfico y `scale_fill_viridis_d()` para tener una paleta de colores más clara. 
+
+```{r}
+library(viridis)
+
+ggplot(menstru_21, aes(x = precio_unidad, fill = Region)) +
+  geom_density(alpha = 0.8)+
+  facet_wrap(vars(Categoría),
+             nrow=2,
+             scales = 'free')+
+  theme_minimal()+
+  scale_fill_viridis_d()
+```
 
 ### ¡Y mas!
 
@@ -306,17 +353,17 @@ Pero no podemos cerrar la clase sin impartir un saber prohibido: cómo hacer gr�
 Si hacer una barra que muestre la proporción de valores por categoría es cuestión de:
 
 ```{r}
-ggplot(gapminder_2007, aes(y = "", fill = continente)) +
-  geom_bar(position = "fill")
+#ggplot(gapminder_2007, aes(y = "", fill = continente)) +
+#  geom_bar(position = "fill")
 ```
 
 Un gráfico de torta no es otra cosa que un gráfico de barras que usa un sistema de [coordenadas polares](https://es.wikipedia.org/wiki/Coordenadas_polares) en lugar de unas cartesianas. Por defecto, ggplot representa los datos usando coordenadas cartesianas, pero permite pasar a polares usando `coord_polar()` (y el tema "void" se usa sólo para limpiar todo elemento del plot que no sea deliciosa torta):
 
 ```{r}
-ggplot(gapminder_2007, aes(y = "", fill = continente)) +
-  geom_bar(position = "fill") +
-  coord_polar() +
-  theme_void()
+#ggplot(gapminder_2007, aes(y = "", fill = continente)) +
+#  geom_bar(position = "fill") +
+#  coord_polar() +
+#  theme_void()
 ```
 
 ¡Ahora ya saben!
