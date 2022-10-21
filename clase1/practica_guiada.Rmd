@@ -10,12 +10,18 @@ Carguemos primero las librerías con la que vamos a trabajar (`ggplot2` y `tidyv
 ```{r}
 ```
 
-Usando *ggplot2*, investigá el dataset *menstru_data.RDS* que está en la carpeta data. 
+Usando *ggplot2*, investigá el dataset *menstru_2020.csv* que está en la carpeta data. 
 
 ```{r}
-
 ```
 
+Este dataset contiene información descargada para la campaña #MenstruAcción, que promueve:
+
+- la distribución gratuita de productos de gestión menstrual en colegios y hospitales,
+- la remoción del IVA sobre estos productos,
+- la difusión y socialización de datos sobre menstruación y las desigualdades vinculadas a ella. 
+
+La información que vemos ahí es sobre precios de productos de gestión menstrual (toallitas y tampones) scrapeados de la página de Precios Claros. 
 
 ## Práctico 1
 
