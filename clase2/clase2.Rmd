@@ -12,16 +12,13 @@ library(ggplot2)
 library(dplyr)
 
 load("./data/gapminder.rda")
-
-color_continentes <- c("Europe" = "darkorange", "Asia" = "red", "Africa" = "blue",
-                       "Americas" = "yellow", "Oceania" = "purple")
 ```
 
 ## Introducción
 
 Cuando genera un gráfico, ggplot nos hace la vida más fácil tomando un montón de decisiones por nosotros: el color de los ítems con los que representamos los datos, el rango numérico de los ejes (en que número empiezan y terminan), el color de fondo, etc. Esto nos permite ver como lucen los datos tipeando lo menos posible, pero a la hora de compartir nuestras visualizaciones con el mundo vale la pena hacer ajustes para obtener aún mejores mejores resultados.
 
-![](./img/ggplot.png){width="80%"}
+![](./img/ggplot.png){width="97%"}
 
 Ahora iremos más allá del aspecto que tienen los gráficos de ggplot *por defecto*, puliéndolos para para su publicación.
 
@@ -72,6 +69,7 @@ Las funciones que empiezan con `scale_y_` o `scale_x_` generalmente me van a ser
 ggplot(gapminder, aes(x = PBIpc, y = expVida)) +
   geom_point() +
   scale_x_log10(labels=scales::comma)
+
 ```
 
 Ahora se vislumbra una disposición similar a la del gráfico del video, pero en nuestro caso parece haber demasiados puntos. Esto es porque nuestra data incluye 12 observaciones para cada país (cada 5 años desde 1952 hasta 2007). ¡O sea que cada país aparece 12 veces! El Dr. Rosling usaba sólo un punto por país, usando animación para mostrar distintos años.
@@ -92,7 +90,7 @@ ggplot(filter(gapminder, año == 2007), aes(x = PBIpc, y = expVida)) +
   scale_x_log10()
 ```
 
-Ahí va queriendo. Desviándonos un poco de nuestro objetivo original de replicar a nuestro amigo Hans, podríamos querer agregar un intervalo de confianza para nuestros puntos. Esto lo podemos lograr con `geom_smooth()`\`.
+Ahí va queriendo. Desviándonos un poco de nuestro objetivo original de replicar a nuestro amigo Hans, podríamos querer agregar un intervalo de confianza para nuestros puntos. Esto lo podemos lograr con `geom_smooth()`.
 
 ```{r}
 ggplot(filter(gapminder, año == 2007), aes(x = PBIpc, y = expVida)) +
@@ -132,7 +130,7 @@ Esto tiene que ver con el mapeo de las observaciones. En la primera línea de gg
 ggplot(filter(gapminder, año == 2007), 
        aes(x = PBIpc, y = expVida)) +
   geom_point(aes(size = pobl, color = continente)) +
-  geom_smooth(method = "lm")+ #Paso una función lineal como tendencia
+  geom_smooth(method = "lm")+
   scale_x_log10()
 ```
 
@@ -240,7 +238,9 @@ ggplot(filter(gapminder, año == 2007),
   theme_minimal()
 ```
 
-¿Cómo haríamos si quisiera ver dónde se ubican los países de las Americas en este mapa? Vamos a introducir un paquete bastante útil: `ggrepel`. Está diseñado específicamente para poder agregar etiquetas en gráficos de ggplot sin que se nos pisen entre ellas. Probemos usar su función `geom_text_repel`:
+¿Cómo haríamos si quisiera ver dónde se ubican los países de las Americas en este mapa?
+
+Vamos a introducir un paquete bastante útil: `ggrepel`. Está diseñado específicamente para poder agregar etiquetas en gráficos de ggplot sin que se nos pisen entre ellas. Probemos usar su función `geom_text_repel`:
 
 ```{r}
 library(ggrepel)
@@ -248,7 +248,8 @@ library(ggrepel)
 ggplot(filter(gapminder, año == 2007), 
        aes(x = PBIpc, y = expVida, size = pobl/1000000, color = continente)) +
   geom_point() + 
-  geom_text_repel(data = gapminder %>%filter(año == 2007 & continente == "Americas"), aes(x = PBIpc, y = expVida, label = pais), inherit.aes = FALSE)+
+  geom_text_repel(data = gapminder %>% filter(año == 2007 & continente == "Americas"), 
+                  aes(x = PBIpc, y = expVida, label = pais), inherit.aes = FALSE)+
   scale_x_log10() +
   scale_colour_manual(values = color_continentes) + 
   theme_minimal()
@@ -297,13 +298,16 @@ Pongamos "población (millones)" como título de la leyenda de tamaño, "PBI per
 
 ```{r}
 ggplot(filter(gapminder, año == 2007), 
-       aes(x = PBIpc, y = expVida, size = pobl/1000000, color = continente)) +
-  geom_point() +
+       aes(x = PBIpc, y = expVida)) +
+  geom_point(aes(size = pobl/1000000, color = continente)) +
   scale_x_log10() +
   scale_colour_manual(values = color_continentes) + 
   theme_minimal() +
-  labs(title = "Riqueza vs. salud en los países del mundo", subtitle = "según datos 2007",
-       size = "población (millones)", x = "PBI per capita (USD)", y = "expectativa de vida en años")
+  labs(title = "Riqueza vs. salud en los países del mundo", 
+       subtitle = "según datos 2007",
+       size = "población (millones)", 
+       x = "PBI per capita (USD)", 
+       y = "expectativa de vida en años")
 
 ```
 
@@ -320,6 +324,8 @@ ggplot(filter(gapminder, año == 2007),
        size = "población (millones)", 
        x = "PBI per capita (USD)", y = "expectativa de vida en años",
        caption = "fuente: Gapminder, www.gapminder.com") 
+
+ggsave('grafico_gapminder.png', width = 8, height = 5)
 ```
 
 Y con eso, terminamos por ahora. Para seguir practicando, tenemos en *Data Visualization - A practical introduction* de Kieran Healy el capítulo: ["Refine your plots":](https://socviz.co/refineplots.html) en el que está basado esta clase.
