@@ -76,14 +76,14 @@ Volvamos a nuestros datos de #MenstruAcción. En este caso tenemos el dataframe 
 head(menstru_top)
 ```
 
-Tenemos una variable numérica a representar con barras, asi que usamos `geom_col()`. Hgamaos un gráfico de barras de `median_precio` versus `Provincia`. O sea, que `median_precio` va en el eje de las $y$ y `Provincia` en el de las $x$:
+Tenemos una cantidad a representar con barras, asi que usamos `geom_col()`. Hgamaos un gráfico de barras de `median_precio` versus `Provincia`. O sea, que `median_precio` va en el eje de las $y$ y `Provincia` en el de las $x$:
 
 ```{r}
 ggplot(menstru_top, aes(x = Provincia, y = median_precio)) +
   geom_col()
 ```
 
-Los resultados son bastante parejos. Si quisiéramos mostrar a que región pertenece cada provincia (cada barra) con un color distinto, intuitivamente pensamos en asignar el atributo estético de "color" al continente. Probemos:
+Los resultados son bastante parejos. Si quisiéramos mostrar a que región pertenece cada provincia (cada barra) con un color distinto, intuitivamente pensamos en asignar el atributo estético de "color" a la región. Probemos:
 
 ```{r}
 ggplot(menstru_top, aes(x = Provincia, y = median_precio, color = Region)) +
@@ -169,7 +169,7 @@ Para convertirlo en uno que muestre la proporción de categorías en el total, h
 -   La variable de interés (en este caso, "Categoría") se asigna al atributo estético "fill"
 
 ```{r}
-ggplot(menstru_21, aes(x = "", fill = Categoría)) +
+ggplot(menstru_21, aes(x = "el todo", fill = Categoría)) +
   geom_bar(position = "fill")
 ```
 
@@ -223,7 +223,7 @@ ggplot(menstru_21_toallitas, aes(x = precio_unidad)) +
   geom_density()
 ```
 
-Los resultados de `geom_density()` se interpretan de forma similar a los de `geom_density()`: Notamos el rango que toman los datos, y que tan comunes son en un rango en comparación con otro. Una ventaja de usar densidad en lugar de histograma se pone de relieve al comparar resultados según categorías internas de la data. Por ejemplo, si queremoos mostrar las distintas distribuciones de precio según región, usamos el atributo estético "fill" igual que con los gráficos de barras. Con histogramas, sería así.
+Los resultados de `geom_density()` se interpretan de forma similar a los de `geom_histogram()`: Notamos el rango que toman los datos, y que tan comunes son en un rango en comparación con otro. Una ventaja de usar densidad en lugar de histograma se pone de relieve al comparar resultados según categorías internas de la data. Por ejemplo, si queremoos mostrar las distintas distribuciones de precio según región, usamos el atributo estético "fill" igual que con los gráficos de barras. Con histogramas, sería así.
 
 ```{r}
 ggplot(menstru_21_toallitas, aes(x = precio_unidad, fill = Region)) +
@@ -264,18 +264,19 @@ ggplot(menstru_provs_toallitas, aes(x = median_precio, y = fct_reorder(Provincia
   geom_col()
 ```
 
-Un problema que no atendimos antes es que la gran cantidad de barras ocupa casi toda el área disponible, distrayendo del objetivo del gráfico que es resaltar las diferencias entre países. La versión "dotplot" del gráfico resuelve ese problema, y se obtiene con sólo usar `geom_point()` en lugar de `geom_col()`:
+Un problema que no atendimos antes es que la gran cantidad de barras ocupa casi toda el área disponible, distrayendo del objetivo del gráfico que es resaltar las diferencias entre provincias. La versión "dotplot" del gráfico resuelve ese problema, y se obtiene con sólo usar `geom_point()` en lugar de `geom_col()`:
 
 ```{r}
 ggplot(menstru_provs_toallitas, aes(x = median_precio, y = fct_reorder(Provincia, median_precio))) +
-  geom_point()
+  geom_point()+
+  xlim(c(0, 20))
 ```
 
 ### Boxplots
 
 Volvamos a nuestras visualizaciones de distribución. Ya hicimos histogramas (con `geom_histogram()`) y gráficos de densidad (con `geom_density()`), pero ahora vamos a usar un "boxplot". Los boxplots pueden interpretarse como un histograma al que se lo ha colgado "de cabeza", y luego resumido mostrando su hitos:
 
-![](./img/leer_un_boxplot.png){width="90%"}
+![](./img/leer_un_boxplot.png){width="100%"}
 
 Para hacer un boxplot básico, alcanza con definir un atributo estético: el eje sobre el cual se representarán los valores de la variable de interés; el de las $x$ para que el boxplot se oriente en forma horizontal, o el de las $y$ para el más usado formato vertical. Visualicemos entonces entonces el precio_unidad en el eje de las $y$, llamando a `geom_boxplot()`
 
@@ -307,7 +308,7 @@ ggplot(menstru_21_toallitas, aes(x = precio_unidad, fill = Region)) +
   geom_density(alpha = 0.5)
 ```
 
-Es difícil ver las diferencias entre los precios con mayor probabilidad ya que algunos outliers me achican el gráfico. Para hacer un zoom entre los precios más comunes, puedo usar la función `facet_zoom()` del paquete `ggforce`. Sólo tengo que pasarle al parámetro `xlim` la región donde quiero que haga ese zoom.
+Es difícil ver las diferencias entre los precios con mayor probabilidad ya que algunos outliers me achican el gráfico. Para hacer un zoom entre los precios más comunes, puedo usar la función `facet_zoom()` del paquete `ggforce`. Sólo tengo que pasarle al parámetro `xlim` los valores donde quiero que haga ese zoom.
 
 ```{r}
 library(ggforce)
@@ -351,9 +352,9 @@ Existen muchas, muchas otras formas de comparar cantidades, distribuciones y pro
 library(ggridges)
 library(ggplot2)
 
-ggplot(menstru_21 , aes(x = precio_unidad, y = Region, fill = Region)) +
+ggplot(menstru_21_toallitas , aes(x = precio_unidad, y = Region, fill = Region)) +
   geom_density_ridges() +
-  theme_ridges() + 
+  theme_minimal() + 
   theme(legend.position = "none")
 ```
 
@@ -380,7 +381,7 @@ ggplot(menstru_21, aes(y = "", fill = Categoría)) +
 Ahora bien, ¿por qué preferimos alejarnos de este tipo de gráficos? Wilke nos lo explica brevemente en una bella tablita:
 
 |                                                                                                              | Gráfico de torta | Barras apiladas | Barras al lado de la otra |
-|---------------------------------|-------------|-------------|-------------|
+|--------------------------------------------------------------------------------------------------------------|------------------|-----------------|---------------------------|
 | Me muestra los datos como proporciones de un todo                                                            | ✔                | ✔               | ✖                         |
 | Me permite una comparación visual fácil de las proporciones relativas                                        | ✖                | ✖               | ✔                         |
 | Se ve bien incluso para datasets muy pequeños                                                                | ✔                | ✔               | ✔                         |
