@@ -295,7 +295,7 @@ Ahora si, a por ese mapa base.
 
 Lo descargamos entregando la bounding box del área que nos interesa (que ya hemos guardado en la variable "bbox") y un nivel de zoom. El nivel de zoom -un número de 1 a 20- indica el detalle que tendrá el mapa descargado. Para una ciudad, un zoom de entre 10 y 12 suele alcanzar.
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 mapa_CABA2 <- get_stamenmap(bbox, zoom = 10)
 ```
 
@@ -318,7 +318,7 @@ Cuando descargamos un mapa que vamos a usar de base para visualizar datos siempr
 
 Probamos entonces descargar una monocromática, pasando una vez mas nuestra bbox y agregamdo el parámetro `maptype = "toner-lite"`:
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 mapa_CABA_toner <- get_stamenmap(bbox, maptype = "toner-lite", zoom = 15)
 ggmap(mapa_CABA_toner)
 ```
