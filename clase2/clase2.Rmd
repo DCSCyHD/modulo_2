@@ -1,10 +1,13 @@
 ---
 title: "Clase 2 - Puliendo gráficos para publicar"
-author: "Diplomatura en Ciencias Sociales Computacionales"
+author: 
+  - Diplomatura en Ciencias Sociales Computacionales
+  - Laia Domenech Burin y Florencia Pinyerúa 
 output: 
   html_document:
     toc: TRUE
     toc_float: TRUE
+    theme: journal
 ---
 
 ```{r setup, include=FALSE}
@@ -311,6 +314,30 @@ ggplot(filter(gapminder, año == 2007),
 
 ```
 
+
+Con el paquete **ggtext** también puedo formatear con Markdown el texto que aparece: 
+
+```{r}
+library(ggtext)
+
+ggplot(filter(gapminder, año == 2007), 
+       aes(x = PBIpc, y = expVida)) +
+  geom_point(aes(size = pobl/1000000, color = continente)) +
+  scale_x_log10() +
+  scale_colour_manual(values = color_continentes) + 
+  theme_minimal() +
+  labs(title = "Riqueza vs. salud en los países del mundo", 
+       subtitle = "según datos 2007",
+       size = "población (millones)", 
+       x = "**PBI per capita** (USD)", 
+       y = "**expectativa de vida** en años")+
+ theme(plot.title = element_markdown(face = 'bold'),
+ axis.title.x = element_markdown(),
+ axis.title.y = element_markdown())
+
+```
+
+
 Y por último, una nota al pie con la fuente de los datos, vía *caption* :
 
 ```{r}
@@ -322,8 +349,14 @@ ggplot(filter(gapminder, año == 2007),
   theme_minimal() +
   labs(title = "Riqueza vs. salud en los países del mundo", subtitle = "según datos 2007",
        size = "población (millones)", 
-       x = "PBI per capita (USD)", y = "expectativa de vida en años",
-       caption = "fuente: Gapminder, www.gapminder.com") 
+       x = "**PBI per capita** (USD)", 
+       y = "**expectativa de vida** en años",
+       caption = "*fuente: Gapminder*") +
+   theme(plot.title = element_markdown(face = 'bold'),
+         plot.caption = element_markdown(lineheight = 1.2),
+   axis.title.x = element_markdown(),
+   axis.title.y = element_markdown())
+
 
 ggsave('grafico_gapminder.png', width = 8, height = 5)
 ```

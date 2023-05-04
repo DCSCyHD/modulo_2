@@ -1,10 +1,13 @@
 ---
 title: "Clase 5 - Agregando interactividad y animación"
-author: "Diplomatura en CSSyHD"
+author: 
+  - Diplomatura en Ciencias Sociales Computacionales
+  - Laia Domenech Burin y Florencia Pinyerúa 
 output: 
   html_document:
     toc: TRUE
     toc_float: TRUE
+    theme: journal
 ---
 
 ```{r setup, include=FALSE}

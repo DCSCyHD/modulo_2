@@ -7,18 +7,7 @@ output: html_document
 
 Carguemos primero las librerías con la que vamos a trabajar (`ggplot2` y `tidyverse`)
 
-```{r}
-library(tidyverse)
-library(ggplot2)
-```
-
 Investigá el dataset *menstru_2020.csv* que está en la carpeta data. 
-
-```{r}
-data <- read_csv('./data/menstru_2020.csv')
-
-head(data)
-```
 
 Este dataset contiene información descargada para la campaña #MenstruAcción, que promueve:
 
@@ -34,38 +23,10 @@ La información que vemos ahí es sobre precios de productos de gestión menstru
 
 ¿Cómo graficarías la relación entre `unidades` y `precio_unidad`? ¿Cómo describirias esta relación?
 
-```{r}
-ggplot(data, aes(x = as.factor(unidades), y = precio_unidad))+
-  geom_boxplot()
-```
-
 ## Ejercicio 2
 
 Graficá la relación entre las variables `Categoría` y `precio_unidad`. Realizá una descripción de la relación que la visualización te está ayudando a realizar.
 
-```{r}
-data %>% group_by(Categoría) %>%
-  summarise(mean_unid = round(mean(precio_unidad), 2)) %>%
-  ggplot(aes(x = Categoría, y = mean_unid))+
-  geom_col() +
-  geom_text(aes(label = mean_unid), vjust = -0.5)
-
-ggplot(data, aes(x= Categoría, y =precio_unidad))+
-  geom_boxplot()
-```
-
 ## Ejercicio 3
 
 Utilizando el atributo estético del color, agregá al gráfico anterior la variable `Region`. ¿Qué podemos observar en el gráfico?
-
-```{r}
-ggplot(data, aes(x = Region, y = precio_unidad, fill = Categoría))+
-  geom_boxplot()
-```
-
-
-```{r}
-ggplot(data, aes(x = Categoría, y = precio_unidad, fill = Region))+
-  geom_boxplot()
-```
-

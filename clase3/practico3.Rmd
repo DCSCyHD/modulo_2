@@ -11,12 +11,6 @@ En esta ocasión vamos a trabajar con una versión "recortada" de la EPH individ
 Primero, importá las liberías `ggplot` y `dplyr`. Luego importá la base. 
 
 ```{r}
-library(ggplot2)
-library(dplyr)
-
-load("./data/eph_2019_limpia.rda")
-
-eph <- df
 ```
 
 
@@ -25,26 +19,14 @@ eph <- df
 ¿Cómo se distribuyen los géneros entre los estados ocupacionales? Realizá un gráfico de barras, utilizá colores y funciones necesarias para formatear los datos logrando su correcta visualización. Tené en cuenta que hay que filtrar aquellos casos que no corresponden (los menores de 10 años).
 
 ```{r}
-ggplot(filter(df, ESTADO != "Menor de 10 años" & ESTADO != "NR"), aes(x=SEXO, fill = ESTADO))+ 
-  geom_bar()+ 
-  theme_minimal()+ 
-  scale_fill_viridis_d() 
 ```
 
 1) Qué participación tienen las mujeres y los varones para cada tipo de ocupación 
 
 ```{r}
-df_fil<-df[df$CH06>10 & df$ESTADO != "NR",] 
-
-ggplot(df_fil, aes(x = ESTADO, fill = SEXO)) + 
-  geom_bar(position = "dodge")
 ```
+
 ```{r}
-df_fil %>%
-  count(ESTADO, SEXO, wt = PONDIIO) %>%
-  ggplot(aes(x = ESTADO, y = n, fill = SEXO))+
-  geom_col(position = "dodge")+
-  theme_minimal()
 ```
 
 
@@ -53,56 +35,18 @@ df_fil %>%
 Mostrá en un gráfico la distribución de probabilidad de la variable ingresos de asalariados (PP08D1) según región. De nuevo, tené en cuenta con filtrar aquellos casos que no corresponden (los no-asalariados).
 
 ```{r}
-#Opción 1
-ggplot(filter(df, CAT_OCUP == "Empleado" & PP08D1 != -9 & PP08D1 != 0), aes(x= PP08D1))+ 
-  geom_density()+ 
-  facet_wrap(vars(REGION))+ 
-  scale_y_continuous(labels=scales::comma) 
-```
-```{r}
-df %>% 
-  filter(CAT_OCUP == "Empleado" & PP08D1 > 0) %>% 
-  ggplot(aes(y=PP08D1)) +
-  geom_boxplot() 
-
-df %>% 
-  filter(CAT_OCUP == "Empleado" & PP08D1 > 0 & PP08D1 < 55000) %>% 
-  ggplot(aes(x=PP08D1, fill=REGION)) +
-  geom_density(alpha = 0.8) 
 ```
 
-```{r}
-library(ggforce)
-
-df %>% 
-  filter(CAT_OCUP == "Empleado" & PP08D1 > 0) %>% 
-  ggplot(aes(x=PP08D1, fill=REGION)) +
-  geom_density(alpha = 0.8) +
-  facet_zoom(xlim = c(0, 55000))
-```
-
-```{r}
-ggplot(filter(df, CAT_OCUP=="Empleado" & PP08D1>0), aes(x = PP08D1, fill = REGION)) +
-geom_density(alpha = 0.5) 
-```
 
 ## Ejercicio 3
 
 Escapando a las barras: utilizá un boxplot para describir la relación entre el nivel de ingresos de los asalariados por región y sexo. Describí estas relaciones.
 
 ```{r}
-ggplot(filter(df, CAT_OCUP == "Empleado" & PP08D1 != -9 & PP08D1 != 0), aes(x= SEXO, y = PP08D1))+ 
-  geom_boxplot()+ 
-  facet_wrap(vars(REGION))+ 
-  scale_y_continuous(labels=scales::comma)+ 
-  theme_minimal()
 
 ```
 
 
 ```{r}
-ggplot(filter(eph, CAT_OCUP=="Empleado" & PP08D1>0), aes(x = REGION, y = PP08D1, fill=SEXO)) +
-  geom_boxplot(position = "dodge") +
-  theme_minimal()
 ```
 

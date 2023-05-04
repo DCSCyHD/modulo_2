@@ -8,86 +8,27 @@ Usando *ggplot2*, vamos a seguir jugando con gapminder. Esta vez, vamos a explor
 
 Primero, importamos las librerías `ggplot` y `dplyr`. También, vamos a leer el archivo `gapminder_clean.csv` que está en la carpeta `data`. 
 
-```{r}
-library(ggplot2)
-library(tidyverse)
-
-df <- read_csv("./data/clean_gapminder.csv")
-```
-
-
 ## Ejercicio 1
 
 Realizá un gráfico que muestre la relación entre la tasa de fertilidad y la expectativa de vida en el año 2007 para todos los países. 
 
-```{r}
-#Puedo guardar los gráficos de ggplot en un objeto
-
-g1 <- ggplot(df %>% filter(year == 2007), aes(x = fert, y = life))+
-  geom_point()
-
-g1
-```
 ## Ejercicio 2
 
 Introducí en el gráfico las variables de `continent` y `pop` (tamaño de la población). Pensá: ¿qué atributos estéticos puedo utilizar para mostrar los valores según el tipo de variable? Luego ploteá un gráfico de muestra.
 
-```{r}
-g2 <- ggplot(df %>% filter(year ==2007), aes(x = fert, y = life, size = pop, color = continent))+
-  geom_point()
-
-g2
-```
 
 ## Ejercicio 3
 
 Modificá manualmente los colores de los continentes. Queremos que Europa tenga el tono "darkorange", Asia "red", África "blue", las Américas "yellow" y Oceanía "purple". 
 
-```{r}
-vec_colores <- c("Europe" = "darkorange", "Asia" = "red", "Africa" = "blue", "Americas" = "yellow", "Oceania" = "purple")
-
-g3 <- g2 +
-  scale_color_manual(values = vec_colores)
-
-g3
-```
 
 ¿Y si quisiera mostrar dónde están Arg y Brasil en este gráfico?
-
-```{r}
-library(ggrepel)
-
-df07 <- df %>% filter(year == 2007)
-
-g2 +
-  geom_text_repel(data = df07 %>%filter(country == "Brazil" | country == "Argentina"), 
-                  aes(x = fert, y = life, label = country), inherit.aes = FALSE)+
-  scale_color_manual(values = vec_colores)
-```
 
 ## Ejercicio 4
 
 Realizá limpieza y ordenamiento finales, asegurate de que las labels describan debidamente su elemento asignado. 
 
-```{r}
-g3 +
-  labs(title = "Fertilidad y exp. vida",
-       subtitle = "año 2007",
-       size = "tamaño población (en millones)",
-       color = "continente",
-       y = "expectativa de vida",
-       x = "tasa de fertilidad",
-       caption = "Fuente: Gapminder")+
-  theme_minimal()
-
-```
 ¿Cómo guardo los gráficos? Uso `ggsave()` .
-
-```{r}
-ggsave('./plot_gapminder.png',
-  width = 7,
-  height = 3)
-```
 
 Recuerden que por default me guarda el último plot hecho, si lo quiero cambiar, modifico el parámetro `plot`. PERO para eso tengo que haberlo guardado en un objeto primero. 
 

@@ -1,10 +1,13 @@
 ---
 title: "Clase 4 - Visualizando información geográfica"
-author: "Diplomatura en Ciencias Sociales Computacionales"
+author: 
+  - Diplomatura en Ciencias Sociales Computacionales
+  - Laia Domenech Burin y Florencia Pinyerúa 
 output: 
   html_document:
     toc: TRUE
     toc_float: TRUE
+    theme: journal
 ---
 
 ```{r setup, include=FALSE}

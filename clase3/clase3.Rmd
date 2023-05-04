@@ -1,13 +1,18 @@
 ---
 title: "Clase 3 - Visualizando cantidades, proporciones y distribuciones"
-author: "Diplomatura en Ciencias Sociales Computacionales"
+author: 
+  - Diplomatura en Ciencias Sociales Computacionales
+  - Laia Domenech Burin y Florencia Pinyerúa 
 output: 
   html_document:
     toc: TRUE
     toc_float: TRUE
+    theme: journal
 ---
 
 ```{r setup, include=FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+
 library(ggplot2)
 library(dplyr)
 library(lubridate)
@@ -73,7 +78,7 @@ library(ggplot2)
 Volvamos a nuestros datos de #MenstruAcción. En este caso tenemos el dataframe menstru_top, que tiene los datos de las provincias con la mediana de precios precios de toallitas más caras:
 
 ```{r }
-head(menstru_top)
+menstru_top
 ```
 
 Tenemos una cantidad a representar con barras, asi que usamos `geom_col()`. Hgamaos un gráfico de barras de `median_precio` versus `Provincia`. O sea, que `median_precio` va en el eje de las $y$ y `Provincia` en el de las $x$:
@@ -126,7 +131,8 @@ Ahora, vamos a un caso en el cual no queremos mostrar una medida resumen, sino c
 Para practicar, aquí tenemos los datos de precios de productos menstruales en marzo de 2021 completos.
 
 ```{r}
-head(menstru_21)
+menstru_21 %>%
+  slice(1:5)
 ```
 
 Visualicemos la cantidad de observaciones que tiene cada región. Para usar `geom_bar()` asignamos a las $x$ la variable a contar. No hace falta asignar una variable a las $y$, porque la altura de cada barra no depende de los valores de alguna otra columna, sino del conteo de subcategorías en la variable de las $x$.
@@ -216,38 +222,38 @@ ggplot(menstru_21_toallitas, aes(x = precio_unidad)) +
 
 Los gráficos de densidad son descendientes directos de los histogramas. Pero en lugar de conteos de observaciones por rango de valores, lo que muestran es la distribución de *probabilidad* de la variable, es decir que tan probable es encontrar un valor determinado si tomaramos al azar una de las observaciones. A diferencia de los histogramas, que llevan un par de siglos en uso porque porque son relativamente fáciles de hacer a mano, los (antes) trabajosos gráficos de densidad se han popularizado con la llegada de software y computadoras capaces de realizarlos en un instante.
 
-Los gráficos de densidad se hacen de forma análoga a los histogramas, reemplazando `geom_histogram()` `geom_density()`. Probemos con los valores de "precio_unidad"
+Los gráficos de densidad se hacen de forma análoga a los histogramas, reemplazando `geom_histogram()` `geom_density()`. Probemos con los valores de "precio_unidad" en la región Patagónica.
 
 ```{r}
-ggplot(menstru_21_toallitas, aes(x = precio_unidad)) +
+ggplot(menstru_21 %>% filter(Region == "PAT"), aes(x = precio_unidad)) +
   geom_density()
 ```
 
 Los resultados de `geom_density()` se interpretan de forma similar a los de `geom_histogram()`: Notamos el rango que toman los datos, y que tan comunes son en un rango en comparación con otro. Una ventaja de usar densidad en lugar de histograma se pone de relieve al comparar resultados según categorías internas de la data. Por ejemplo, si queremoos mostrar las distintas distribuciones de precio según región, usamos el atributo estético "fill" igual que con los gráficos de barras. Con histogramas, sería así.
 
 ```{r}
-ggplot(menstru_21_toallitas, aes(x = precio_unidad, fill = Region)) +
+ggplot(menstru_21 %>% filter(Region == "PAT"), aes(x = precio_unidad, fill = Categoría)) +
   geom_histogram()
 ```
 
 ¡El resultado es un lío! Las barras apiladas no son ideales para interpretar distribuciones. Las cosas mejoran un poco si usamos `position = "dodge"`, pero no mucho:
 
 ```{r, echo=TRUE}
-ggplot(menstru_21_toallitas, aes(x = precio_unidad, fill = Region)) +
+ggplot(menstru_21 %>% filter(Region == "PAT"), aes(x = precio_unidad, fill = Categoría)) +
   geom_histogram(position = "dodge")
 ```
 
 Probemos ahora usando `geom_density()`:
 
 ```{r}
-ggplot(menstru_21_toallitas, aes(x = precio_unidad, fill = Region)) +
+ggplot(menstru_21 %>% filter(Region == "PAT"), aes(x = precio_unidad, fill = Categoría)) +
   geom_density()
 ```
 
-El resultado es mucho más interpretable. Por ejemplo, salta a la vista que en la región de Cuyo tenemos una distribución de precios alrededor de los valores más bajos, y en casi todas las regiones vemos una bimodalidad que atribuimos a las toallitas vs. tampones. Para revelar cualquier "sorpresa" que pudiera haber quedado oculta en las distribuciones tapadas por otras, ajustamos el atributo de `alpha`, que por cierto puede usarse con cualquier geometría de ggplot para controlar su grado de transparencia. Intentemos asignando una transparencia del 50% con `alpha = 0.5`,:
+El resultado es mucho más interpretable. Por ejemplo, salta a la vista que los tampones son considerablemente más caros que las toallitas. Para revelar cualquier "sorpresa" que pudiera haber quedado oculta en las distribuciones tapadas por otras, ajustamos el atributo de `alpha`, que por cierto puede usarse con cualquier geometría de ggplot para controlar su grado de transparencia. Intentemos asignando una transparencia del 50% con `alpha = 0.5`,:
 
 ```{r}
-ggplot(menstru_21_toallitas, aes(x = precio_unidad, fill = Region)) +
+ggplot(menstru_21 %>% filter(Region == "PAT"), aes(x = precio_unidad, fill = Categoría)) +
   geom_density(alpha = 0.5)
 ```
 
@@ -269,7 +275,77 @@ Un problema que no atendimos antes es que la gran cantidad de barras ocupa casi 
 ```{r}
 ggplot(menstru_provs_toallitas, aes(x = median_precio, y = fct_reorder(Provincia, median_precio))) +
   geom_point()+
-  xlim(c(0, 20))
+  xlim(c(0, 20))+
+  labs(y = "Provincia",
+       x = "Mediana de precio unitario")
+```
+
+### Lollipops
+
+Otra variante del dotplot un poco más atractiva son los lollipop chart o gráfico de chupetín. Podemos generarlo combinando los dotplots con `geom_segment`.
+
+Primero, hacemos una línea que tenga nuestros valores mapeados:
+
+```{r}
+ggplot(menstru_provs_toallitas, aes(x = median_precio, 
+                                    y = fct_reorder(Provincia, median_precio))) +
+  geom_segment(aes(x = 0, 
+                   y = fct_reorder(Provincia, median_precio), 
+                   xend = median_precio, 
+                   yend = fct_reorder(Provincia, median_precio)))
+```
+
+Luego le agregamos un punto al final.
+
+```{r}
+ggplot(menstru_provs_toallitas, aes(x = median_precio, 
+                                    y = fct_reorder(Provincia, median_precio))) +
+  geom_segment(aes(x = 0, 
+                   y = fct_reorder(Provincia, median_precio), 
+                   xend = median_precio, 
+                   yend = fct_reorder(Provincia, median_precio))) +
+  geom_point()+
+  labs(y = "Provincia",
+       x = "Mediana de precio unitario")+
+  theme_minimal()
+```
+
+Al tener una geometría que ocupa más espacio visualmente, podemos mapear más atributos estéticos. Por ejemplo, podemos agregar la región.
+
+```{r}
+ggplot(menstru_provs_toallitas, aes(x = median_precio, 
+                                    y = fct_reorder(Provincia, median_precio),
+                                    color = Region)) +
+  geom_segment(aes(x = 0, 
+                   y = fct_reorder(Provincia, median_precio), 
+                   xend = median_precio, 
+                   yend = fct_reorder(Provincia, median_precio))) +
+  geom_point()+
+  labs(x = "Provincia",
+       y = "Mediana de precio unitario")+
+  theme_minimal()
+```
+
+¿Y si quisiéramos que solo el punto del final tenga color?
+
+```{r}
+ggplot(menstru_provs_toallitas, aes(x = median_precio, 
+                                    y = fct_reorder(Provincia, median_precio))) +
+  geom_segment(aes(x = 0, 
+                   y = fct_reorder(Provincia, median_precio), 
+                   xend = median_precio, 
+                   yend = fct_reorder(Provincia, median_precio)),
+               color = "lightgrey") +
+  geom_point(aes(color = Region))+
+  labs(x = "Precio unitario",
+       y = "",
+       title = "Precios de toallitas",
+       subtitle = "en Argentina, 2021")+
+  scale_color_viridis_d()+
+  theme_minimal()+
+  theme(
+    axis.line.y=element_line(color="#2b2b2b", size=0.15)
+    )
 ```
 
 ### Boxplots
@@ -278,33 +354,45 @@ Volvamos a nuestras visualizaciones de distribución. Ya hicimos histogramas (co
 
 ![](./img/leer_un_boxplot.png){width="100%"}
 
-Para hacer un boxplot básico, alcanza con definir un atributo estético: el eje sobre el cual se representarán los valores de la variable de interés; el de las $x$ para que el boxplot se oriente en forma horizontal, o el de las $y$ para el más usado formato vertical. Visualicemos entonces entonces el precio_unidad en el eje de las $y$, llamando a `geom_boxplot()`
+Para hacer un boxplot básico, alcanza con definir un atributo estético: el eje sobre el cual se representarán los valores de la variable de interés; el de las $x$ para que el boxplot se oriente en forma horizontal, o el de las $y$ para el más usado formato vertical. Visualicemos entonces entonces el precio_unidad de la Patagonia en el eje de las $y$, llamando a `geom_boxplot()`
 
 ```{r}
-ggplot(menstru_21_toallitas, aes(y = precio_unidad)) +
+ggplot(menstru_21 %>% filter(Region == "PAT"), aes(y = precio_unidad)) +
   geom_boxplot()
 ```
 
-La gracia de los boxplots es que permiten mostrar diferencias por categoría de forma más prolija que los histogramas, e incluso que los gráficos de densidad. Para separar por categorías, asignemos una variable categórica, "Región" al eje de las $x$:
+La gracia de los boxplots es que permiten mostrar diferencias por categoría de forma más prolija que los histogramas, e incluso que los gráficos de densidad. Para separar por categorías, asignemos una variable categórica, "Categoría" al eje de las $x$:
 
 ```{r}
-ggplot(menstru_21_toallitas, aes(x = Region, y = precio_unidad)) +
+ggplot(menstru_21 %>% filter(Region == "PAT"), aes(x = Categoría, y = precio_unidad, fill = Categoría)) +
   geom_boxplot()
 ```
 
 Usando como guía el ejemplo la "anatomía de un boxplot" que mostramos antes, deberíamos ser capaces de describir:
 
--   ¿Hay diferencias entre los precios medios de toallitas entre las regiones?
+-   ¿Hay diferencias entre los precios medios de toallitas y tampones?
 -   ¿Tienen poca dispersión los precios de la toallitas?
+
+Otra manera de ilustrar visualmente el gráfico de cajas es con el llamado "Raindcloud plot". Este nos muestra los valores en un boxplot y cómo es su distribución de probabilidad.
+
+```{r message=FALSE, warning=FALSE}
+library(ggdist)
+
+ggplot(menstru_21 %>% filter(Region == "PAT"), aes(x = Categoría, y = precio_unidad, fill = Categoría)) + 
+  stat_halfeye(adjust = .5, width = .3, .width = 0, justification = -.3, point_colour = NA) +
+  geom_boxplot(width = .1)+
+  theme_minimal()
+
+```
 
 Mientras nos entusiasmamos con tanta información útil y fácilmente legible para el ojo entrenado, vale una aclaración: quienes tienen afinidad con la estadística o la visualización de datos se llevan muy bien con los boxplots, pero para el público general suelen ser indigestos. Y bueno... cuando haga falta ser simples y directos siempre tendremos a nuestras barras.
 
 ### Facetados
 
-Otra manera de mostrar comparaciones entre categorías es a través de los facetados, con las variantes de la función `facet_wrap()`. La función original, provista por ggplot, nos permite seleccionar una variable para desagruparla y graficarla en varios paneles. Pero a partir de esta función original se crearon otras variantes que nos permiten, por ejemplo, hacer zoom en un área determinada del gráfico. Recordemos nuestro gráfico de densidad de los precios de toallitas:
+Otra manera de mostrar comparaciones entre categorías es a través de los facetados, con las variantes de la función `facet_wrap()`. La función original, provista por ggplot, nos permite seleccionar una variable para desagruparla y graficarla en varios paneles. Pero a partir de esta función original se crearon otras variantes que nos permiten, por ejemplo, hacer zoom en un área determinada del gráfico. Por ejemplo, hagamos un gráfico de densidad de los precios de toallitas en las regiones Pampeana y Patagónica:
 
 ```{r}
-ggplot(menstru_21_toallitas, aes(x = precio_unidad, fill = Region)) +
+ggplot(menstru_21_toallitas %>% filter(Region == "PAT" | Region == "PAM"), aes(x = precio_unidad, fill = Region)) +
   geom_density(alpha = 0.5)
 ```
 
@@ -313,7 +401,7 @@ Es difícil ver las diferencias entre los precios con mayor probabilidad ya que 
 ```{r}
 library(ggforce)
 
-ggplot(menstru_21_toallitas, aes(x = precio_unidad, fill = Region)) +
+ggplot(menstru_21_toallitas %>% filter(Region == "PAT" | Region == "PAM"), aes(x = precio_unidad, fill = Region)) +
   geom_density(alpha = 0.5)+
   facet_zoom(xlim = c(0, 30))
 ```
@@ -321,7 +409,7 @@ ggplot(menstru_21_toallitas, aes(x = precio_unidad, fill = Region)) +
 Ahora bien, supongamos que quisiera ver la distribución de probabilidad para toallitas y tampones, para ver si ambas tienen una dispersión similar. Puedo usar la función `facet_wrap()`, a la cual le tengo que pasar con la función `vars()` el nombre de la variable por la cual se va a ordenar el facetado. En este caso, "Categoría".
 
 ```{r}
-ggplot(menstru_21, aes(x = precio_unidad, fill = Region)) +
+ggplot(menstru_21 %>% filter(Region == "PAT" | Region == "PAM"), aes(x = precio_unidad, fill = Region)) +
   geom_density(alpha = 0.8)+
   facet_wrap(vars(Categoría))
 ```
@@ -335,7 +423,7 @@ A este gráfico se le pueden hacer varias mejoras.
 ```{r}
 library(viridis)
 
-ggplot(menstru_21, aes(x = precio_unidad, fill = Region)) +
+ggplot(menstru_21 %>% filter(Region == "PAT" | Region == "PAM"), aes(x = precio_unidad, fill = Region)) +
   geom_density(alpha = 0.8)+
   facet_wrap(vars(Categoría),
              nrow=2,
@@ -356,6 +444,35 @@ ggplot(menstru_21_toallitas , aes(x = precio_unidad, y = Region, fill = Region))
   geom_density_ridges() +
   theme_minimal() + 
   theme(legend.position = "none")
+```
+
+```{r}
+library(ggtext)
+library(glue)
+
+menstru_21_toallitas %>% 
+  mutate(color = case_when(
+    Region == "PAT" ~ "deepskyblue4",
+    Region == "GBA" ~ "slategrey",
+    Region == "NOA" ~ "orange",
+    Region == "NEA" ~ "orange4",
+    Region == "PAM" ~ "sienna1",
+    Region == "CUY" ~ "darkolivegreen4"
+  ),
+  name = glue("<b style='color:{color}'>{Region}")) %>%
+  ggplot(aes(x = precio_unidad, y = name, fill = color)) +
+  geom_density_ridges() +
+  scale_fill_identity()+
+  labs(title = "Precios de toallitas",
+       subtitle = "en Argentina, 2021",
+       x = "Precio unitario",
+       caption = "**Fuente:** EcoFemiData")+
+  theme_minimal() + 
+  theme(legend.position = "none",
+        plot.caption = element_markdown(lineheight = 1.2),
+        axis.text.y = element_markdown(),
+        axis.title.y = element_blank())
+
 ```
 
 Y luego tenemos ["treemaps"](https://r-charts.com/es/parte-todo/treemapify/), ["enjambres de abejas"](https://r-charts.com/es/distribucion/ggbeeswarm/), [¡gráficos de piruleta!](https://r-charts.com/es/ranking/lollipop-ggplot2/), [gráficos de waffle](https://r-charts.com/es/parte-todo/grafico-waffle-ggplot2/), [gráficos de violín](https://r-charts.com/es/distribucion/grafico-violin-grupo-ggplot2/), [mapas de calor](https://r-charts.com/es/correlacion/mapa-calor-ggplot2/)...
