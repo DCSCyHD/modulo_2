@@ -7,7 +7,16 @@ output: html_document
 
 Carguemos primero las librerías con la que vamos a trabajar (`ggplot2` y `tidyverse`)
 
-Investigá el dataset *menstru_2020.csv* que está en la carpeta data. 
+```{r}
+library(tidyverse)
+```
+
+Investigá el dataset *menstru_full.csv* que está en la carpeta data. ¿Cuáles son sus columnas? 
+
+```{r}
+
+```
+
 
 Este dataset contiene información descargada para la campaña #MenstruAcción, que promueve:
 
@@ -19,14 +28,24 @@ La información que vemos ahí es sobre precios de productos de gestión menstru
 
 ## Práctico 1
 
-## Ejercicio 1
+Utilizando las herramientas aprendidas en el M1 (tidyverse) y las vistas en la clase de hoy, expresá en gráficos: 
 
-¿Cómo graficarías la relación entre `unidades` y `precio_unidad`? ¿Cómo describirias esta relación?
+1. La evolución de precios medios unitarios de los productos menstruales, en general. 
 
-## Ejercicio 2
+```{r}
 
-Graficá la relación entre las variables `Categoría` y `precio_unidad`. Realizá una descripción de la relación que la visualización te está ayudando a realizar.
+```
 
-## Ejercicio 3
 
-Utilizando el atributo estético del color, agregá al gráfico anterior la variable `Region`. ¿Qué podemos observar en el gráfico?
+2. La evolución de precios distinguiendo toallitas y tampones.
+
+```{r}
+
+```
+
+3. La evolución de preicos por región. 
+
+```{r}
+
+```
+
