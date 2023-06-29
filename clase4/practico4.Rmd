@@ -1,0 +1,106 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+## Práctico 4
+
+Trabajaremos con datos geográficos, iniciemos cargando las librerías:
+
+```{r}
+library(ggplot2)
+library(sf)
+```
+
+## Ejercicio 1
+
+Carguemos la base con datos georeferenciados de los polígonos de CABA (<https://bitsandbricks.github.io/data/CABA_rc.geojson>) y hagamos un plot de tales datos.
+
+```{r}
+CABA_mapa <- read_sf("https://bitsandbricks.github.io/data/CABA_rc.geojson")
+
+ggplot(CABA_mapa) + 
+  geom_sf()
+```
+
+## Ejercicio 2
+
+¿Cómo mostrarían la relación entre hogares con NBI/hogares totales en un mapa?
+
+```{r}
+ggplot(CABA_mapa) +
+  geom_sf(aes(fill = HOGARES_NBI/HOGARES), color = NA) +
+  scale_fill_viridis_c() +
+  labs(title = "Ciudad Autónoma de Buenos Aires",
+  subtitle = "Hogares con NBI",
+  fill = "Hogares con NBI sobre total de hogares") 
+```
+
+## Ejercicio 3
+
+Carguemos la base de datos `espacios-culturales.geojson` con información sobre los barrios de la Ciudad de Buenos Aires. Luego realicemos un plot agregando información sobre la localización de bares sobre el mapa como capa.
+
+```{r}
+library(tidyverse)
+
+espacios_culturales <- read_sf('./data/espacios-culturales.geojson') 
+
+bares <- filter(espacios_culturales, FUNCION_PRINCIPAL == "BAR")
+
+ggplot() + 
+  geom_sf(data = CABA_mapa) + 
+  geom_sf(data = bares) 
+```
+
+Ahora, grafiquen la misma información pero utilizando de base un mapa de Stamen Maps. 
+
+```{r}
+library(ggmap) 
+
+bbox <- st_bbox(CABA_mapa) 
+names(bbox) <- c("left", "bottom", "right", "top")
+
+mapa_CABA <- get_stamenmap(bbox, zoom = 12) 
+ggmap(mapa_CABA) 
+
+mapa_CABA_ <- get_stamenmap(bbox, maptype = "toner-lite", zoom = 12) 
+
+ggmap(mapa_CABA_) 
+
+ggmap(mapa_CABA_) + 
+  geom_sf(data = bares, inherit.aes = FALSE) + 
+  labs(title = "Bares", subtitle = "Ciudad Autónoma de Buenos Aires") + 
+  theme_void() 
+```
+
+
+## Ejercicio 4
+
+Al mapa previo de bares:
+
+-   Agregale otro tipo de espacio cultural que quieras (librería, biblioteca, espacio escénico, etc.)
+-   Sumale más formato e información. Jugá e investigá parámetros para enriquecer la visualización.
+
+```{r}
+# Versión 1:
+ccul_caba <- espacios_culturales %>% filter(FUNCION_PRINCIPAL == "CENTRO CULTURAL") 
+
+#bares y centros culturales
+ggmap(mapa_CABA_)+
+  geom_sf(data = bares, aes(color = SUBCATEGORIA), inherit.aes = FALSE) +
+  geom_sf(data = ccul_caba, color = "black", inherit.aes = FALSE) +
+  labs(title = "Bares y centros culturales CABA") +
+  theme_void() 
+```
+
+```{r}
+#Versión 2
+
+espacios <- filter(espacios_culturales, FUNCION_PRINCIPAL == "BAR" | FUNCION_PRINCIPAL == "BIBLIOTECA") 
+
+ggmap(mapa_CABA_) + 
+  geom_sf(data = espacios, inherit.aes = F, aes(color = FUNCION_PRINCIPAL))+ 
+  scale_color_viridis_d()+ 
+  theme_void() 
+```
+
