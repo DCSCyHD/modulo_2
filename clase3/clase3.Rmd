@@ -446,6 +446,14 @@ ggplot(menstru_21_toallitas , aes(x = precio_unidad, y = Region, fill = Region))
   theme(legend.position = "none")
 ```
 
+Finalmente, lo podemos terminar de tunear con el paquete `ggtext`. Vamos a hacer las siguientes funciones:
+
+-   Creamos la columna `color` que adopta valores de colores según la región, y la columna `name` que pega con formato **Markdown** el valor de texto con un estilo de color (es decir, que "PAT" se imprima en deepskyblue, "GBA" en slategrey... y así).
+
+-   En ggplot agregamos `scale_fill_identity()`, que hace que ggplot entienda que los valores que mapeamos de la columna `color` son exactamente los colores que queremos utilizar para las distintas regiones.
+
+-   Por último, en el theme ponemos que los elementos del eje y (`axis.text.y` y `axis.title.y`) sean un elemento de markdown, así los genera con colores.
+
 ```{r}
 library(ggtext)
 library(glue)
@@ -498,7 +506,7 @@ ggplot(menstru_21, aes(y = "", fill = Categoría)) +
 Ahora bien, ¿por qué preferimos alejarnos de este tipo de gráficos? Wilke nos lo explica brevemente en una bella tablita:
 
 |                                                                                                              | Gráfico de torta | Barras apiladas | Barras al lado de la otra |
-|--------------------------------------------------------------------------------------------------------------|------------------|-----------------|---------------------------|
+|--------------------------------------|------------|------------|------------|
 | Me muestra los datos como proporciones de un todo                                                            | ✔                | ✔               | ✖                         |
 | Me permite una comparación visual fácil de las proporciones relativas                                        | ✖                | ✖               | ✔                         |
 | Se ve bien incluso para datasets muy pequeños                                                                | ✔                | ✔               | ✔                         |

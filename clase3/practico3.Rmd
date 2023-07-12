@@ -21,10 +21,7 @@ Primero, importá las liberías `ggplot` y `dplyr`. Luego importá la base.
 ```{r}
 ```
 
-1) Qué participación tienen las mujeres y los varones para cada tipo de ocupación 
-
-```{r}
-```
+¿Qué participación tienen las mujeres y los varones para cada tipo de ocupación 
 
 ```{r}
 ```
