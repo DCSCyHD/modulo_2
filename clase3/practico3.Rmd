@@ -11,39 +11,160 @@ En esta ocasión vamos a trabajar con una versión "recortada" de la EPH individ
 Primero, importá las liberías `ggplot` y `dplyr`. Luego importá la base. 
 
 ```{r}
+library(tidyverse)
+
+load("data/eph_2019_limpia.rda")
+
+df
 ```
 
 
 ## Ejercicio 1
 
-¿Cómo se distribuyen los géneros entre los estados ocupacionales? Realizá un gráfico de barras, utilizá colores y funciones necesarias para formatear los datos logrando su correcta visualización. Tené en cuenta que hay que filtrar aquellos casos que no corresponden (los menores de 10 años).
+¿Cómo se distribuyen los géneros entre los estados ocupacionales? Realizá un gráfico de barras, utilizá colores y funciones necesarias para formatear los datos logrando su correcta visualización. 
+
+Tené en cuenta que hay que filtrar aquellos casos que no corresponden (los menores de 10 años).
 
 ```{r}
+
+ggplot(df, aes(x = ESTADO, fill = SEXO))+
+    geom_bar(position = "dodge")
+
+df %>% 
+  filter(ESTADO !="Menor de 10 años") %>% 
+  ggplot()+
+  geom_bar(aes(x=ESTADO,fill=SEXO),position = "fill") +
+  labs(y="",x="Estado ocupacional",
+       title = "Distribución del género según estado ocupacional")+
+  theme_minimal()
+
 ```
 
-¿Qué participación tienen las mujeres y los varones para cada tipo de ocupación 
+¿Qué participación tienen las mujeres y los varones para cada tipo de ocupación ?
 
 ```{r}
+
+ggplot(df %>% filter(CAT_OCUP != "Sin datos"), aes(x = CAT_OCUP, fill = SEXO))+
+            geom_bar(position = "dodge")
+
+ggplot(df %>% filter(CAT_OCUP != "Sin datos"), aes(x = CAT_OCUP, fill = SEXO))+
+            geom_bar(position = "fill")
+
+df %>% 
+  group_by(CAT_OCUP, SEXO) %>%
+  summarise(n=n()) %>%
+  filter(CAT_OCUP != "Sin datos")%>%
+  ggplot(aes(x = reorder(CAT_OCUP, -n), fill = SEXO, y = n))+
+  geom_col(position = "dodge")+
+  geom_text(aes(label = n), position = position_dodge(width=0.9),
+            vjust = -0.25)
 ```
 
 
 ## Ejercicio 2
 
-Mostrá en un gráfico la distribución de probabilidad de la variable ingresos de asalariados (PP08D1) según región. De nuevo, tené en cuenta con filtrar aquellos casos que no corresponden (los no-asalariados).
+Mostrá en un gráfico la distribución de probabilidad de la variable ingresos de asalariados (PP08D1) según región. 
+
+De nuevo, tené en cuenta con filtrar aquellos casos que no corresponden (los no-asalariados).
 
 ```{r}
+library(glue)
+library(ggtext)
+library(ggridges)
+
+df %>% 
+  filter(CAT_OCUP == "Empleado" & PP08D1 > 0) %>% 
+  mutate(color = case_when(
+    REGION == "Patagonia" ~ "deepskyblue4",
+    REGION == "Gran Buenos Aires" ~ "slategrey",
+    REGION == "NOA" ~ "orange",
+    REGION == "NEA" ~ "orange4",
+    REGION == "Pampeana" ~ "sienna1",
+    REGION == "Cuyo" ~ "darkolivegreen4"
+  ), name = glue("<b style='color:{color}'>{REGION}")) %>%
+  ggplot(aes(x = PP08D1, y = name, fill = color)) +
+  geom_density_ridges() +
+  scale_fill_identity()+
+  scale_x_log10() +
+  theme_minimal() + 
+  theme(legend.position = "none",
+        plot.caption = element_markdown(lineheight = 1.2),
+        axis.text.y = element_markdown(),
+        axis.title.y = element_blank()) +
+  labs(title = "Ingresos según Región",
+       subtitle = "en Argentina, 1er trimestre 2019",
+       x = "Ingresos",
+       caption = "**Fuente:** EPH")
+
+ggplot(df %>% filter(CAT_OCUP == "Empleado") , aes(x = PP08D1, y = REGION, fill = REGION)) +
+  geom_density_ridges() +
+  theme_minimal() + 
+  theme(legend.position = "none")
+
 ```
 
 
 ## Ejercicio 3
 
-Escapando a las barras: utilizá un boxplot para describir la relación entre el nivel de ingresos de los asalariados por región y sexo. Describí estas relaciones.
+Escapando a las barras: utilizá un boxplot para describir la relación entre el nivel de ingresos de los asalariados por región y sexo. 
 
 ```{r}
+
+df %>% 
+  filter(CAT_OCUP == "Empleado",
+         PP08D1 > 0) %>% 
+  mutate(SEXO=case_when(
+    SEXO == "Mujeres" ~ "F"
+    ,SEXO == "Varones" ~ "M"
+  )) %>% 
+  ggplot(aes(x=SEXO,y=PP08D1,fill=SEXO))+
+  geom_boxplot() +
+  facet_wrap(~REGION,nrow=1)+
+  theme_minimal()+
+  labs(x="",y="")
 
 ```
-
-
 ```{r}
+library(grid)
+library(gridExtra)
+
+g1e<- ggplot(df %>% filter( CAT_OCUP == "Empleado" & PP08D1>0 & REGION=="Patagonia"), aes(x = SEXO, y = PP08D1, fill = SEXO)) +
+  geom_boxplot()
+
+
+g2e<- ggplot(df %>% filter( CAT_OCUP == "Empleado" & PP08D1>0 & REGION=="Gran Buenos Aires"), aes(x = SEXO, y = PP08D1, fill = SEXO)) +
+  geom_boxplot()
+
+g3e<- ggplot(df %>% filter( CAT_OCUP == "Empleado" & PP08D1>0 & REGION=="NOA"), aes(x = SEXO, y = PP08D1, fill = SEXO)) +
+  geom_boxplot()
+
+g4e<- ggplot(df %>% filter( CAT_OCUP == "Empleado" & PP08D1>0 & REGION=="NEA"), aes(x = SEXO, y = PP08D1, fill = SEXO)) +
+  geom_boxplot()
+
+g4e<- ggplot(df %>% filter( CAT_OCUP == "Empleado" & PP08D1>0 & REGION=="Pampeana"), aes(x = SEXO, y = PP08D1, fill = SEXO)) +
+  geom_boxplot()
+
+g5e<- ggplot(df %>% filter( CAT_OCUP == "Empleado" & PP08D1>0 & REGION=="Cuyo"), aes(x = SEXO, y = PP08D1, fill = SEXO)) +
+  geom_boxplot()
+
+grid.arrange(g1e, g2e, g3e, g4e, g5e, ncol=2)
+```
+```{r}
+ggplot(df %>% filter(CAT_OCUP == "Empleado",PP08D1> 0), aes(x= REGION, y = PP08D1, fill= REGION))+
+  geom_boxplot()+
+  facet_wrap(vars(SEXO),
+             nrow=2)+
+  coord_flip()
+
+ggplot(df %>% filter(CAT_OCUP == "Empleado",PP08D1> 0), aes(x= REGION, y = PP08D1, fill= REGION))+
+  geom_boxplot()+
+  facet_wrap(vars(SEXO))+
+  theme(axis.text.x = element_blank())
+
+ggplot(df %>% filter(CAT_OCUP == "Empleado",PP08D1> 0), aes(x= REGION, y = PP08D1))+
+  geom_boxplot()+
+  facet_wrap(vars(SEXO))+
+  theme(axis.text.x = element_text(angle = 90))
+
 ```
 
