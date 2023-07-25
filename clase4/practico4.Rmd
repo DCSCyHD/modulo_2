@@ -8,6 +8,8 @@ output: html_notebook
 Trabajaremos con datos geográficos, iniciemos cargando las librerías:
 
 ```{r}
+library(sf)
+library(tidyverse)
 ```
 
 ## Ejercicio 1
@@ -15,6 +17,13 @@ Trabajaremos con datos geográficos, iniciemos cargando las librerías:
 Carguemos la base con datos georeferenciados de los polígonos de CABA (<https://bitsandbricks.github.io/data/CABA_rc.geojson>) y hagamos un plot de tales datos.
 
 ```{r}
+radios <- read_sf("https://bitsandbricks.github.io/data/CABA_rc.geojson")
+
+ggplot()+
+  geom_sf(data = radios)
+```
+```{r}
+radios
 ```
 
 ## Ejercicio 2
@@ -22,6 +31,22 @@ Carguemos la base con datos georeferenciados de los polígonos de CABA (<https:/
 ¿Cómo mostrarían la relación entre hogares con NBI/hogares totales en un mapa?
 
 ```{r}
+#V1: 
+
+ggplot() + 
+  geom_sf(data = radios, aes(fill = HOGARES_NBI/HOGARES), color= NA) +
+  scale_fill_viridis_c()
+
+#V2: 
+
+ggplot() +
+  geom_sf(data = radios, aes(fill = HOGARES_NBI/HOGARES), color = NA) +
+  scale_fill_viridis_c() +
+  labs(title = "Ciudad Autónoma de Buenos Aires",
+       subtitle = "Proporción de hogares c/ NBI sobre el total",
+       fill = "%") + 
+  theme_void()
+
 ```
 
 ## Ejercicio 3
@@ -29,13 +54,35 @@ Carguemos la base con datos georeferenciados de los polígonos de CABA (<https:/
 Carguemos la base de datos `espacios-culturales.geojson` con información sobre los barrios de la Ciudad de Buenos Aires. Luego realicemos un plot agregando información sobre la localización de bares sobre el mapa como capa.
 
 ```{r}
+cculturales <- read_sf('./data/espacios-culturales.geojson')
+
+head(cculturales)
+
+
+ggplot(radios) +
+  geom_sf(color = NA) +
+  #scale_fill_viridis_c()+
+  geom_sf(data=(cculturales %>% filter(FUNCION_PRINCIPAL == "BAR")))+
+  theme_void()
+
+
 ```
 
 Ahora, grafiquen la misma información pero utilizando de base un mapa de Stamen Maps. 
 
 ```{r}
-```
+library(ggmap)
 
+bbox <- st_bbox(radios)
+
+names(bbox) <- c("left", "bottom", "right", "top")
+
+mapa_CABA <- get_stamenmap(bbox, maptype ="toner-background", zoom = 12)
+
+ggmap(mapa_CABA)+
+  geom_sf(data = cculturales %>% filter(FUNCION_PRINCIPAL == "BAR"), 
+          inherit.aes = F, color = "red3")
+```
 
 ## Ejercicio 4
 
@@ -45,6 +92,26 @@ Al mapa previo de bares:
 -   Sumale más formato e información. Jugá e investigá parámetros para enriquecer la visualización.
 
 ```{r}
+
+ggmap(mapa_CABA)+
+  geom_sf(data=cculturales %>% filter(FUNCION_PRINCIPAL=="BAR"), color ="red3", inherit.aes = FALSE)+
+  geom_sf(data=cculturales %>% filter(FUNCION_PRINCIPAL=="CENTRO CULTURAL"), color="blue3", inherit.aes = FALSE)+
+  labs(title = "Ubicación de Bares y Centros Culturales",
+       subtitle = "Ciudad Autónoma de Buenos Aires") +
+    theme_void()
+
+
+ggmap(mapa_CABA)+
+  geom_sf(data=(cculturales %>% filter(FUNCION_PRINCIPAL == "BAR" | FUNCION_PRINCIPAL == "LIBRERIA")), 
+          aes(color = FUNCION_PRINCIPAL),
+          inherit.aes = FALSE)+
+  labs(title = "Ciudad Autónoma de Buenos Aires",
+       subtitle = "Bares y librerias",
+       color = "Función principal") + 
+  scale_color_manual(values = c("BAR" = "blue1", "LIBRERIA" = "red3"))+
+  theme_void()
+
 ```
+
 
 

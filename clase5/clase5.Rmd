@@ -399,7 +399,6 @@ gapminder_anim1 <- ggplot(gapminder_ranking, aes(group = pais)) +
   labs(title = "Año: {frame_time}", y = NULL, x = "población (millones)")
 
 gapminder_anim1
-install.packages("gifski")
 ```
 
 Por último, un detalle más: vean que en la primera línea agregamos `aes(group = pais)`. Esto sirve para que `gganimate` entienda que los valores de la esa variable representan a la misma entidad a lo largo de los años, haciendo que cuando un pais gana o pierde puestos esto se refleje en un desplazamiento de su barra. Para ver lo que pasaría si no agregáramos `aes(group = pais)`, ejecuten el código borrando esa parte y revisen los resultados.

@@ -37,4 +37,4 @@ contenidos.
 
 -   **Clase 5:** Agregando interactividad y animación
 
-[![Boton de descarga](/img/Download.png)](/modulo_2/clase5/clase5.rar)
+[![Boton de descarga](/img/Download.png)](/modulo_2/clase5/clase5.zip)

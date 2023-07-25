@@ -72,6 +72,8 @@ library(glue)
 library(ggtext)
 library(ggridges)
 
+options(scipen = 999)
+
 df %>% 
   filter(CAT_OCUP == "Empleado" & PP08D1 > 0) %>% 
   mutate(color = case_when(
