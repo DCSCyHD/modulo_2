@@ -1,0 +1,54 @@
+---
+title: "Práctico clase 1 - Asignando propiedades estéticas a los datos"
+author: 
+  - Diplomatura en Ciencias Sociales Computacionales
+  - Seminario de Visualización de datos en R
+  - Florencia Piñeyrúa, Santiago Nuñez y Nayla Sol Garcilazzo
+date: '2024-05-14'
+output: html_document
+---
+
+Carguemos primero las librerías con la que vamos a trabajar (`ggplot2` y `tidyverse`)
+
+```{r}
+library(tidyverse)
+```
+
+Investigá el dataset *menstru_full.csv* que está en la carpeta data. ¿Cuáles son sus columnas? 
+
+```{r}
+
+```
+
+
+Este dataset contiene información descargada para la campaña #MenstruAcción, que promueve:
+
+- la distribución gratuita de productos de gestión menstrual en colegios y hospitales,
+- la remoción del IVA sobre estos productos,
+- la difusión y socialización de datos sobre menstruación y las desigualdades vinculadas a ella. 
+
+La información que vemos ahí es sobre precios de productos de gestión menstrual (toallitas y tampones) scrapeados de la página de Precios Claros. 
+
+## Práctico 1
+
+Utilizando las herramientas aprendidas en el M1 (tidyverse) y las vistas en la clase de hoy, expresá en gráficos: 
+
+1. La evolución de precios medios unitarios de los productos menstruales, en general. 
+
+```{r}
+
+```
+
+
+2. La evolución de precios distinguiendo toallitas y tampones.
+
+```{r}
+
+```
+
+3. La evolución de preicos por región. 
+
+```{r}
+
+```
+
