@@ -1,0 +1,107 @@
+---
+title: "Resuelto - Práctico clase 4 - Visualizando información geográfica"
+author: 
+  - Diplomatura en Ciencias Sociales Computacionales
+  - Seminario de Visualización de datos en R
+  - Florencia Piñeyrúa, Santiago Nuñez y Nayla Sol Garcilazo
+date: '2024-05-16'
+output: html_document
+---
+## Práctico 4
+
+Trabajaremos con datos geográficos, iniciemos cargando las librerías:
+
+```{r}
+library(ggplot2)
+library(sf)
+library(ggmap)
+library(tidyverse)
+```
+
+## Ejercicio 1
+
+Carguemos la base con datos georeferenciados de los polígonos de CABA (https://bitsandbricks.github.io/data/CABA_rc.geojson) y hagamos un plot de tales datos. 
+
+```{r}
+radios <- read_sf('https://bitsandbricks.github.io/data/CABA_rc.geojson')
+```
+
+```{r}
+head(radios)
+```
+
+```{r}
+ggplot(radios)+
+  geom_sf()
+```
+
+## Ejercicio 2
+
+Carguemos la base de datos `espacios-culturales.geojson` con información sobre los barrios de la Ciudad de Buenos Aires. Luego realicemos un plot agregando información sobre la localización de bares sobre el mapa como capa.
+
+```{r}
+espacios_culturales <- read_sf('./data/espacios-culturales.geojson')
+
+head(espacios_culturales)
+```
+Filtro los bares: 
+
+```{r}
+bares <- espacios_culturales %>% filter(FUNCION_PRINCIPAL == "BAR")
+```
+
+
+```{r}
+ggplot(radios)+
+  geom_sf()+
+  geom_sf(data= bares)
+```
+
+
+## Ejercicio 3
+
+Al mapa previo de bares: 
+
+- Agregale otro tipo de espacio cultural que quieras (librería, biblioteca, espacio escénico, etc.)
+- Sumale más formato e información. Jugá e investigá parámetros para enriquecer la visualización.
+
+```{r}
+byb <- espacios_culturales %>% filter(FUNCION_PRINCIPAL == "BAR" | FUNCION_PRINCIPAL == "BIBLIOTECA")
+
+ggplot()+
+  geom_sf(data = radios, color = NA)+
+  geom_sf(data = byb, aes(color = FUNCION_PRINCIPAL))+
+  labs(title = "Bares y bibliotecas",
+       subtitle = "Ciudad Autónoma de Buenos Aires",
+       color = "Tipo de lugar:")+
+  theme_minimal()
+```
+
+```{r}
+bbox <- st_bbox(radios) 
+names(bbox) <- c("left", "bottom", "right", "top") 
+```
+```{r}
+caba <- get_stadiamap(bbox = bbox, maptype = "stamen_toner", zoom = 12)
+```
+```{r}
+ggmap(caba)+
+  geom_sf(data = byb, aes(color = FUNCION_PRINCIPAL), inherit.aes = FALSE)+
+  labs(title = "Bares y bibliotecas",
+       subtitle = "Ciudad Autónoma de Buenos Aires",
+       color = "Tipo de lugar:")+
+  theme_void()
+
+#¿Cómo descargo la imagen?
+
+ggsave('./img/bares_y_bibliotecas.png') #Por default guarda el último grafico que generé
+```
+
+
+## Ejercicio 4
+
+En https://data.buenosaires.gob.ar/dataset/ hay varios archivos geojson para experimentar. Descargá uno de interés y plotealo en un gráfico informativo.
+
+```{r}
+
+```
