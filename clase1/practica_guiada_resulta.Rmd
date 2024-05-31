@@ -1,0 +1,94 @@
+---
+title: "Práctico clase 1 - Asignando propiedades estéticas a los datos"
+author: 
+  - Diplomatura en Ciencias Sociales Computacionales
+  - Seminario de Visualización de datos en R
+  -  Florencia Piñeyrúa, Santiago Nuñez y Nayla Sol Garcilazo
+date: '2024-05-14'
+output: html_document
+---
+
+Carguemos primero las librerías con la que vamos a trabajar (`ggplot2` y `tidyverse`)
+
+```{r}
+library(tidyverse)
+library(ggplot2)
+library(readr)
+```
+
+Investigá el dataset *menstru_full.csv* que está en la carpeta data. ¿Cuáles son sus columnas? 
+
+```{r}
+df <- read_csv("data/menstru_full.csv")
+colnames(df)
+```
+
+
+Este dataset contiene información descargada para la campaña #MenstruAcción, que promueve:
+
+- la distribución gratuita de productos de gestión menstrual en colegios y hospitales,
+- la remoción del IVA sobre estos productos,
+- la difusión y socialización de datos sobre menstruación y las desigualdades vinculadas a ella. 
+
+La información que vemos ahí es sobre precios de productos de gestión menstrual (toallitas y tampones) scrapeados de la página de Precios Claros. 
+
+## Práctico 1
+
+Utilizando las herramientas aprendidas en el M1 (tidyverse) y las vistas en la clase de hoy, expresá en gráficos: 
+
+1. La evolución de precios medios unitarios de los productos menstruales, en general. 
+
+```{r}
+precio_medio_anual <- df %>%
+  group_by(anio) %>%
+  summarize(precio_medio = mean(precio_unidad, na.rm = TRUE))
+
+print(precio_medio_anual)
+
+
+ggplot(precio_medio_anual, aes(x = anio, y = precio_medio)) +
+  geom_line() +
+  geom_point() +
+  labs(title = "Evolución de los Precios Medios Unitarios de Productos Menstruales",
+       x = "Año",
+       y = "Precio Medio Unitario") +
+  theme_minimal()
+```
+
+
+2. La evolución de precios distinguiendo toallitas y tampones.
+
+```{r}
+precio_medio_anual_categoria <- df %>%
+  filter(Categoría %in% c("toallitas", "tampones")) %>%
+  group_by(anio, Categoría) %>%
+  summarize(precio_medio = mean(precio_unidad, na.rm = TRUE))
+
+ggplot(precio_medio_anual_categoria, aes(x = anio, y = precio_medio, color = Categoría, group = Categoría)) +
+  geom_line() +
+  geom_point() +
+  labs(title = "Evolución de los Precios medios unitarios de toallitas y tampones",
+       x = "Año",
+       y = "Precio Medio Unitario",
+       color = "Categoría") +
+  theme_minimal()
+
+```
+
+3. La evolución de preicos por región. 
+
+```{r}
+precio_medio_anual_region <- df %>%
+  group_by(anio, Region) %>%
+  summarize(precio_medio = mean(precio_unidad, na.rm = TRUE), .groups = "drop")
+
+ggplot(precio_medio_anual_region, aes(x = anio, y = precio_medio, color = Region, group = Region)) +
+  geom_line() +
+  geom_point() +
+  labs(title = "Evolución de los precios medios unitarios por región",
+       x = "Año",
+       y = "Precio medio unitario",
+       color = "Región") +
+  theme_minimal()
+```
+
