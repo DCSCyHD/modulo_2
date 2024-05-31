@@ -35,12 +35,15 @@ Una clase sincrónica por semana compuesta por un segmento teórico y otro prác
 
 
 ## Contenidos y cronograma
-Los materiales para la cursada se encuentran estructurados por clases. En esta página encontrarán en cada módulo un botón de descarga de los contenidos
+Los materiales para la cursada se encuentran estructurados por clases. En esta página encontrarán en cada módulo un enleace para descargar de los contenidos
 
 ### Clase 1. Asignando propiedades estéticas a los datos. 
 Uso básico de ggplot y nociones conceptuales: geometrías, forma, color, tamaño, color.
 
 En el teórico se trabaja con datos de la temperatura promedio para cada día del 2019 en la ciudad de Beirut en Líbano; en el práctico, se trabaja con datos de la campaña #MenstruAcción (Argentina).
+
+![dowload.zip](https://github.com/DCSCyHD/modulo_2/blob/gh-pages/img/Download.png)
+https://github.com/DCSCyHD/modulo_2/blob/gh-pages/clase1/clase1.rar
 
 
 ### Clase 2. Puliendo gráficos para publicar. 
@@ -48,25 +51,32 @@ Escalas logarítmicas. Intervalo de confianza. Eliminar leyendas. Trabajar con n
 
 Tanto en el teórico como en el práctico se trabaja con un data set compilado por Gapminder, una ONG sueca dedicada a explicar el mundo con datos. La base de datos contiene indicadores de desarrollo de países en todo el mundo, con observaciones en intervalos de 5 años.
 
+![dowload.zip](https://github.com/DCSCyHD/modulo_2/blob/gh-pages/img/Download.png)
+https://github.com/DCSCyHD/modulo_2/blob/gh-pages/clase2/clase2.rar
 
 ### Clase 3. Visualizando cantidades, proporciones y distribuciones. 
 Histograma, Dot Plots, Lollipops, Boxplots y facetados.
 
 En el teórico utilizamos datos de la campaña #MenstruAcción (Argentina) abordados previamente en el práctico de la clase 1, el data frame menstru_top contiene los datos de las provincias con la mediana de precios precios de toallitas más caras. En la instancia práctica trabajamos con la Encuesta Permanente de Hogares (EPH) correspondiente a los datos individuales del primer trimestre de 2019. La EPH es una encuesta semestral realizada en 31 aglomerados urbanos de Argentina con representatividad estadística que revela indicadores sobre condiciones de vida y del mercado laboral. 
 
+![dowload.zip](https://github.com/DCSCyHD/modulo_2/blob/gh-pages/img/Download.png)
+https://github.com/DCSCyHD/modulo_2/blob/gh-pages/clase3/clase3.rar
 
 ### Clase 4. Visualizando información geográfica. 
 Nociones sobre cartografía (proyecciones, sistemas de coordenadas). Acceso a datos georreferenciados. Visualización de información geográfica. Emplear mapas de múltiples capas de información. Obtener cartografía de internet.
 
 Tanto en el teórico como en el práctico se trabaja con datos georeferenciados en polígonos que corresponden al territorio de la Ciudad de Buenos Aires dividido en radios censales, la unidad geográfica más pequeña para la que se dispone de datos públicos producidos por el censo nacional.
 
-
+![dowload.zip](https://github.com/DCSCyHD/modulo_2/blob/gh-pages/img/Download.png)
+https://github.com/DCSCyHD/modulo_2/blob/gh-pages/clase4/clase4.rar
 
 ### Clase 5. Agregando interactividad y animación. 
 Interactividad con bajo esfuerzo.  Mapas interactivos con leaflet.
 
 En esta clase se emplean datos compilados por Gapminder, abordados anteriormente en la clase 2.
 
+![dowload.zip](https://github.com/DCSCyHD/modulo_2/blob/gh-pages/img/Download.png)
+https://github.com/DCSCyHD/modulo_2/blob/gh-pages/clase5/clase5.rar
 
 ## Bibliografía complementaria
 
