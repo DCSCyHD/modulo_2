@@ -16,7 +16,7 @@ En el proceso de investigación la instancia de generación de visualización de
 
 La generación de visualizaciones de datos cobra mayor relevancia en las instancias de comunicación de resultados tanto a audiencias técnicas como no técnicas, donde un buen despliegue visual (visualizaciones e infografías) ayuda a transmitir conceptos complejos. 
 
-Este seminarios es una introducción práctica a la visualización de datos, enfocada en el análisis y presentación de datos reales. Los contenidos del seminario abordan aspectos de la dimensión estética y cognitiva y el flujo de trabajo en el proceso de generación de visualizaciones. Se trabajarán diferentes tipos de datos: categóricos, cuantitativos, georreferenciados y algunas herramientas para generar visualizaciones interactivas. 
+Este seminario es una introducción práctica a la visualización de datos, enfocada en el análisis y presentación de datos reales. Los contenidos del seminario abordan aspectos de la dimensión estética y cognitiva y el flujo de trabajo en el proceso de generación de visualizaciones. Se trabajarán diferentes tipos de datos: categóricos, cuantitativos, georreferenciados y algunas herramientas para generar visualizaciones interactivas. 
 
 
 ## Objetivos pedagógicos
