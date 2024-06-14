@@ -35,7 +35,7 @@ Una clase sincrónica por semana compuesta por un segmento teórico y otro prác
 
 
 ## Contenidos y cronograma
-Los materiales para la cursada se encuentran estructurados por clases. En esta página encontrarán en cada módulo un enleace para descargar de los contenidos
+Los materiales para la cursada se encuentran estructurados por clases. En esta página encontrarán en cada módulo un enlace para descargar de los contenidos
 
 ### Clase 1. Asignando propiedades estéticas a los datos. 
 Uso básico de ggplot y nociones conceptuales: geometrías, forma, color, tamaño, color.
