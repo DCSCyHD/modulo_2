@@ -192,7 +192,7 @@ ggplot(filter(gapminder, año == 2007),
 
 Se puede hacer que R se abstenga de abreviar usando la notación científica (ejecutando la línea `options(scipen=999)`). Pero una solución aún mejor, cuando de visualización se trata, es la de convertir unidades. Por ejemplo, si los valores de población alcanzan valores tan grandes, representemos *millones* de personas y con eso los valores van a ser mas pequeños: en lugar de mostrar 1.000.000, ahora veremos solo "1" (porque la unidad es "millones de habitantes").
 
-Entonces nos quedamos con las leyendas (ya no las deshabilitamos con `guides()`), y le podemos pedirle a ggplot que el tamaño de los puntos ya no represente los valores de la columna "pobl", si no el resultado de los valores de la columna divididos por un millón. ¿Cómo sería?
+Entonces nos quedamos con las leyendas (ya no las deshabilitamos con `guides()`), y le podemos pedir a ggplot que el tamaño de los puntos ya no represente los valores de la columna "pobl", si no el resultado de los valores de la columna divididos por un millón. ¿Cómo sería?
 
 ```{r}
 ggplot(filter(gapminder, año == 2007), 
