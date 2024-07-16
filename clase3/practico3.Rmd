@@ -1,0 +1,82 @@
+---
+title: "Resuleto - Práctico clase 3 - Visualizando cantidades, proporciones y distribuciones"
+author: 
+  - Diplomatura en Ciencias Sociales Computacionales
+  - Seminario de Visualización de datos en R
+  - Florencia Piñeyrúa, Santiago Nuñez y Nayla Sol Garcilazo
+date: '2024-05-16'
+output: html_document
+---
+
+## Práctico 3
+
+Usando *ggplot2*, vamos a explorar un set de datos para indagar sobre cantidades, proporciones y distribuciones. Como lo venimos haciendo, te dejamos un dataset con el que podés trabajar el ejercicio, pero si querés usar uno de tu interés particular lo podés hacer. 
+
+En esta ocasión vamos a trabajar con una versión "recortada" de la EPH individual del primer trimestre de 2019. La EPH es una encuesta semestral realizada en 31 aglomerados urbanos del país, con representatividad estadística. Releva ciertos indicadores sobre condiciones de vida de la población y el mercado laboral. Esta está guaradada en la carpeta `data` con el nombre `eph_2019_limpia.rda`. 
+
+Primero, importá las liberías `ggplot` y `dplyr`. Luego importá la base. 
+
+```{r}
+library(ggplot2)
+library(dplyr)
+
+load('./data/eph_2019_limpia.rda')
+```
+
+
+## Ejercicio 1
+
+¿Cómo se distribuyen los estados ocupacionales por género? Realizá un gráfico de barras, utilizá colores y funciones necesarias para formatear los datos logrando su correcta visualización. 
+
+Tené en cuenta que hay que filtrar aquellos casos que no corresponden (los menores de 10 años).
+
+```{r}
+
+```
+
+## Ejercicio 2
+
+Mostrá en un gráfico la distribución de probabilidad de la variable ingresos de asalariados (PP08D1) según región. De nuevo, tené en cuenta con filtrar aquellos casos que no corresponden (los no-asalariados).
+
+- Opción 1: filtro NR en salarios y outliers "a ojo".
+
+```{r}
+
+```
+
+- Opción 2: si quiero mantener los outliers para quedarme con las distribuciones de probabilidad originales pero hacer un "zoom" en los valores donde se concentran la mayoría de los casos, puedo usar la función `facet_zoom()` del paquete `ggforce`.
+
+```{r}
+
+```
+
+Los facets son formas de facetar gráficos en distintos paneles. Son otra buena forma de agregar una capa más de información en el gráfico y que aún se vea de manera organizada. Uno los puede utilizar con la función `facet_wrap()`, colocando adentro el parámetro `vars()` con la variable de interés que queremos facetar. Por ejemplo, supongamos que quisiera mostrar un `geom_density()` del ingreso de asalariades según género y por región:
+
+```{r}
+
+```
+
+Puedo controlar la cantidad de filas y columnas de las facetas con el parámetro `nrow` y `ncol`.
+
+```{r}
+
+```
+
+Puedo ver que las distribuciones de ingresos entre varones y entre mujeres de distintas provincias es bastante parecida, excepto por la región de la Patagonia donde los salarios masculinos se distribuyen entre valores un poco más altos. Además, podemos ver que las mujeres de Cuyo tienen la probabilidad de tener los salarios más bajos  de entre todos los grupos.
+
+## Ejercicio 3
+
+Escapando a las barras: utilizá un boxplot para describir la relación entre el nivel de ingresos de los asalariados por región y sexo. Describí estas relaciones.
+
+```{r}
+
+```
+
+## Ejercicio 4
+
+Experimentá con otros recursos: “treemaps”, “enjambres de abejas”, gráficos de waffle, gráficos de violín, “ridgeline plots”, mapas de calor o el recurso que consideres aporta insights de interés sobre nuestro conjunto de datos. 
+
+```{r}
+
+```
+
