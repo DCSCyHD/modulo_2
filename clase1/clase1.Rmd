@@ -100,7 +100,7 @@ ggplot(temps_beirut, aes(x = temperature, y = day_of_year)) +
   geom_point()
 ```
 
-## Empelando *geoms* más complejas
+## Empleando *geoms* más complejas
 
 Pueden elegir entre una variada colección de geoms para hacer toda clase de gráficos. Por ejemplo, `geom_boxplot()` crea *boxplots* (o ["diagramas de caja"](https://economipedia.com/definiciones/diagrama-de-caja.html)). 
 Al hacer boxplots es común mostrar un gráfico separado para cada categoría presente en la data a mostrar, usando para eso el eje de las $x$ o de las $y$. 
