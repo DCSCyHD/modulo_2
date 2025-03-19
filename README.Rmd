@@ -96,3 +96,9 @@ En esta clase se emplean datos compilados por Gapminder, abordados anteriormente
 - [Vázquez Brust, Antonio (2020). Ciencia de datos para gente sociable.](https://bitsandbricks.github.io/ciencia_de_datos_gente_sociable/)
 
 - [Tufte, Edward (1983). The Visual Display of Quantitative Information, Cheshire, CT: Graphics Press.](https://www.econ.upf.edu/~michael/visualdata/tufte-aesthetics_and_technique.pdf)
+
+
+```{r include=FALSE}
+rmarkdown::render("README.Rmd", output_format = "html_document")
+```
+
