@@ -41,7 +41,7 @@ Una clase sincrónica por semana compuesta por un segmento teórico y otro prác
 
 
 __Clase 1- Asignando propiedades estéticas a los datos__  
-[![](img/Download.png)](https://github.com/DCSCyHD/modulo_2/blob/gh-pages/clase1/clase1.rar)  
+[![](img/Download.png)](clase1)  
 + Temas de clase
   + Uso básico de ggplot y nociones conceptuales: geometrías, forma, color, tamaño, color.
 
