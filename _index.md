@@ -4,10 +4,8 @@
 
 ##### Escuela Interdisciplinaria de Altos Estudios Sociales
 ##### Universidad Nacional de San Martín
-![](img/logo-factor-data-solo.jpg)
 
-**Docente:** [Florencia Piñeyrúa](https://github.com/pinieyrua)
-**Ayudantes:** [Santiago Nuñez Rimedio](https://ar.linkedin.com/in/santiago-nu%C3%B1ez-rimedio-902ba474?trk=public_post_feed-actor-name&original_referer=https%3A%2F%2Fes.linkedin.com%2F) y [Nayla Sol Garcilazo](www.linkedin.com/in/nayla-sol-garcilazo)
+*Equipo docente:** [Florencia Piñeyrúa](https://github.com/pinieyrua), [Santiago Nuñez Rimedio](https://ar.linkedin.com/in/santiago-nu%C3%B1ez-rimedio-902ba474?trk=public_post_feed-actor-name&original_referer=https%3A%2F%2Fes.linkedin.com%2F) y [Nayla Sol Garcilazo](www.linkedin.com/in/nayla-sol-garcilazo)
 
 
 ## **Visualización de datos**
@@ -86,52 +84,3 @@ En esta clase se emplean datos compilados por Gapminder, abordados anteriormente
 - [Vázquez Brust, Antonio (2020). Ciencia de datos para gente sociable.](https://bitsandbricks.github.io/ciencia_de_datos_gente_sociable/)
 
 - [Tufte, Edward (1983). The Visual Display of Quantitative Information, Cheshire, CT: Graphics Press.](https://www.econ.upf.edu/~michael/visualdata/tufte-aesthetics_and_technique.pdf)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-## Docentes
-
-- [Laia Domenech]()
-- [Florencia Piñeyrúa]()
-
-# Presentación
-
-Estas clases están basadas en el material de 2021 realizado por Antonio Vázquez Brust. [Aquí](https://github.com/bitsandbricks/dataviz) encontrarán el material original.
-
-
-## Programa
-
-A continuación están los materiales para la cursada estructurados por
-clases. Encontrarán en para clase un botón de descarga de los
-contenidos.
-
--   **Clase 1:** Asignando propiedades estéticas a los datos
-
-[![Boton de descarga](/img/Download.png)](/modulo_2/clase1/clase1.zip)
-
--   **Clase 2:** Puliendo gráficos para publicar
-
-[![Boton de descarga](/img/Download.png)](/modulo_2/clase2/clase2.zip)
-
--   **Clase 3:** Visualizando cantidades, proporciones y distribuciones
-
-[![Boton de descarga](/img/Download.png)](/modulo_2/clase3/clase3.zip)
-
--   **Clase 4:** Visualizando información geográfica
-
-[![Boton de descarga](/img/Download.png)](/modulo_2/clase4/clase4.zip)
-
--   **Clase 5:** Agregando interactividad y animación
-
-[![Boton de descarga](/img/Download.png)](/modulo_2/clase5/clase5.rar)
