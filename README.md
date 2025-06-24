@@ -6,10 +6,10 @@
 
 <img src="img/logo-factor-data-solo.jpg" width="200" />
 
-**Equipo Docente:** [Florencia Piñeyrúa](https://github.com/pinieyrua),
+**Equipo Docente:** [Florencia Piñeyrúa](https://github.com/pinieyrua), 
+[Nayla Sol Garcilazo](https://linkedin.com/in/nayla-sol-garcilazo) y 
 [Santiago Nuñez
-Rimedio](https://ar.linkedin.com/in/santiago-nu%C3%B1ez-rimedio) y
-[Nayla Sol Garcilazo](www.linkedin.com/in/nayla-sol-garcilazo)
+Rimedio](https://linkedin.com/in/santiago-nu%C3%B1ez-rimedio)
 
 ## **Visualización de datos**
 
