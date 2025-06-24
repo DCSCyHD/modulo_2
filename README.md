@@ -49,7 +49,7 @@ realizada en conjunto
 ### Contenidos por clase
 
 **Clase 1- Asignando propiedades estéticas a los datos**  
-[![](img/Download.png)](https://github.com/DCSCyHD/modulo_2/blob/gh-pages/clase1/clase1.rar)  
+[![](img/Download.png)](clase1.rar)  
 + Temas de clase + Uso básico de ggplot y nociones conceptuales:
 geometrías, forma, color, tamaño, color.
 
@@ -58,7 +58,7 @@ día del 2019 en la ciudad de Beirut en Líbano; en el práctico, se
 trabaja con datos de la campaña #MenstruAcción (Argentina).
 
 **Clase 2- Puliendo gráficos para publicar**  
-[![](img/Download.png)](https://github.com/DCSCyHD/modulo_2/blob/gh-pages/clase2/clase2.rar)  
+[![](img/Download.png)](clase2.rar)  
 + Temas de clase + Escalas logarítmicas. Intervalo de confianza.
 Eliminar leyendas. Trabajar con números grandes. Elegir colores a mano.
 Cambiar el “tema”. Establecer título, sub-título, etiquetas, leyendas y
@@ -70,7 +70,7 @@ datos. La base de datos contiene indicadores de desarrollo de países en
 todo el mundo, con observaciones en intervalos de 5 años.
 
 **Clase 3- Visualizando cantidades, proporciones y distribuciones**  
-[![](img/Download.png)](https://github.com/DCSCyHD/modulo_2/blob/gh-pages/clase3/clase3.rar)  
+[![](img/Download.png)](clase3.rar)  
 + Temas de clase + Histograma, Dot Plots, Lollipops, Boxplots y
 facetados.
 
@@ -85,7 +85,7 @@ representatividad estadística que revela indicadores sobre condiciones
 de vida y del mercado laboral.
 
 **Clase 4- Visualizando información geográfica**  
-[![](img/Download.png)](https://github.com/DCSCyHD/modulo_2/blob/gh-pages/clase4/clase4.rar)  
+[![](img/Download.png)](clase4.rar)  
 + Temas de clase + Nociones sobre cartografía (proyecciones, sistemas de
 coordenadas). Acceso a datos georreferenciados. Visualización de
 información geográfica. Emplear mapas de múltiples capas de información.
@@ -98,7 +98,7 @@ más pequeña para la que se dispone de datos públicos producidos por el
 censo nacional.
 
 **Clase 5- Agregando interactividad y animación**  
-[![](img/Download.png)](https://github.com/DCSCyHD/modulo_2/blob/gh-pages/clase5/clase5.rar)  
+[![](img/Download.png)](clase5.rar)  
 + Temas de clase + Interactividad con bajo esfuerzo. Mapas interactivos
 con leaflet.
 
@@ -123,3 +123,8 @@ anteriormente en la clase 2.
 -   [Tufte, Edward (1983). The Visual Display of Quantitative
     Information, Cheshire, CT: Graphics
     Press.](https://www.econ.upf.edu/~michael/visualdata/tufte-aesthetics_and_technique.pdf)
+
+-   [Introduction to Modern
+    Statistics](https://openintro-ims.netlify.app/) Este manual no forma
+    parte del contenido de la diplomatura, pero recomendamos su lectura
+    para quienes necesiten acompañamiento en nociones de estadística.
