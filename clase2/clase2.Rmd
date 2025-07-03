@@ -67,6 +67,16 @@ ggplot(gapminder, aes(x = PBIpc, y = expVida)) +
   scale_x_log10()
 ```
 
+Las funciones que empiezan con `scale_y_` o `scale_x_` generalmente sirven para modificar valores en una escala. A su vez, tiene varios parámetros modificables. Por ejemplo, tenemos el parámetro `labels` en el cual puedo especificar las etiquetas del eje. Con la ayuda del paquete `scales` podemos mostrar nuestros valores como números con comas.
+En este caso, el parámetro `(labels=scales::coma)` se asemeja a la aplicación de `options(scipen=999)` para aplicar notación decimal en vez de notación científica. En el primer caso, solo seteamos la notación en nuestra representación gráfica, mientras que con el segundo podemos aplicar notación decimal en todos nuestros outputs (por ejemplo, en tablas).
+
+```{r}
+ggplot(gapminder, aes(x = PBIpc, y = expVida)) +
+  geom_point() +
+  scale_x_log10(labels=scales::comma)
+
+```
+
 Ahora se vislumbra una disposición similar a la del gráfico del video, pero en nuestro caso parece haber demasiados puntos. Esto es porque nuestra data incluye 12 observaciones para cada país (cada 5 años desde 1952 hasta 2007). ¡O sea que cada país aparece 12 veces! El Dr. Rosling usaba sólo un punto por país, usando animación para mostrar distintos años.
 
 Vamos a filtrar los datos para quedarnos sólo con la observación más reciente disponible, la de 2007. Hay muchas, pero muchas maneras de hacer eso en R, pero aquí vamos a usar la función `filter()` del paquete [dplyr](https://dplyr.tidyverse.org/). Si no conocen esta herramienta, o necesitan un repaso rápido, pueden revisar ["transformando los datos"](https://bitsandbricks.github.io/ciencia_de_datos_gente_sociable/poniendo-los-datos-en-forma.html#transformando-los-datos). Por ahora la vamos a usar de forma muy simple: en lugar de llamar a la variable gapminder, vamos a usar el resultado de filtrar su contenido de forma tal que solo usemos las filas donde la variable "año" toma el valor _2007_.
@@ -85,7 +95,20 @@ ggplot(filter(gapminder, año == 2007), aes(x = PBIpc, y = expVida)) +
 
 ```
 
-Ahí va queriendo. Necesitamos dos ajustes más para que el parecido sea evidente. Rosling usa el tamaño de los puntos para indicar la población del país, y el color para diferenciar entre continentes. Con lo que aprendimos en la clase anterior, podemos animarnos: las variables que que se mostrarán con esos atributos estéticos son "pobl" y "continente"
+## Intervalo de confianza  
+
+Nuestro gráfico se asemeja más a lo que vimosDesviándonos un poco de nuestro objetivo original de replicar a nuestro amigo Hans, podríamos querer agregar un intervalo de confianza para nuestros puntos. Esto lo podemos lograr con `geom_smooth()`.
+
+```{r}
+ggplot(filter(gapminder, año == 2007), aes(x = PBIpc, y = expVida)) +
+  geom_point() +
+  geom_smooth(method = "lm") +
+  scale_x_log10()
+```
+
+`geom_smooth()` me muestra una línea de tendencia de las observaciones en el gráfico con el intervalo de confianza para cada grupo. Cuantas menos observaciones tenga para cada grupo, más grande será el intervalo. Se pueden aplicar distintas funciones para aplicar la línea de tendencia.
+
+Necesitamos dos ajustes más para que el parecido sea evidente. Rosling usa el tamaño de los puntos para indicar la población del país y el color para diferenciar entre continentes. Con lo que aprendimos en la clase anterior podemos animarnos: las variables que se mostrarán con esos atributos estéticos son "pobl" y "continente"
 
 ```{r}
 ggplot(filter(gapminder, año == 2007), 
@@ -94,7 +117,31 @@ ggplot(filter(gapminder, año == 2007),
   scale_x_log10()
 ```
 
-¡Eso si es un plot _gapmindereano_!. Pero esto no termina aquí. Quedan bastantes cosas para ajustar antes de que nuestro querido gráfico esté listo para ser compartido con el mundo.
+¡Eso si es un plot *gapmindereano*!
+
+¿Qué pasaría si quisieramos agregar un intervalo de confianza en este gráfico?
+
+```{r}
+ggplot(filter(gapminder, año == 2007), 
+       aes(x = PBIpc, y = expVida, size = pobl, color = continente)) +
+  geom_point() +
+  geom_smooth(method = "lm")+ 
+  scale_x_log10()
+```
+
+:( ¿Por qué no se ve como quisieramos?
+
+Esto tiene que ver con el mapeo de las observaciones. En la primera línea de ggplot definimos que queríamos que los atributos de color y tamaño se mapeen para todas las geometrías que tenemos. De esta manera, `geom_smooth()`\` está haciendo la línea de tendencia para todos los grupos por su color. Por ello, si queremos mantener la tendencia global debemos hacer unos pequeños ajustes en nuestro gráfico.
+
+```{r}
+ggplot(filter(gapminder, año == 2007), 
+       aes(x = PBIpc, y = expVida)) +
+  geom_point(aes(size = pobl, color = continente)) +
+  geom_smooth(method = "lm")+
+  scale_x_log10()
+```
+
+Pero esto no termina aquí. Quedan bastantes cosas para ajustar antes de que nuestro querido gráfico esté listo para ser compartido con el mundo.
 
 
 ## Ajustar los detalles
@@ -176,7 +223,23 @@ ggplot(filter(gapminder, año == 2007),
   theme_dark()
 ```
 
-Incluso podemos definir a mano cada componente visual de los gráficos, creando así nuestro propio tema. No vamos a entrar en detalles ahora, pero para quien tenga interés el camino comienza por el uso de la [función `theme`](https://ggplot2-book.org/polishing.html#modifying-theme-components). También existen paquetes de R que agregan a nuestro arsenal nuevos temas listos para usar, como [`ggthemes`](https://ggplot2.tidyverse.org/reference/theme.html) y [`hrbrthemes`](https://cinc.rud.is/web/packages/hrbrthemes/). 
+
+Incluso podemos definir a mano cada componente visual de los gráficos, creando así nuestro propio tema. No vamos a entrar en detalles ahora, pero para quien tenga interés el camino comienza por el uso de la [función `theme`](https://ggplot2-book.org/polishing.html#modifying-theme-components).  
+
+Veamos un pequeño ejemplo, cambiando de lugar la ubicación de las leyendas con el parámetro `legend.position`.
+
+```{r}
+ggplot(filter(gapminder, año == 2007), 
+       aes(x = PBIpc, y = expVida, size = pobl/1000000, color = continente)) +
+  geom_point() +
+  scale_x_log10() +
+  scale_colour_manual(values = color_continentes) + 
+  theme_dark()+
+  theme(legend.position = "bottom")
+```
+
+(¡Ojo! Si quiero aplicar un parámetro de la función theme manteniendo un theme predeterminado siempre tiene que ir después de él).
+También existen paquetes de R que agregan a nuestro arsenal nuevos temas listos para usar, como [`ggthemes`](https://ggplot2.tidyverse.org/reference/theme.html) y [`hrbrthemes`](https://cinc.rud.is/web/packages/hrbrthemes/).
 
 Para cerrar el tema de los temas (¡ja!) va una recomendación. El tema minimalista "theme_minimal" viene con `ggplot2` por lo que ya lo tenemos disponible, y con sólo agregar la línea que lo aplica obtenemos un gráfico de aspecto más "limpio" que el del tema por default:
 
@@ -189,26 +252,48 @@ ggplot(filter(gapminder, año == 2007),
   theme_minimal()
 ```
 
-## Los toques finales
+¿Cómo haríamos si quisiera ver dónde se ubican los países de las Américas en este mapa?
 
-En el contexto de la exploración de los datos, lo importante es trabajar en forma rápida. Probamos una u otra técnica de visualización y refinamos nuestros resultados hasta hallar patrones interesantes, o sacarnos dudas acerca del contenido. No necesitamos ponerle título a las visualizaciones, porque ya sabemos de que tratan (¡acabamos de escribirlas!). No nos preocupa que los nombres de los ejes indiquen en forma clara la variable representan, porque ya lo sabemos de antemano.
+Vamos a introducir un paquete bastante útil: `ggrepel`. Está diseñado específicamente para poder agregar etiquetas en gráficos de ggplot sin que se nos pisen entre ellas. Probemos usar su función `geom_text_repel`:
 
-Pero cuando queremos guardar un gráfico para compartir con otras personas, sea publicándolo en un _paper_ o enviándolo por email a colegas, necesitamos tener más cuidado. Hemos pasado del ámbito de la exploración al de la comunicación. Ahora si nos importa la claridad, porque no sabemos de antemano cuánta familiaridad tiene con los datos la eventual audiencia.
+```{r}
+library(ggrepel)
+ggplot(filter(gapminder, año == 2007), 
+       aes(x = PBIpc, y = expVida, size = pobl/1000000, color = continente)) +
+  geom_point() + 
+  geom_text_repel(data = gapminder %>% filter(año == 2007 & continente == "Americas"), 
+                  aes(x = PBIpc, y = expVida, label = pais), inherit.aes = FALSE)+
+  scale_x_log10() +
+  scale_colour_manual(values = color_continentes) + 
+  theme_minimal()
+```
 
-Si bien la comunicación clara es un arte cuyas reglas dependen del contexto, y además cada quien tiene su estilo, podemos mencionar al menos tres elementos que no deberían faltar en un gráfico pensado para compartir:
+Aquí estamos viendo algunos parámetros nuevos:
 
-* Un título descriptivo, pero breve. 
-* Etiquetas claras (no ambiguas) en los ejes
-* Nombres descriptivos en las leyendas
+-   `label` me permite agregar las etiquetas de cada país,
+
+-   `inherit.aes` evita que mi texto adopte los colores y formas de la primera línea.
+
+## Título, sub-título, etiquetas, leyendas y notas al pie
+
+En el contexto de la exploración de los datos, lo importante es trabajar en forma rápida. Probamos una u otra técnica de visualización y refinamos nuestros resultados hasta hallar patrones interesantes o sacarnos dudas acerca del contenido. No necesitamos ponerle título a las visualizaciones porque ya sabemos de que tratan (¡acabamos de escribirlas!). No nos preocupa que los nombres de los ejes indiquen en forma clara la variable representan porque ya lo sabemos de antemano.
+
+Sin embargo, cuando queremos guardar un gráfico para compartir con otras personas, sea publicándolo en un *paper* o enviándolo por email a colegas, necesitamos tener más cuidado. Hemos pasado del ámbito de la exploración al de la comunicación. Ahora si nos importa la claridad porque no sabemos de antemano cuánta familiaridad tiene con los datos la eventual audiencia.
+
+Si bien la comunicación clara es un arte cuyas reglas dependen del contexto y además cada quien tiene su estilo, podemos mencionar al menos tres elementos que no deberían faltar en un gráfico pensado para compartir:
+
+-   Un título descriptivo, pero breve.
+-   Etiquetas claras (no ambiguas) en los ejes
+-   Nombres descriptivos en las leyendas
 
 y ya que estamos, dos opcionales:
 
-* Un subtítulo donde poner detalles importantes que no entran en un título breve
-* Una nota al pie con información adicional: fuente de los datos, cita académica, advertencias, etc.
+-   Un subtítulo donde poner detalles importantes que no entran en un título breve
+-   Una nota al pie con información adicional: fuente de los datos, cita académica, advertencias, etc.
 
-Todo ello puede resolverse con la misma función: `labs()`. Esta se encarga de definir título y subtítulo, nombres de ejes y de leyendas, y nota al pie si hiciera falta.
+Todo ello puede resolverse con la misma función: `labs()`. Esta se encarga de definir título y subtítulo, nombres de ejes y de leyendas y nota al pie si hiciera falta.
 
-Empecemos por título y subtítulo, que se asignan con los parámetros _title_ y _subtitle_. Pidamos que el título sea "Riqueza vs. salud en los países del mundo", y el subtítulo, "según datos 2007":  
+Empecemos por título y subtítulo, que se asignan con los parámetros *title* y *subtitle*. Pidamos que el título sea "Riqueza vs. salud en los países del mundo", y el subtítulo, "según datos 2007":
 
 ```{r}
 ggplot(filter(gapminder, año == 2007), 
@@ -220,24 +305,50 @@ ggplot(filter(gapminder, año == 2007),
   labs(title = "Riqueza vs. salud en los países del mundo", subtitle = "según datos 2007")
 ```
 
-Ahora mejoremos las etiquetas de los ejes, y de la leyenda de tamaño. La leyenda dec color está bien así, la vamos a dejar en paz. Como podríamos habernos imaginado, el parámetro de `labs()` para definir el nombre que llevaran las $x$ es _x_ (como `labs(x  = "nombre para el eje de las x")`). El parámetro para las $y$ es _y_. El que fija el título de la leyenda de tamaño es _size_, y así con el resto de las leyendas: _color_, _shape_, o el atributo que hayamos definido dentro de `aes()` al hacer el gráfico. 
+Ahora mejoremos las etiquetas de los ejes y el tamañno de la leyenda. La leyenda dec color está bien así, la vamos a dejar en paz. El parámetro de `labs()` para definir el nombre que llevaran las $x$ es *x* (como `labs(x  = "nombre para el eje de las x")`). El parámetro para las $y$ es *y*. El que fija el título de la leyenda de tamaño es *size*, y así con el resto de las leyendas: *color*, *shape*, o el atributo que hayamos definido dentro de `aes()` al hacer el gráfico.
 
-Pongamos "población (millones)" como título de la leyenda de tamaño, "PBI per capita (USD)" en las $x$, y "expectativa de vida en años" en las $y$:
-
+Pongamos "población (millones)" como título de la leyenda de tamaño, "PBI per capita (USD)" en las $x$ y "expectativa de vida en años" en las $y$:
 
 ```{r}
 ggplot(filter(gapminder, año == 2007), 
-       aes(x = PBIpc, y = expVida, size = pobl/1000000, color = continente)) +
-  geom_point() +
+       aes(x = PBIpc, y = expVida)) +
+  geom_point(aes(size = pobl/1000000, color = continente)) +
   scale_x_log10() +
   scale_colour_manual(values = color_continentes) + 
   theme_minimal() +
-  labs(title = "Riqueza vs. salud en los países del mundo", subtitle = "según datos 2007",
-       size = "población (millones)", x = "PBI per capita (USD)", y = "expectativa de vida en años")
+  labs(title = "Riqueza vs. salud en los países del mundo", 
+       subtitle = "según datos 2007",
+       size = "población (millones)", 
+       x = "PBI per capita (USD)", 
+       y = "expectativa de vida en años")
 
 ```
 
-Y por último, una nota al pie con la fuente de los datos, vía _caption_ :
+
+Con el paquete **ggtext** también puedo formatear con Markdown el texto que aparece: 
+
+```{r}
+library(ggtext)
+
+ggplot(filter(gapminder, año == 2007), 
+       aes(x = PBIpc, y = expVida)) +
+  geom_point(aes(size = pobl/1000000, color = continente)) +
+  scale_x_log10() +
+  scale_colour_manual(values = color_continentes) + 
+  theme_minimal() +
+  labs(title = "Riqueza vs. salud en los países del mundo", 
+       subtitle = "según datos 2007",
+       size = "población (millones)", 
+       x = "**PBI per capita** (USD)", 
+       y = "**expectativa de vida** en años")+
+ theme(plot.title = element_markdown(face = 'bold'),
+ axis.title.x = element_markdown(),
+ axis.title.y = element_markdown())
+
+```
+
+
+Y por último, una nota al pie con la fuente de los datos, vía *caption* :
 
 ```{r}
 ggplot(filter(gapminder, año == 2007), 
@@ -248,9 +359,16 @@ ggplot(filter(gapminder, año == 2007),
   theme_minimal() +
   labs(title = "Riqueza vs. salud en los países del mundo", subtitle = "según datos 2007",
        size = "población (millones)", 
-       x = "PBI per capita (USD)", y = "expectativa de vida en años",
-       caption = "fuente: Gapminder, www.gapminder.com")
+       x = "**PBI per capita** (USD)", 
+       y = "**expectativa de vida** en años",
+       caption = "*fuente: Gapminder*") +
+   theme(plot.title = element_markdown(face = 'bold'),
+         plot.caption = element_markdown(lineheight = 1.2),
+   axis.title.x = element_markdown(),
+   axis.title.y = element_markdown())
+
+
+ggsave('grafico_gapminder.png', width = 8, height = 5)
 ```
 
 Y con eso, terminamos por ahora. Para seguir practicando, tenemos en *Data Visualization - A practical introduction* de Kieran Healy el capítulo: ["Refine your plots":](https://socviz.co/refineplots.html) en el que está basado esta clase.
-

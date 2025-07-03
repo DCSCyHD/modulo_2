@@ -1,0 +1,110 @@
+---
+title: "Práctico clase 1"
+author: "Diplomatura CSSyHD"
+date: '2022-08-16'
+output: html_document
+---
+
+Carguemos primero las librerías con la que vamos a trabajar (`ggplot2` y `tidyverse`)
+
+```{r}
+library(tidyverse)
+```
+
+Investigá el dataset *menstru_full.csv* que está en la carpeta data. ¿Cuáles son sus columnas? 
+
+```{r}
+menstru_full <- read_csv("data/menstru_full.csv") #es posible que en el caso de ustedes la ruta sea./data/menstru_full.csv)
+```
+
+
+Este dataset contiene información descargada para la campaña #MenstruAcción, que promueve:
+
+- la distribución gratuita de productos de gestión menstrual en colegios y hospitales,
+- la remoción del IVA sobre estos productos,
+- la difusión y socialización de datos sobre menstruación y las desigualdades vinculadas a ella. 
+
+La información que vemos ahí es sobre precios de productos de gestión menstrual (toallitas y tampones) scrapeados de la página de Precios Claros. 
+
+## Práctico 1
+
+Utilizando las herramientas aprendidas en el M1 (tidyverse) y las vistas en la clase de hoy, expresá en gráficos: 
+
+1. La evolución de precios medios unitarios de los productos menstruales, en general. 
+
+```{r}
+precio_medio_anual <- menstru_full %>% 
+  group_by(anio) %>% 
+  summarise(precio_medio = mean(precio_unidad), na.rm = TRUE)
+
+ggplot(precio_medio_anual, aes (x = anio, y = precio_medio)) +
+  geom_line()
+```
+```{r}
+ggplot(precio_medio_anual, aes (x = anio, y = precio_medio)) +
+  geom_line()
+```
+
+```{r}
+ggplot(precio_medio_anual, aes (x = anio, y = precio_medio)) +
+  geom_line() + 
+  geom_point() +
+  labs(title = "Evolución de los precios medios unitarios de los productos menstruales",
+       x = "Año",
+       y = "Precio medio unitario")
+```
+```{r}
+ggplot(precio_medio_anual, aes (x = anio, y = precio_medio)) +
+  geom_line() + 
+  geom_point() +
+  labs(title = "Evolución de los precios medios unitarios de los productos menstruales",
+       x = "Año",
+       y = "Precio medio unitario") + 
+  theme_minimal()
+```
+
+2. La evolución de precios distinguiendo toallitas y tampones.
+
+```{r}
+precio_medio_anual <- menstru_full %>% 
+  group_by(anio, Categoría) %>% 
+  summarise(precio_medio = mean(precio_unidad), na.rm = TRUE)
+
+ggplot(precio_medio_anual, aes (x = anio, y = precio_medio, color = Categoría)) +
+  geom_line() + 
+  geom_point() +
+  labs(title = "Evolución de los precios medios unitarios de los productos menstruales",
+       x = "Año",
+       y = "Precio medio unitario") + 
+  theme_minimal()
+```
+
+3. La evolución de precios por región. 
+
+```{r}
+precio_medio_anual <- menstru_full %>% 
+  group_by(anio, Region) %>% 
+  summarise(precio_medio = mean(precio_unidad), na.rm = TRUE)
+
+ggplot(precio_medio_anual, aes (x = anio, y = precio_medio, color = Region)) +
+  geom_line() + 
+  geom_point() +
+  labs(title = "Evolución de los precios medios unitarios de los productos menstruales",
+       x = "Año",
+       y = "Precio medio unitario") + 
+  theme_minimal() +
+  scale_color_viridis_d()
+```
+
+
+¿Se animan a un Ejercicio con pipe '%>%'?
+
+
+```{r}
+menstru_full %>% 
+  group_by(anio) %>% 
+  summarise(precio_medio = mean(precio_unidad), na.rm = TRUE) %>% 
+ggplot(aes (x = anio, y = precio_medio)) +
+  geom_line()
+```
+
