@@ -23,7 +23,7 @@ color_lineas <- c("A" = "cyan", "B" = "red", "C" = "blue",
                   "D" = "darkgreen", "E" = "purple", "H" = "yellow")
 
 
-register_stadiamaps("81834ce1-00c3-4c88-b30f-12f781571218") #Entre las " " deben ingresar su clave API que obtienen al registrarse en Stadia Maps
+#register_stadiamaps(" ") #Entre las " " deben ingresar su clave API que obtienen al registrarse en Stadia Maps
 bbox <- st_bbox(radios)
 names(bbox) <- c("left", "bottom", "right", "top")
 mapa_CABA <- get_stadiamap(bbox, zoom = 12)
