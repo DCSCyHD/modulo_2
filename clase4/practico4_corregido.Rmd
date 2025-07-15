@@ -6,7 +6,7 @@ output: html_notebook
 
 Trabajaremos con datos geográficos, iniciemos cargando las librerías:
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 library(ggplot2)
 library(sf)
 library(ggmap)
@@ -77,7 +77,7 @@ bbox <- st_bbox(radios)
 names(bbox) <- c("left", "bottom", "right", "top") 
 ```
 ```{r}
-caba <- get_stamenmap(bbox = bbox, "toner", zoom = 12)
+caba <- get_stadiamap(bbox = bbox, "stamen_toner", zoom = 12)
 ```
 ```{r}
 ggmap(caba)+
