@@ -36,7 +36,7 @@ Carguemos la base de datos `espacios-culturales.geojson` con información sobre 
 
 ```
 
-Ahora, grafiquen la misma información pero utilizando de base un mapa de Stamen Maps. 
+Ahora, grafiquen la misma información pero utilizando de base un mapa de Stadia Maps. 
 
 ```{r}
 ```
