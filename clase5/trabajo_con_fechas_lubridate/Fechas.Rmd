@@ -15,7 +15,7 @@ knitr::opts_chunk$set(echo = TRUE,include = TRUE,message = FALSE)
 
 </center>
 # Introducción
-En este material abordaremos las principales funciones para trabajar con fechas en R. Dado que las fechas son una clase particular de objetos/variables, su procesamiento requiere herramientas específicas distintas a las abordadas hasta aquí. Trabajaremos sobre el paquete `lubridate`, uno de los más utilizados actualmente para dicho propósito ^[Esta clase está inspirada en el capítulo 16 del libro [R for Data Science](https://es.r4ds.hadley.nz/fechas-y-horas.html). Allí pueden profundizar algunos aspectos que exceden los alcances de la misma].     
+En este material abordaremos las principales funciones para trabajar con fechas en R. Dado que las fechas son una clase particular de datos, su procesamiento requiere herramientas específicas distintas a las abordadas hasta aquí. Trabajaremos sobre el paqueete `lubridate`, uno de los más utilizados actualmente para dicho propósito ^[Esta clase está inspirada en el capítulo 16 del libro [R for Data Science](https://es.r4ds.hadley.nz/16-datetimes.html). Allí pueden profundizar algunos aspectos que exceden los alcances de la misma].     
 
 ## Cargamos librerias
 ```{r message=FALSE, warning=FALSE}
@@ -31,8 +31,8 @@ Trabajaremos en paralelo con dos bases de datos. Una muestra de la base argentin
 
 
 ```{r message=FALSE, warning=FALSE}
-base.covid <- readRDS("../bases/base_covid_sample.RDS")
-vacuna.tweets <- readRDS("../bases/vacuna_tweets.RDS")
+base.covid <- readRDS("bases/base_covid_sample.RDS")
+vacuna.tweets <- readRDS("bases/vacuna_tweets.RDS")
 ```
 
 
@@ -107,7 +107,7 @@ Necesitamos explicitamente crear objetos de clase fecha!
 Hay un set de funciones del paquete *lubridate* que siguen la siguiente lógica:          
 Mediante la combinacion de los caracteres **dmy_hms** que representan a día(d), mes(m), año(y), hora(h), minuto(m) y segundo(s) podemos convertir un número (o un string) hacia una fecha.   
 
-Por ejemplo, la función `ymd()` me permite pasar un numero que contenga año, mes y dia y transformarlo en formato fecha.
+Por ejemplo, la función `ymd()` me permite pasar un numero que contenga año, mes y dia para transformarlo en formato fecha.
 ```{r}
 #Distintas variantes que admite la función
 ymd(20210420)  
@@ -118,7 +118,7 @@ ymd("2021/04/20")
 ```{r}
 today() - ymd(20210420)
 ```
-Veamos algún otro ejemplo de creación de fechas con un ordenamiento distinto de día mes y año; y con el agregado de horas, segundos y minutos.
+Veamos algún otro ejemplo de creación de fechas con un ordenamiento distinto de día mes y año; y con el agregado de horas, minutos y segundos.
 ```{r}
 ejemplo2 <- "20/05/2020 18:20:40"
 class(ejemplo2)
@@ -147,8 +147,8 @@ fechas_3 <- c("2020-April-10","2020/May/11","2020-June 12")
 ```
 
 ```{r eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
-mdy(fechas1)
-dmy_hms(fechas_hora)
+mdy(fechas_1)
+dmy_hms(fechas_2)
 parse_date_time(fechas_3, orders = 'ymd')
 ```
 
@@ -173,7 +173,7 @@ base.covid.fechas<- base.covid %>%
 
 ```
 
-Veamos como quedan algunas de estas nuevas columnas.
+Veamos como quedan *algunas* de estas nuevas columnas.
 ```{r}
 base.covid.fechas %>% 
   select(fecha_apertura,trimestre,semana,dia.del.anio,dia.nombre,hora,minutos)
