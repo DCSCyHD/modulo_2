@@ -1,370 +1,796 @@
 ---
-title: "Clase 4 - Visualizando información geográfica"
+title: "Clase 4 - Escapando de las barras con interactividad y animación"
+subtitle: Diplomatura en Ciencias Sociales Computacionales y Humanidades Digitales - UNSAM
 author: 
-  - Diplomatura en Ciencias Sociales Computacionales
   - Seminario de Visualización de datos en R
-  - Florencia Piñeyrúa, Santiago Nuñez y Nayla Sol Garcilazo
+  - Florencia Piñeyrúa y Nayla Sol Garcilazo
+
 output: 
   html_document:
     toc: TRUE
     toc_float: TRUE
     theme: journal
 ---
-
 ```{r setup, include=FALSE}
-library(ggplot2)
-library(sf)
-library(ggmap)
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
 
-radios <- st_read("https://bitsandbricks.github.io/data/CABA_rc.geojson")
-subte_lineas <- st_read("http://bitsandbricks.github.io/data/subte_lineas.geojson")
-subte_estaciones <- read_sf("http://bitsandbricks.github.io/data/subte_estaciones.geojson")
-color_lineas <- c("A" = "cyan", "B" = "red", "C" = "blue",
-                  "D" = "darkgreen", "E" = "purple", "H" = "yellow")
+req <- c("eph", "dplyr", "ggplot2", "forcats", "tidyr", "plotly")
+for (pkg in req) {
+  if (!requireNamespace(pkg, quietly = TRUE)) install.packages(pkg)
+  suppressPackageStartupMessages(library(pkg, character.only = TRUE))
+}
+
+df_raw <- eph::get_microdata(year = 2025, trimester = 2, type = "individual")
+
+regiones_labels <- data.frame(
+  REGION = c(1, 40, 41, 42, 43, 44, 45),
+  nombre_region = c(
+    "Gran Buenos Aires",
+    "Pampeana",
+    "Noroeste (NOA)",
+    "Noreste (NEA)",
+    "Cuyo",
+    "Patagonia",
+    "Resto urbano"
+  )
+)
+
+eph_rank_region <- df_raw %>%
+  filter(!is.na(IPCF), IPCF > 0) %>%
+  group_by(REGION) %>%
+  summarise(
+    mediana_ingreso = median(IPCF),
+    n = dplyr::n(),
+    .groups = "drop"
+  ) %>%
+  left_join(regiones_labels, by = "REGION")
 
 
-#register_stadiamaps(" ") #Entre las " " deben ingresar su clave API que obtienen al registrarse en Stadia Maps
-bbox <- st_bbox(radios)
-names(bbox) <- c("left", "bottom", "right", "top")
-mapa_CABA <- get_stadiamap(bbox, zoom = 12)
-mapa_CABA_toner <- get_stadiamap(bbox, maptype = "stamen_toner_lite", zoom = 12)
+eph_rank_region2 <- eph_rank_region %>%
+  mutate(
+    mediana_nacional = median(mediana_ingreso),
+    nivel = ifelse(mediana_ingreso >= mediana_nacional, "Arriba de la mediana", "Abajo de la mediana")
+  )
+
+eph_ocup_sector <- df_raw %>%
+  filter(ESTADO == 1, !is.na(SECTOR), !is.na(PONDERA)) %>%
+  group_by(SECTOR) %>%
+  summarise(
+    n_pond = sum(PONDERA),
+    .groups = "drop"
+  ) %>%
+  mutate(p = n_pond / sum(n_pond),
+         SECTOR = fct_reorder(factor(SECTOR), n_pond))
+
+
+sectores_labels <- tibble(
+  SECTOR = c(1, 2, 3, 4),
+  nombre_sector = c(
+    "Sector público estatal",
+    "Sector privado formal",
+    "Sector privado informal",
+    "Trabajo independiente / mixto"
+  )
+)
+
+ramas_labels <- tibble(
+  CAT_INAC = c(1,2,3,4,5),
+  nombre_inac = c(
+    "Estudiante",
+    "Jubilado/a o pensionado/a",
+    "Tareas de cuidado del hogar",
+    "Persona con discapacidad",
+    "Rentista / otros"
+  )
+)
+
+eph_ocup_sector <- df_raw %>%
+  filter(ESTADO == 1, IPCF > 0) %>%
+  mutate(CAT_INAC = as.integer(CAT_INAC)) %>%
+  left_join(sectores_labels, by = "SECTOR")
+
+eph_treemap <- df_raw %>%
+filter(ESTADO == 1, !is.na(SECTOR), IPCF > 0) %>%
+group_by(SECTOR) %>%
+summarise(n_pond = sum(PONDERA), .groups = "drop") %>%
+left_join(sectores_labels, by = "SECTOR") %>%
+mutate(p = n_pond / sum(n_pond))
+
+
+eph_sector <- df_raw %>% 
+  filter(CH06 >= 18, ESTADO == 1) %>% 
+  mutate(
+    Sector = dplyr::case_when(
+      PP04A == 1 ~ "Público",
+      PP04A == 2 ~ "Privado",
+      TRUE ~ NA_character_)) %>%
+  filter(!is.na(Sector)) %>%
+  count(Sector, name = "n") %>%
+  mutate(porc = round(100 * n / sum(n))) %>%
+  tidyr::uncount(porc) %>%
+  mutate(id = row_number() - 1,
+         fila = id %/% 10,
+         col = id %% 10)
+
+
+eph_heat <- df_raw %>% 
+  left_join(regiones_labels, by = "REGION") %>%  
+  filter(!is.na(IPCF), IPCF > 0, CH06 >= 18, !is.na(REGION), !is.na(CH04)) %>%
+  mutate(
+    edad_grupo = cut(CH06,
+                     breaks = c(18, 25, 35, 45, 55, 65, Inf),
+                     right = FALSE,
+                     labels = c("18-24","25-34","35-44","45-54","55-64","65+")),
+    genero = case_when(
+      CH04 == 1 ~ "Varón",
+      CH04 == 2 ~ "Mujer",
+      TRUE ~ "Otro/NA"
+    )
+  ) %>%
+  group_by(nombre_region, edad_grupo, genero) %>%
+  summarise(ingreso_promedio = mean(IPCF, na.rm = TRUE), .groups = "drop") %>%
+  group_by(nombre_region) %>%
+  mutate(ord = median(ingreso_promedio, na.rm = TRUE)) %>%
+  ungroup() %>%
+  mutate(nombre_region = forcats::fct_reorder(nombre_region, ord))
+
+eph_dist <- df_raw %>%
+  left_join(regiones_labels, by = "REGION") %>%
+  filter(!is.na(IPCF), IPCF > 0, CH06 >= 18, !is.na(CH04)) %>%
+  mutate(genero = case_when(
+    CH04 == 1 ~ "Varón",
+    CH04 == 2 ~ "Mujer",
+    TRUE ~ "Otro/NA"
+  ))
+
+eph_bar <- eph_dist %>%
+  group_by(nombre_region) %>%
+  summarise(ingreso_promedio = mean(IPCF, na.rm = TRUE), .groups = "drop")
+
+
+eph_bar <- eph_dist %>%
+  group_by(nombre_region) %>%
+  summarise(ingreso_promedio = mean(IPCF, na.rm = TRUE), .groups = "drop")
+
+eph_rank_region_plotly <- df_raw %>%
+  left_join(regiones_labels, by = "REGION") %>%
+  filter(!is.na(IPCF), IPCF > 0, !is.na(nombre_region)) %>%
+  group_by(nombre_region) %>%
+  summarise(
+    mediana_ingreso = median(IPCF, na.rm = TRUE),
+    promedio_ingreso = mean(IPCF, na.rm = TRUE),
+    n = n(),
+    .groups = "drop"
+  )
+
+anios <- 2016:2025
+eph_raw_t2_2016_2025 <- purrr::map_dfr(
+  anios,
+  ~ eph::get_microdata(year = .x, trimester = 2, type = "individual") %>%
+      dplyr::mutate(ANO4 = .x, TRIMESTRE = 2),
+  .id = NULL
+)
+
+eph_t2_min <- eph_raw_t2_2016_2025 %>%
+  dplyr::select(
+    ANO4, TRIMESTRE,
+    REGION,      
+    IPCF,        
+    PONDERA       
+  )
 ```
 
-## Información geográfica y mapas
 
-Durante el siglo pasado, los labores de producción de mapas y análisis espacial estaban reservadas para especialistas, debido a la complejidad de las tareas y al alto costo de producción y adquisición de datos geográficos. Sin embargo, durante las dos últimas décadas la tecnología digital cambió el panorama. 
+# Escapando de las barras
 
-Una dramática caída en el costo asociado a adquirir y procesar información geográfica (pensemos en satélites y computadoras multiplicándose y bajando de precio) dio paso al mapa digital como herramienta universal. El consumo de sofisticados mapas y otros productos geográficos se volvió masivo y cotidiano, con Google Maps como el exponente más conocido. Apenas había pasado la novedad de disponer de mapas en alta resolución de todo el mundo accesibles al instante desde nuestros escritorios, cuando la llegada de los *smartphones* popularizó el acceso en cualquier momento y lugar.
+## Introducción
 
-El mismo proceso que nos convirtió a todos en consumidores constantes de información geográfica también nos da la oportunidad de ser los productores. Sin dudas, hacer mapas se ha vuelto más fácil que en el pasado. Existen cada vez más repositorios con información georreferenciada de acceso publico -datasets que incluyen información precisa sobre su ubicación geográfica. Al mismo tiempo, maduran y se hacen más fáciles de usar las herramientas para análisis y visualización espacial.
+Por lo simple y efectiva, la herramienta inescapable para visualizar cantidades, proporciones y distribuciones es el gŕafico de barras. 
+De tan común, el gráfico de barras se vuelve víctima de su propio éxito. A veces resulta repetitivo, aburrido, sobre todo si es el único recurso usado para múltiples visualizaciones que se presentan juntas. De allí la [frase de Amanda Cox](https://hbr.org/2013/03/power-of-visualizations-aha-moment), editora en jefe de periodismo de datos en el *New York Times*:
 
-En los procesos sociales, el "dónde" suele ser un aspecto clave. Es central para quienes estudiamos -por ejemplo- las ciudades o las dinámicas de la política, siempre tan arraigadas a lo territorial. Esto vuelve al mapa una de las herramientas de visualización más importantes que podemos emplear.
+> Hay una corriente en el mundo de la visualización de datos que argumenta que todo podría resolverse con un gráfico de barras.
+>
+> Eso bien podría ser cierto, pero también sería un mundo sin gracia.
 
-En R contamos con varios paquete de funciones que permiten manipular información espacial con facilidad. A continuación vamos a aprender a combinarlos con las herramientas que ya hemos aprendido para hacer análisis geográfico y crear nuestros propios mapas.
+En las siguientes secciones veremos como resolver la visualización de cantidades, proporciones y distribuciones con barras interactivas y animadas y sin ellas... ¡e intentado ponerle gracia al asunto!
 
-### Geometrías
 
-Los archivos de datos geográficos relacionados con fenómenos sociales (datos de cosas que somos y hacemos los humanos, como composición de población, trazado de rutas o ubicación de hospitales) suelen ser de tipo vectorial. Los datos vectoriales expresan la posición y extensión de cosas mediante geometrías, que pueden ser de puntos, de líneas, o de polígonos. En la jerga de los sistemas de información geográfica se les llama "capas" (*layers*) a los archivos que contienen estas geometrías; en ese sentido, se habla de combinar capas para crear mapas.
+## Gráficos para comparación de rankings
+_¿Quién está arriba/abajo y cuánto difieren?_
+_Dotplots y lollipops_
 
-![](./img/puntos_lineas_polis.png){width="93%"}
+### "Dotplots"
 
--   Un archivo geográfico con geometría de **puntos** se utiliza para marcar **posiciones**: por ejemplo, puntos que señalen la ubicación de hospitales.
-
--   La geometría de **líneas** permite mostrar **recorridos**: la extensión de ríos, de autopistas o de calles, son ejemplos típicos.
-
--   Los **polígonos** se usan cuando hay que representar **superficies**: el territorio de barrios, provincias o países; el terreno ocupado por parques y plazas, la extensión de parcelas o los límites de áreas especiales.
-
-### Los datos georreferenciados
-
-El atributo que distingue a los datos georreferenciados, lo que los hace merecer ese nombre, es que representan ubicaciones exactas sobre la superficie de la Tierra. Representar en forma precisa una posición sobre la superficie terrestre es un todo un reto. Para empezar, la Tierra tiene una forma irregular. A pesar de cómo solemos imaginarla y dibujarla, no es una esfera perfecta sino que está "achatada" en los polos, dificultando la matemática necesaria para comparar posiciones y medir distancias. Luego, está el problema de cómo mostrar sobre papel impreso, o en una pantalla digital, -superficies planas- rasgos geográficos que pertenecen a una superficie tridimensional esférica. La solución a estos problemas toma la forma de sistemas de coordenadas de referencia (*CRS* por sus siglas en inglés) y de proyecciones cartográficas.
-
-Los CRS son un sistema de números que definen ubicaciones sobre la superficie de la Tierra; funcionan como direcciones. El tipo de CRS más conocido es el que usa latitud y longitud para definir posiciones en los ejes norte-sur y este-oeste.
-
-Las proyecciones cartográficas son instrucciones para traducir a un plano la disposición de puntos ubicados en la esfera terrestre. Algo así como las instrucciones para dibujar en dos dimensiones las disposición de fronteras, accidentes geográficos, calles o cualquier otro objeto que se extiende sobre la superficie curva del planeta. Como en toda traducción, hay algo que se pierde en el proceso. Todo los mapas "mienten", en el sentido en que presentan una versión distorsionada de la superficie de terrestre. Esto es inevitable; no existe forma de pasar de la esfera al plano sin distorsionar la forma, la superficie, la distancia o la dirección de los rasgo geográficos. Existen muchísimas proyecciones distintas, cada una pensada para minimizar alguno de los tipos de distorsión o para encontrar una solución de compromiso que los balancee.
-
-![](./img/proyecciones.png){width="81%"}
-
-La proyección más famosa es la *Mercator*, en uso desde el siglo XVI cuando fue creada para asistir la navegación marítima. Su fuerte es que no distorsiona las direcciones, por lo que permite fijar un rumbo de navegación consultando el mapa. Su principal problema es que produce una distorsión notable en las áreas cercanas a los polos: Groenlandia aparenta el mismo tamaño que toda África, cuando en realidad tiene sólo un quinceavo de su superficie. Por esa razón, la proyección perdió popularidad en el siglo XX cuando comenzaron a preferirse alternativas que respetan las áreas, como las cuatro mostradas antes. Pero ese no fue el fin: en el siglo XXI la vetusta proyección Mercator recuperó protagonismo. Google la eligió para sus mapas en línea, y por razones de compatibilidad otros proveedores de mapas digitales la adoptaron también. Así, y para entendible irritación de especialistas en geografía, Mercator se convirtió en el estándar de facto para aplicaciones geográficas y mapas en la web.
-
-![](./img/mapamundi_mercator.png){width="79%"}
-
-En la práctica, si trabajamos en forma frecuente con archivos georreferenciados vamos a sufrir tarde o temprano de problemas de coordenadas o proyección. El más común de ellos: tener una fuentes de datos geográficos que no podemos comparar con otras, porque desconocemos el sistema de coordenadas que se usó para crearla; es decir, no podemos saber a que posición sobre el planeta corresponde cada observación en los datos.
-
-### Accediendo a datos geográficos
-
-Otro problema asociado a trabajar con datos geográficos es el de los formatos de archivo. El formato más común es el denominado "shapefile", inventado por la empresa ESRI (los creadores del software ArcGIS). Es un formato incómodo porque guarda la información en varios archivos distintos, que suelen ser combinados en un archivo .zip para su distribución. 
-Un inconveniente aún mayor es que los nombres de las variables en un shapefile deben tener 10 caracteres o menos, lo que facilita el uso de abreviaturas ininteligibles. A pesar de éstos y otros detrimentos, el formato es tan común que se ha vuelto sinónimo de archivo con información geográfica, y resiste a pesar de los esfuerzos por reemplazarlo con alternativas más modernas. Una de ellas es "GeoJSON", un estándar abierto que corrige los dos inconvenientes mencionados antes. Para nuestros ejercicios usaremos datos geográficos en esta último formato.
-
-Vamos a trabajar, como siempre con `ggplot2`. Y ahora también sumamos el paquete [`sf`](https://r-spatial.github.io/sf/), que brinda funciones para trabajar con datos georefrenciados.
-
-```{r echo=TRUE, eval=FALSE}
-library(ggplot2)
-library(sf)
-```
-
-Practicaremos con datos georeferenciados en polígonos: el territorio de la Ciudad de Buenos Aires dividido en radios censales, la unidad geográfica más pequeña para la que se dispone de datos públicos producidos por el censo nacional.
-
-Podemos leemos el archivo con datos geográficos directo desde internet:
-
-```{r eval=FALSE}
-radios <- read_sf("https://bitsandbricks.github.io/data/CABA_rc.geojson")
-```
-
-Como con cualquier otro dataset, podemos escribir su nombre de variable y ejecutar la línea para ver el contenido:
+Los *dotplots* son el equivalente a marcar con un punto donde termina cada barra... y luego borrar las barras. Expresan la misma información de forma más minimalista. Son útiles como reemplazo a gráficos de barras que muestran una gran cantidad de categorías y resultan visualmente "pesados". 
 
 ```{r}
-head(radios)
-```
-
--   "RADIO_ID" es el código que identifica cada radio censal.
--   "BARRIO" y "COMUNA" representan barrio y comuna de cada radio (vaya sorpresa!).
--   "POBLACION" indica la cantidad de habitantes del radio, según Censo 2010.
--   "HOGARES_NBI" representa la cantidad de hogares donde se encontró que al menos una de sus necesidades básicas insatisfechas.
--   "AREA_KM2" indica la superficie.
--   y por último queda la columna `geometry`, que contiene una serie de puntos que permiten trazar la silueta de cada radio (sus polígonos). Nosotros no vamos a prestarle atención, pero para R es fundamental, ya que le permite proyectar mapas y hacer cálculos geométricos cuando se lo pidamos.
-
-Ahora, ¿cómo podemos ver el sistema de coordenadas de nuestros datos?
-
-```{r}
-st_crs(radios)
-```
-
-Está en WGS 84, que son las siglas del sistema de coordenadas World Geodetic System 1984 también conocido como Pseudo-Mercator. Si quisiéramos cambiarlo a otro sistema de coordenadas, podríamos usar la función `st_transform()`. Por ejemplo, para trasladarlo a Mercator:
-
-```{r}
-radios_mercator <- st_transform(radios, 3857)
-st_crs(radios_mercator)
-```
-
-Ahora, a generar mapas.
-
-## Visualizando información geográfica
-
-La visualización de información geográfica por excelencia es el mapa... ¡por supuesto!
-
-`ggplot()` puede graficar datos geográficos empleando la geometría `geom_sf()`. Probemos:
-
-```{r}
-ggplot(radios) +
-  geom_sf()
-```
-
-Ahora usemos el atributo estético "fill" para pintar el interior de cada polígono de acuerdo a la cantidad de gente que vive allí (variable "POBLACION"):
-
-```{r}
-ggplot(radios) + 
-  geom_sf(aes(fill = POBLACION)) 
-```
-
-Continuemos puliendo el gráfico. 
-Cuando pintamos polígonos para mostrar datos, el grosor de la línea que traza las fronteras a veces hace difícil determinar el color de relleno. Esto suele pasar cuando se muestra información geográfica intrincada como la de los radios censales. Una solución es definir el color de la línea como `NA`, que para `ggplot` significa "ninguno". Como siempre que queremos modificar un atributo estético en forma arbitraria -un valor fijo, que no dependa de los datos- debemos hacerlo por fuera de `aes()`:
-
-```{r}
-ggplot(radios) + 
-  geom_sf(aes(fill = POBLACION), color = NA) 
-```
-
-Así esta mejor.
-
-Algo importante que no hemos mencionado aún es la importancia de "normalizar" las variables antes de mostrarlas en un mapa. En general, los lugares más grandes van a contener dentro "más" de cualquier variable que los lugares pequeños (sean personas, comercios o accidentes). Es de esperarse que en el barrio más pequeño de la ciudad vivan menos personas que en el más grande; lo que es útil saber es si los valores son bajo o altos para un área *con esa extensión*. Ejemplos típicos:
-
--   En lugar de mostrar "número de crímenes por barrio" es más instructivo mostrar el número de crímenes per cápita; de lo contrario es de esperar que los lugares más poblados siempre registren más incidentes, lo cual no agrega demasiada información.
--   En lugar de mostrar "cantidad de habitantes por radio censal", mostramos la densidad de población, es decir la cantidad de habitantes dividida por la extensión del área. Los mapas de densidad muestran mucho mejor la distribución espacial de la población.
-
-Con nuestros datos, podemos visualizar la densidad de la población mostrando la cantidad de habitantes dividida por la superficie del polígono. O sea, POBLACION / AREA_KM2:
-
-```{r}
-ggplot(radios) + 
-  geom_sf(aes(fill = POBLACION/AREA_KM2), color = NA) 
-```
-
-Este último gráfico representa de forma mucho mas precisa la distribución de habitantes en la ciudad, haciendo saltar a la vista los núcleos con mayor densidad de población. Pero tenemos una mejora más por realizar: elegir una escala de color que haga más legible el gráfico, ayudando al ojo a diferenciar las áreas donde la densidad es particularmente alta o baja. Apelamos a ["viridis"](https://cran.r-project.org/web/packages/viridis/vignettes/intro-to-viridis.html), una escala diseñada para ser fácil de interpretar... y lucir bien de paso. Para usar virids, agregamos `scale_fill_viridis_d()` cuando se muestra una variable categórica, y `scale_fill_viridis_c()`cuando se trata de una variable continua, nuestro caso en este momento.
-
-¿Cómo queda con la escala viridis?
-
-```{r}
-ggplot() +
-  geom_sf(data = radios, aes(fill = POBLACION/AREA_KM2), color = NA) +
-  scale_fill_viridis_c() 
-```
-
-Si vamos a compartir este gráfico, necesitamos agregar un título descriptivo, definir nombres claros para las leyendas, etc. 
-Además, podemos elegir un tema que resulte adecuado para mostrar datos geográficos. Dos opciones disponibles son `theme_minimal()`, que ya hemos probado, y `theme_void()`. Probemos usando uno u otro. ¿Cuál es la diferencia?
-
-```{r}
-ggplot() +
-  geom_sf(data = radios, aes(fill = POBLACION/AREA_KM2), color = NA) +
-  scale_fill_viridis_c() +
-  labs(title = "Ciudad Autónoma de Buenos Aires",
-       subtitle = "Densidad de población",
-       fill = "hab/km2") + 
+ggplot(eph_rank_region,
+       aes(x = mediana_ingreso,
+           y = fct_reorder(nombre_region, mediana_ingreso))) +
+  geom_col() +
+  scale_x_continuous(labels = scales::comma) +
   theme_minimal()
 ```
-```{r}
-ggplot() +
-  geom_sf(data = radios, aes(fill = POBLACION/AREA_KM2), color = NA) +
-  scale_fill_viridis_c() +
-  labs(title = "Ciudad Autónoma de Buenos Aires",
-       subtitle = "Densidad de población",
-       fill = "hab/km2") + 
-    theme_void()
-```
 
-
-## Volcando en el mapa múltiples capas de información
-
-En algunos casos, un archivo con información geográfica contiene todos los datos que necesitamos. Pero lo habitual es que el archivo sólo brinde la ubicación y fronteras de nuestras unidades de análisis, de manera que necesitamos agregarle los datos que hemos obtenido de otras fuentes y queremos proyectar en un mapa.
-
-Comentamos al principio de la clase que los archivos con datos espaciales pueden representar áreas (polígonos), líneas o puntos. Hasta ahora hemos hecho mapas con polígonos, pero según el caso podríamos querer mostrar otros tipos de geometría.
-
-Un ámbito donde es común utilizar toda la variedad de geometrías es el transporte: polígonos para representar distritos, líneas para el recorrido de un sistema de transporte y puntos para la ubicación de las estaciones.
-
-Sumemos a nuestra colección datos espaciales con
-
--   las líneas de transporte subterráneo (SUBTE) de la ciudad
-
-```{r eval=FALSE}
-subte_lineas <- read_sf("http://bitsandbricks.github.io/data/subte_lineas.geojson")
-```
-
-```{r echo=FALSE}
-subte_lineas
-```
-
--   y los puntos con las ubicaciones de las estaciones de SUBTE
-
-```{r eval=FALSE}
-subte_estaciones <- read_sf("http://bitsandbricks.github.io/data/subte_estaciones.geojson")
-```
-
-```{r echo=FALSE}
-head(subte_estaciones)
-```
-
-Combinar capas mostrado distintas geometrías es simple. Sólo es cuestión de sumar capas de `geom_sf()` asignando a cada una un dataframe espacial a mostrar con el parámetro "data"; por ejemplo, `data = radios`. Mostremos los radios censales (`data = radios`) y el trazado de las líneas de transporte (`data = subte_lineas`) en el mismo mapa:
+Un problema que no atendimos en la clase 3 es que la gran cantidad de barras ocupa casi toda el área disponible, distrayendo del objetivo del gráfico que es resaltar las diferencias entre regiones. 
+La versión "dotplot" del gráfico resuelve ese problema, y se obtiene con sólo usar `geom_point()` en lugar de `geom_col()`:
 
 ```{r}
-ggplot() +
-    geom_sf(data = radios) +
-    geom_sf(data = subte_lineas) 
+ggplot(eph_rank_region,
+       aes(x = mediana_ingreso,
+           y = fct_reorder(nombre_region, mediana_ingreso))) +
+  geom_point(size = 2) +
+  labs(title = "Mediana de ingreso individual por región – EPH",
+       subtitle = "Dotplot para entender diferencias reales (sin barras)",
+       y = "Región",
+       x = "Mediana de ingreso IPCF") +
+  theme_minimal()
 ```
 
-Y del mismo modo, sumemos una capa más para mostrar la ubicación de las estaciones (`data = subte_estaciones`):
+
+_¿Diferencias entre dotplots y barras?_ Más liviano (menos tinta), facilita lectura de diferencias pequeñas y ordenamiento
+
+
+### Lollipops
+
+Otra variante del dotplot un poco más atractiva son los _lollipop chart_ o _gráfico de chupetín_. Podemos generarlo combinando los dotplots con `geom_segment`.
+
+Primero, hacemos una línea que tenga nuestros valores mapeados:
 
 ```{r}
-ggplot() +
-    geom_sf(data = radios) +
-    geom_sf(data = subte_lineas) +
-    geom_sf(data = subte_estaciones)
+ggplot(eph_rank_region,
+       aes(x = mediana_ingreso,
+           y = fct_reorder(nombre_region, mediana_ingreso))) +
+  geom_segment(aes(x = 0,
+                   xend = mediana_ingreso,
+                   yend = fct_reorder(nombre_region, mediana_ingreso))) +
+  scale_x_continuous(labels = scales::comma) +
+  theme_minimal()
 ```
 
-Mostremos cada línea con un color distinto, en base a la variable "LINEA". 
-Y hagamos lo mismo para la capa de estaciones.
+Luego le agregamos un punto al final.
 
 ```{r}
-ggplot() +
-    geom_sf(data = radios) +
-    geom_sf(data = subte_lineas, aes(color = LINEA)) +
-    geom_sf(data = subte_estaciones, aes(color = LINEA))
-```
-
-¡Funciona! Eso si, el gráfico queda bastante recargado por la abundancia de líneas. Podemos mostrar sólo la extensión de la ciudad, sin detalle interno, para resaltar las líneas de transporte. 
-Como hicmos antes, podemos hacer desaparecer la división entre polígonos usando `color = NA`:
-
-```{r}
-ggplot() +
-    geom_sf(data = radios, color = NA) +
-    geom_sf(data = subte_lineas, aes(color = LINEA)) +
-    geom_sf(data = subte_estaciones, aes(color = LINEA))
+ggplot(eph_rank_region,
+       aes(x = mediana_ingreso,
+           y = fct_reorder(nombre_region, mediana_ingreso))) +
+  geom_segment(aes(x = 0,
+                   xend = mediana_ingreso,
+                   yend = fct_reorder(nombre_region, mediana_ingreso))) +
+  geom_point(size = 2) +
+  scale_x_continuous(labels = scales::comma) +
+  labs(title = "Mediana de ingreso por región – EPH 2025 T2",
+       x = "Mediana de ingreso IPCF",
+       y = "Región") +
+  theme_minimal()
 
 ```
 
-Pensando en compartir el resultado, nos queda usar `theme_void()` para un tema minimalista sin panel de fondo, y agregar título y demás textos vía `labs()`:
+Al tener una geometría que ocupa más espacio visualmente, podemos mapear más atributos estéticos. Por ejemplo, podemos agregar el tamaño muestreal (n).
 
 ```{r}
-ggplot() +
-  geom_sf(data = radios, color = NA) +
-  geom_sf(data = subte_lineas, aes(color = LINEA)) +
-  geom_sf(data = subte_estaciones, aes(color = LINEA)) +
-  labs(title = "Sistema de transporte subterráneo (SUBTE)",
-       subtitle = "Ciudad Autónoma de Buenos Aires") +
-  theme_void()
+ggplot(eph_rank_region,
+       aes(x = mediana_ingreso,
+           y = fct_reorder(nombre_region, mediana_ingreso),
+           color = n)) +
+  geom_segment(aes(x = 0, xend = mediana_ingreso, yend = fct_reorder(nombre_region, mediana_ingreso))) +
+  geom_point(size = 2) +
+    scale_color_viridis_c()+
+  scale_x_continuous(labels = scales::comma) +
+  labs(title = "Mediana de ingreso por región – EPH 2025 T2",
+       subtitle = "Color = tamaño muestral (n) por región",
+       x = "Mediana de ingreso IPCF",
+       y = "Región",
+       color = "n") +
+  theme_minimal()
 ```
 
-Este es un caso que amerita elegir los colores de la paleta de visualización a mano. Esto es porque la identidad de las líneas de SUBTE en Buenos Aires está muy asociada a su color oficial y, por lo tanto, resulta confuso verlas representadas en otra gama.
+También podemos agregar por nivel relativo (arriba/abajo de la mediana nacional)
 
-Recurriendo a `scale_color_manual()` como hicimos en una clase anterior, aquí queda el ejercicio resuelto:
 
 ```{r}
-color_lineas <- c("A" = "cyan", "B" = "red", "C" = "blue",
-                  "D" = "darkgreen", "E" = "purple", "H" = "yellow")
+ggplot(eph_rank_region2,
+       aes(x = mediana_ingreso,
+           y = fct_reorder(nombre_region, mediana_ingreso),
+           color = nivel)) +
+  geom_segment(aes(x = 0, xend = mediana_ingreso, yend = fct_reorder(nombre_region, mediana_ingreso))) +
+  geom_point(size = 2) +
+    scale_color_viridis_d() +
+  scale_x_continuous(labels = scales::comma) +
+  labs(title = "Mediana de ingreso por región – EPH 2025 T2",
+       subtitle = "Color = posición relativa respecto de la mediana nacional",
+       x = "Mediana de ingreso IPCF",
+       y = "Región",
+       color = "") +
+  theme_minimal()
+```
 
-ggplot() +
-  geom_sf(data = radios, color = NA) +
-  geom_sf(data = subte_lineas, aes(color = LINEA)) +
-  geom_sf(data = subte_estaciones, aes(color = LINEA)) +
-  labs(title = "Sistema de transporte subterráneo (SUBTE)",
-       subtitle = "Ciudad Autónoma de Buenos Aires") +
+¿Y si quisiéramos que solo el punto del final tenga color?
+
+```{r}
+ggplot(eph_rank_region2,
+       aes(x = mediana_ingreso,
+           y = fct_reorder(nombre_region, mediana_ingreso))) +
+  geom_segment(aes(x = 0,
+                   xend = mediana_ingreso,
+                   yend = fct_reorder(nombre_region, mediana_ingreso))) +
+  geom_point(aes(color = nivel), size = 2) +   # ← color SOLO en el punto final
+  scale_color_viridis_d() +
+  scale_x_continuous(labels = scales::comma) +
+  labs(title = "Lollipop de mediana de ingreso por región – EPH",
+       subtitle = "Color = posición relativa respecto de la mediana nacional",
+       x = "Mediana de ingreso IPCF",
+       y = "Región",
+       color = "") +
   theme_minimal() +
-  scale_color_manual(values = color_lineas)
+  theme(axis.line.y = element_line(color = "#2b2b2b", size = 0.15))
+
 ```
 
-## Obteniendo cartografía de internet
+## Gráficos para composición
+_¿Cómo se reparte un total entre categorías?_
+_Treemap, waffle, heatmap_
 
-Hasta ahora hemos mostrado nuestros datos georreferenciados "flotando" sobre espacio vacío. Pero para dar contexto que guíe a la audiencia, muchas veces es útil proyectar la información sobre un mapa de fondo que muestre la posición de caminos, nombres de localidades, accidentes geográficos y otros hitos. Estos mapas usados como capa de fondo sobre la cual mostrar datos espaciales son conocidos como "mapas base", o *basemaps*. Guardar por nuestra cuenta información cartográfica con alto nivel de detalle de cualquier lugar del mundo es impracticable, pero por suerte existen servicios en internet que lo hacen por nosotros, como [Google Maps Platform](https://developers.google.com/maps) (que requiere registro previo y tarjeta de crédito) o [Stamen Maps](http://maps.stamen.com) (¡que es de uso gratuito!)
+### Treemap
 
-![](./img/stamen.png){width="99%"}
+Los *treemaps* son gráficos muestran cómo se reparte un total entre categorías usando áreas, y son especialmente útiles cuando hay muchas categorías y queremos ver rápidamente cuáles pesan más.
 
-Para incluir mapas base en nuestras visualizaciones podemos usar las funciones del paquete [`ggmap`](https://github.com/dkahle/ggmap), que complementa a ggplot agregando funciones que permiten adquirir y visualizar mapas en forma fácil.
 
-Lo activamos:
+_Treemap vs barras:_ si bien los treempas son útil cuando hay muchas categorías y queremos ver jerarquía, recordemos que la comparación por área es menos precisa que por posición. Por eso conviene acompañarlo con porcentajes o etiquetas.
+
+
+Primero hagamos un gráfico de barras y despúes un treemap:
+
+
+```{r}
+ggplot(eph_treemap,
+       aes(x = n_pond,
+           y = fct_relevel(
+             fct_reorder(nombre_sector, desc(n_pond))))) +
+  geom_col() +
+  geom_text(aes(label = scales::percent(p, accuracy = 1)),
+            hjust = -0.1, size = 3) +
+  scale_x_continuous(labels = scales::comma,
+                     expand = expansion(mult = c(0, 0.12))) +
+  labs(title = "Composición del empleo por sector – EPH 2025 T2",
+       x = "Cantidad ponderada",
+       y = "Sector") +
+  theme_minimal()
+
+```
+
+
+```{r}
+library(treemapify)
+
+ggplot(eph_treemap,
+       aes(area = n_pond,
+           fill = nombre_sector,
+           label = scales::percent(p, accuracy = 1))) +
+  geom_treemap() +
+  geom_treemap_text(colour = "black", place = "centre", grow = TRUE, size = 1) +
+  scale_fill_viridis_d() + 
+  labs(title = "Composición del empleo por sector de actividad – EPH 2025 T2",
+       x = "",
+       y = "") +
+  theme_minimal()
+
+
+```
+
+
+
+### Gráficos de waffle
+
+Los *waffle charts* también muestran composición. Cada cuadrado representa una porción del total. Este tipo de gráficos funcionan bien para audiencias generales y porcentajes simples.
+
+_Waffle vs barras:_ es más “icónico” y fácil de leer como “partes de un total”, pero es malo si hay muchas categorías o si necesitás precisión fina.
+
+Armemos un ejemplo simple: sector público vs privado entre personas ocupadas (18+).
+
+```{r}
+ggplot(eph_sector, aes(x = col, y = fila, fill = Sector)) +
+  geom_tile(color = "white") +
+  scale_fill_viridis_d() +
+  scale_y_reverse() +
+  coord_equal() +
+  labs(title = "Composición del empleo por sector – EPH 2025 T2",
+       subtitle = "Cada cuadrado ≈ 1% (sin ponderar)",
+       fill = "Sector") +
+  theme_void() +
+  theme(legend.position = "bottom")
+```
+
+### Mapas de calor
+
+Un *heatmap* es ideal cuando la pregunta de composición involucra dos dimensiones (por ejemplo, región × grupo etario) y queremos ver patrones globales. Es excelente para detectar estructuras, pero ojo: no está pensado para leer valores exactos con precisión.
+
+
+
+```{r}
+ggplot(eph_heat, aes(x = edad_grupo, y = nombre_region, fill = ingreso_promedio)) +
+  geom_tile() +
+  scale_fill_viridis_c(labels = scales::comma, name = "Ingreso promedio") +
+  facet_wrap(vars(genero)) +
+  labs(title = "Ingreso promedio por edad y región – EPH 2025 T2",
+       x = "Grupo etario",
+       y = "Región (ordenada)") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 60, hjust = 1, vjust = 1))
+```
+
+Probemos ahora visualizar la misma información pero con barras:
+
+```{r}
+ggplot(eph_heat,
+       aes(x = edad_grupo,
+           y = ingreso_promedio,
+           group = nombre_region,
+           fill = nombre_region)) +
+  geom_col(position = "dodge") +
+  scale_fill_viridis_d(name = "Región") +
+  scale_y_continuous(labels = scales::comma) +
+  facet_wrap(vars(genero)) +
+  labs(title = "Ingreso promedio por edad y región – EPH 2025 T2",
+       x = "Grupo etario",
+       y = "Ingreso promedio",
+       caption = "Medias estimadas con datos de la encuesta EPH") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 60,
+                                   hjust = 1, vjust = 1),
+        legend.position = "bottom")
+```
+
+### Gráficos para distribución 
+_¿Cómo se dispersan los valores dentro de cada grupo?_
+_Violín y enjambres_
+
+### Enjambres de abejas (o beeswarm)
+
+Los *enjambres de abejas* sirven para representar todas las observaciones individuales de una variable sobre un eje común, evitando resúmenes excesivos. Son ideales cuando queremos ver la heterogeneidad real dentro de los grupos, identificar valores atípicos y comprender si las diferencias entre categorías responden a pocos casos extremos o a un patrón generalizado. Conviene usarlos cuando el tamaño muestral es moderado o grande y las categorías son pocas y claramente definidas, de modo que los puntos mantengan su capacidad informativa.
+
+
+```{r}
+library(ggbeeswarm)
+
+ggplot(eph_dist,
+       aes(x = IPCF,
+           y = fct_reorder(nombre_region, IPCF))) +
+  ggbeeswarm::geom_quasirandom(alpha = 0.35, size = 0.8) +
+  scale_x_continuous(labels = scales::comma) +
+  labs(title = "Distribución del ingreso individual (18+) por región – EPH 2025 T2",
+       x = "Ingreso individual (IPCF)",
+       y = "Región") +
+  theme_minimal()
+```
+
+¿Y  si aplicamos un zoom como vimos en la clase 3?
+
+El zoom permite revelar heterogeneidad que las barras no muestran, pero también deja ver que el fenómeno no es uniforme.
+
+```{r}
+ggplot(eph_dist,
+       aes(x = IPCF,
+           y = fct_reorder(nombre_region, IPCF))) +
+  ggbeeswarm::geom_quasirandom(alpha = 0.35, size = 0.8) +
+  scale_x_continuous(labels = scales::comma) +
+  coord_cartesian(xlim = c(0, 7000000)) +   # ← ZOOM
+  labs(title = "Distribución del ingreso individual (18+) por región – EPH 2025 T2",
+       x = "Ingreso individual (IPCF)",
+       y = "Región") +
+  theme_minimal()
+
+```
+
+
+_Beeswarm vs barras_: mientras que las barras de promedios muestran solo un valor agregado por grupo y suelen ocultar la dispersión, el enjambre permite observar la forma efectiva de la distribución, revelar outliers y apreciar el peso relativo de cada conjunto de datos. Este enfoque mejora la transparencia analítica y ofrece una lectura más rica que la comparación entre columnas “pesadas”, especialmente en estudios con datos de la EPH donde los ingresos presentan asimetrías marcadas y trayectorias diferenciadas por región, género o educación.
+
+```{r}
+ggplot(eph_bar,
+       aes(x = ingreso_promedio,
+           y = fct_reorder(nombre_region, ingreso_promedio))) +
+  geom_col() +
+  scale_x_continuous(labels = scales::comma) +
+  labs(title = "Ingreso promedio por región – EPH 2025 T2",
+       x = "Ingreso promedio (IPCF)",
+       y = "Región") +
+  theme_minimal()
+```
+
+### Violin plots
+
+Los *violin plots* o *gráficos de violín* se usan para visualizar distribuciones comparando grupos. A diferencia de una barra (que resume en un promedio o mediana), el violín muestra la densidad estimada de los datos: dónde se concentra la mayor parte de las observaciones y qué tan “ancha” o “delgada” es la distribución en distintos valores.
+
+Son especialmente útiles cuando:
+
+●	hay muchos casos por grupo (la densidad se estima mejor),
+
+●	queremos comparar forma (asimetría), dispersión y concentración entre categorías,
+
+●	sospechamos que dos grupos pueden tener el mismo promedio pero distribuciones muy distintas.
+
+
+_Violin vs barras_: las barras de promedios ocultan heterogeneidad (dos grupos pueden tener el mismo promedio con realidades internas opuestas). En cambio, el violín permite ver si hay colas largas, si la distribución está muy sesgada, y si la masa principal de observaciones se ubica en rangos distintos. En ingresos EPH, donde suele haber fuerte asimetría y valores extremos, esta diferencia es clave.
+
+
+```{r}
+ggplot(eph_dist,
+       aes(x = IPCF,
+           y = fct_reorder(nombre_region, IPCF))) +
+  geom_violin(trim = TRUE, scale = "width") +
+  scale_x_continuous(labels = scales::comma) +
+  coord_cartesian(xlim = c(0, 7000000)) +
+  labs(title = "Distribución del ingreso individual (18+) por región – EPH 2025 T2",
+       x = "Ingreso individual (IPCF)",
+       y = "Región") +
+  theme_minimal()
+```
+
+¿Y si queremos que el violín no “oculte” la mediana? Podemos hacerlo con la función stat_summary()
+
+```{r}
+ggplot(eph_dist,
+       aes(x = IPCF,
+           y = fct_reorder(nombre_region, IPCF))) +
+  geom_violin(trim = TRUE, scale = "width") +
+  stat_summary(fun = median, geom = "point", size = 1.5) +
+  scale_x_continuous(labels = scales::comma) +
+  coord_cartesian(xlim = c(0, 7000000)) +
+  labs(title = "Distribución del ingreso individual (18+) por región – EPH 2025 T2",
+       x = "Ingreso individual (IPCF)",
+       y = "Región") +
+  theme_minimal()
+
+```
+
+## ¿Para qué incluir interactividad?
+
+Durante el proceso de análisis de datos, uno de los recursos más útiles que nos brinda la programación es la capacidad de "iterar" a gran velocidad: escribir código que se encargue de tareas que serían tediosas de resolver "a mano", y una vez aplicado para un caso en particular volver a usarlo en otros contextos con mínimo esfuerzo adicional. De este modo podemos evaluar distintos aspectos de nuestros datos (identificar valores extremos, calcular métricas agregadas por categoría, realizar modelos estadísticos, obtener gráficos que muestren relaciones, etc) sin que importe tanto si son decenas o millones de observaciones, o si lidiamos con un dataset o con veinte. La gracia de usar código es que permite una automatización de tareas que multiplica nuestra capacidad de análisis, y además nos evita el fastidio de tener que realizar tareas repetitivas... ¡que se encargue la computadora!.
+
+Como si eso fuera poco, existe otro recurso que también permite analizar grandes cantidades de información y sacar conclusiones en forma rápida, que habilita la programación: la visualización interactiva. Así como hemos aprendido a realizar gráficos estáticos, aprendiendo algunos trucos adicionales podremos generar versiones dinámicas, que permiten a la audiencia interactuar con los datos para revisar sus atributos, cambiar las variables comparadas, o "hacer zoom" en distintas áreas para mostrar subconjuntos mas pequeño o más grande de los datos disponibles.
+
+![La visualización interactiva puede combinarse con buenos gestos de manos para máximo impacto](https://bitsandbricks.github.io/img/visualizacion_interactiva.gif)
+
+Una buena visualización interactiva nos permite "interrogar" a los datos de forma intuitiva, explorándolos de acuerdo a las preguntas que nos surgen al verlos en pantalla. Organizar y reorganizar los datos de forma visual puede ayudar a descubrir patrones y relaciones clave que serían difíciles de discernir al verlos en una tabla o incluso en una visualización estática.
+
+También puede entusiasmarnos compartir una visualización interactiva para hacer accesible ésta capacidad de análisis rápido a un público amplio, invitado a jugar con los datos por su cuenta. Aquí vale aclarar que la audiencia casual rara vez siente ganas de dedicar su tiempo a mover diales para explorar los datos que presentamos. En general una visualización estática, que vaya directo al grano y muestre alguna conclusión, es preferible a una opción interactiva. A pesar de bajar la barrera de entrada al análisis rápido de datos, la interactividad podría ser mucho mas útil para analistas con experiencia que para su audiencia... al menos por ahora.
+
+## Interactividad con bajo esfuerzo
+
+Uno de los fuertes de `R` es sin dudas la calidad y cantidad de herramientas de visualización disponibles. Además de las funciones incluidas en el lenguaje, y de la "gramática" para realizar todo tipo de gráficos que ofrece `ggplot2`, podemos agregar a nuestro repertorio paquetes adicionales que realizan visualizaciones específicas. En la vertiente de interactividad, son notables los paquetes reunidos bajo el nombre de [htmlwidgets](http://gallery.htmlwidgets.org/), que generan visualizaciones dinámicas con una gran variedad de estilos y recursos.
+
+![Paquetes para la visualización interactiva](./img/1.png){width="93%"}
+
+
+La particularidad de los *htmlwidgets* (palabra que yo traduciría como "cositos HTML") es que traen a `R` excelentes funciones de visualización desarrolladas en otro idioma: `JavaScript`. El gran fuerte de `JavaScript` es la generación de contenido interactivo para sitios web. Los paquetes reunidos en la colección *htmlwidgets* "envuelven" el código `Javascript` en instrucciones en `R`, haciendo un puente entre los dos mundos, y permitiendo generar desde `R` visualizaciones que pueden publicarse como contenido web. Para nuestros fines, vamos a concentrarnos en una de las opciones en particular: [`Plotly`](https://plotly.com/r/). Esto debido a que `Plotly` permite convertir nuestros gráficos realizados con `ggplot2` en versiones interactivas, con solo agregar una línea de código. Dicho de otra forma: podemos producir visualizaciones interactivas... ¡sin necesitar nada más que lo que ya hemos aprendido!.
+
+Vamos a demostrarlo con un ejemplo. Sigamos con la EPH y recuperemos nuestro gráfico lolipops:
+
+```{r}
+ggplot(eph_rank_region,
+       aes(x = mediana_ingreso,
+           y = fct_reorder(nombre_region, mediana_ingreso))) +
+  geom_segment(aes(x = 0,
+                   xend = mediana_ingreso,
+                   yend = fct_reorder(nombre_region, mediana_ingreso))) +
+  geom_point(size = 2) +
+  scale_x_continuous(labels = scales::comma) +
+  labs(title = "Mediana de ingreso por región – EPH 2025 T2",
+       x = "Mediana de ingreso IPCF",
+       y = "Región") +
+  theme_minimal()
+```
+
+Para realizar una versión interactiva del mismo gráfico, activamos el paquete `plotly`
 
 ```{r eval=FALSE}
-library(ggmap)
+library(plotly)
 ```
 
-Ahora, para obtener un mapa base del área donde se encuentran los datos que queremos mostrar, necesitamos determinar su "bounding box": el rango de latitud y longitud que forma un rectángulo conteniendo todas sus posiciones. En resumidas cuentas, se trata de los valores de 1) latitud máxima y mínima y de 2)longitud máxima y mínima de nuestros datos georreferenciados.
+Ahora solo necesitamos dos cosas:
 
-Los proveedores de mapas online suelen solicitar los valores en este orden: izquierda, abajo, derecha, arriba. Es decir, posición mas al oeste, posición mas al sur, posición mas al este, posición mas al norte. Cuando disponemos de un dataframe georreferenciado, obtener la *bounding box* de su contenido es bastante fácil usando `st_bbox`, una función del paquete `sf` que recupera esas cuatro coordenadas clave. Por ejemplo `st_bbox(radios)` obtiene las coordenadas del rectángulo de territorio que abarca los radios censales de Buenos Aires. Luego de guardar las coordenadas en una variable, les ponemos los nombres que permitirán que `ggmap` las identifique:
+-   guardar el resultado de nuestra visualización en una variable, que llamaremos -por elegir algo- "p"
+-   pasar la variable que contiene la visualización a la función `ggplotly`, que la convertirá en una versión interactiva.
+
+Y eso es todo. A intentarlo:
 
 ```{r}
-bbox <- st_bbox(radios)
+p <- ggplot(eph_rank_region,
+            aes(x = mediana_ingreso,
+                y = fct_reorder(nombre_region, mediana_ingreso))) +
+  geom_segment(aes(x = 0, xend = mediana_ingreso, yend = fct_reorder(nombre_region, mediana_ingreso))) +
+  geom_point(size = 2) +
+  scale_x_continuous(labels = scales::comma) +
+  labs(title = "Mediana de ingreso por región – EPH 2025 T2",
+       subtitle = "Versión interactiva con ggplotly()",
+       x = "Mediana de ingreso (IPCF)",
+       y = "Región") +
+  theme_minimal()
 
-
-names(bbox) <- c("left", "bottom", "right", "top")
+ggplotly(p)
 ```
 
-Ahora si, vamos por ese mapa base.
+Si todo salió bien, debería aparecer una visualización en pantalla muy similar al que hicimos con `ggplot2`... hasta que pasamos el puntero del mouse por encima. Ahí se hace evidente que esta versión es interactiva y permite, entre otras cosas:
 
-Lo descargamos entregando la bounding box del área que nos interesa (que ya hemos guardado en la variable "bbox") y un nivel de zoom. El nivel de zoom -un número de 1 a 20- indica el detalle que tendrá el mapa descargado. Para una ciudad, un zoom de entre 10 y 12 suele alcanzar.
+-   obtener un recuadro emergente (o *tooltip* en la jerga de interfaces gráficas) al deslizar el puntero del mouse sobre un punto, obteniendo el valor exacto que toman las variables visualizadas
+-   "arrastrar y soltar" con el mouse para definir un área sobre la cual hacer "zoom"
+-   cliquear en las categorías de la leyenda para "prender" o "apagar" los datos correspondientes
+-   seleccionar un subconjunto de los datos para resaltar (con los íconos del rectángulo y del lazo)
+-   guardar la visualización como imagen, incluyendo los ajustes que realizamos (con el ícono de la cámara)
+-   y unas cuantas opciones más a descubrir cliqueando aquí y allá
 
-```{r message=FALSE, warning=FALSE}
-mapa_CABA2 <- get_stadiamap(bbox, zoom = 10)
-```
+Por defecto, la "tooltip" muestra las variables que representan los atributos estéticos que asginamos al crear el *ggplot*, dentro de alguna llamada a `aes()` ("x", "y", "color", etc). para controlar cuales aparecen, podemos usar el parámetro "tooltip". Para que sólo se muestren PBI y expectativa de vida, que hemos asignado a $x$ e $y$, usaríamos `ggplotly(p, tooltip = c("x", "y"))`. Algo que suele ser útil es usar la *tooltip* para mostrar en el recuadro valores que no hemos representado visualmente, y así poder incluir información. Podríamos querer que se muestre el país que representa cada punto ya que es práctico poder indicar el país sólo para el punto que se elige, en lugar de llenar la pantalla con etiquetas mostrando los nombres de todos los países a la vez. Para eso "inventamos" un nombre de atributo estético, por ejemplo "para_plotly" y le asignamos la variable que se verá en la tooltip. `ggplot()` ignora los atributos estéticos que no conoce (no hace nada con ellos), pero `plotly()` los recibe y puede mostrar su valores en el recuadro emergente.
 
-Para ver el resultado usamos `ggmap()`, pasándole como parámetro el mapa que acabamos de descargar:
+Como siempre, un ejemplo va a hacerlos más claro:
+
+Asignamos la variable que queremos mostrar en la *tooltip* a un atributo estético ad-hoc, como "para_plotly":
 
 ```{r}
-ggmap(mapa_CABA)
+p <- ggplot(eph_rank_region_plotly,
+            aes(x = mediana_ingreso,
+                y = fct_reorder(nombre_region, mediana_ingreso),
+                text = paste0("Promedio IPCF: ", promedio_ingreso)
+            )) +
+  geom_segment(aes(x = 0,
+                   xend = mediana_ingreso,
+                   yend = fct_reorder(nombre_region, mediana_ingreso))) +
+  geom_point(size = 2) +
+  scale_x_continuous(labels = scales::comma) +
+  labs(title = "Mediana de ingreso por región – EPH 2025 T2",
+       subtitle = "Versión interactiva con ggplotly()",
+       x = "Mediana de ingreso (IPCF)",
+       y = "Región") +
+  theme_minimal()
 ```
 
-Pueden probar el resultado con niveles de zoom más bajos y más altos, pero cuidado al elegir un zoom elevado para un área grande... pueden tener que esperar un rato largo a que termine la descarga de los datos.
-
-Stamen ofrece varios estilos de mapa base, que pueden revisarse en su [sitio web](http://maps.stamen.com). Entre ellos:
-
--   `terrain` (usado por defecto)
--   `toner` (monocromático)
--   `toner_lite` (versión alternativa de toner, de menos contraste visual)
--   `watercolor` (hay que probarlo para apreciarlo, pero digamos que es artístico)
-
-Cuando descargamos un mapa que vamos a usar de base para visualizar datos siempre es una buena idea elegir una opción en escala de grises, sin colores que compitan contra los datos que proyectaremos.
-
-Probamos entonces descargar una monocromática, pasando una vez mas nuestra bbox y agregamdo el parámetro `maptype = "stamen_toner_lite"`:
-
-```{r message=FALSE, warning=FALSE}
-mapa_CABA_toner <- get_stadiamap(bbox, maptype = "stamen_toner_lite", zoom = 15)
-ggmap(mapa_CABA_toner)
-```
-
-Y por fin, para mostrar nuestros propios datos, como hicimos antes con ggplot... la verdad es que no hay mucho esfuerzo extra! Podemos usar casi el mismo código. Sólo necesitamos recordar dos cosas:
-
--   en vez de comenzar con `ggplot()`, comenzamos la visualización con `ggmap(mapa_CABA_toner)`
--   donde usamos `geom_sf()`, agregamos el parámetro `inherit.aes = FALSE`.
-
-El segundo punto es necesario por que `ggmap()` usa un sistema particular de coordenadas de referencia, que pueden causar problemas si son distintas a la de los datos geográficos que muestra `geom_sf()`. Al agregar ese parámetro, se le indica a `geom_sf()` que no intente usar ("heredar") las coordenadas de `ggmap()`, y listo.
-
-A intentarlo:
+Y pedimos a `plotly` que use el atributo para la tooltip:
 
 ```{r}
-ggmap(mapa_CABA_toner) +
-  geom_sf(data = subte_lineas, aes(color = LINEA), inherit.aes = FALSE) +
-  geom_sf(data = subte_estaciones, aes(color = LINEA), inherit.aes = FALSE) +
-  labs(title = "Sistema de transporte subterráneo (SUBTE)",
-       subtitle = "Ciudad Autónoma de Buenos Aires") +
-  theme_void() +
-  scale_color_manual(values = color_lineas)
+ggplotly(p, tooltip = "text") %>%
+  style(hovertemplate = "%{text}<extra></extra>")
 ```
 
-En esta ocasión no usamos la capa de radios, como si habíamos visualizado en el ejemplo con `ggplot`. ¿Porqué creen que fue? ¿Cómo mostrarían la capa de radios?
+Y del mismo modo podemos obtener versiones interactivas de los otros tipos de gráficos que sabemos hacer: de barras, boxplots, histogramas, de densidad... y cualquier otro que pueda realizarse con `ggplot()`.
 
-Y por último, pueden seguir ahondando en la producción de mapas con el capítulo ["Draw maps"](https://socviz.co/maps.html) en *Data Visualization - A practical introduction*.
+
+## Animando las cosas
+
+La animación es un recurso a veces complicado de implementar, pero muy poderoso para hacer que las datos "cuenten una historia". Es sin duda una forma poderosa de comunicar, por su capacidad de llamar la atención de la audiencia y con ello lograr que nos dediquen los siguientes momentos de su día.
+
+Si bien las herramientas para animar gráficos corresponden por tradición al mundo del arte más que del análisis de datos. La herramienta [gganimate](https://gganimate.com/) (que vimos en la clase 2) extiende la funcionalidad de `ggplot2` y nos permite tomar como base las visualizaciones que ya sabemos hacer, aplicando un conjunto de funciones especializadas para obtener versiones animadas.
+
+Es imposible mostrar en toda su variedad las formas en que podemos realizar animaciones, pero vamos a mostrar como emular un estilo bastante conocidos: la [*carrera de gráfico de barras*](https://builtin.com/data-science/bar-chart-races) que ya es una especie de género en si mismo, con sus detractores.
+
+### Una carrera de barras
+
+Continuamos con nuestra querida data de EPH. ¿Qué tal si mostramos el incremento de los ingresos individuales a través del tiempo? Lo haremos mediante una versión emulando la lógica de la carrera de barras entre regiones, observando cuáles alcanzan mayor nivel de ingresos en cada año registrado.
+
+Continuando con la estrategia establecida en este curso, aprovecharemos lo que ya sabemos hacer con `ggplot2`, y construiremos sobre eso.
+
+El primer ingrediente para la animación que tenemos en mente es un gráfico de barras. Para ello debemos tomar algunas decisiones de diseño:
+
+●	Para cada año mostraremos el promedio IPCF correspondiente al mismo trimestre, con un ranking de los puestos 1 al 7 en Argentina. Será necesario preparar los datos y crear una columna numérica denominada “ranking”.
+
+●	Para mejor legibilidad, haremos que las barras se dibujen en forma horizontal, tal como ya lo hemos practicado y como suele utilizarse en este tipo de gráficos.
+
+●	Agregaremos porcentajes y etiquetas al final de cada barra para reconocer la entidad que compite.
+
+
+El primer paso será transformar los datos. Para obtener una versión del conjunto que incluya las 6 regiones con el ingreso promedio para cada año (2016–2025, segundo trimestre), podemos utilizar las funciones del paquete `dplyr`:
+
+```{r}
+eph_rank_region_time <- eph_t2_min %>%
+  left_join(regiones_labels, by = "REGION") %>%   #unir etiquetas de región (definidas en los pasos anteriores)
+  filter(!is.na(IPCF),
+         IPCF > 0,
+         !is.na(nombre_region),
+         !is.na(PONDERA)) %>%
+  group_by(ANO4, nombre_region) %>% #promedio ponderado por AÑO × REGIÓN
+  summarise(promedio_ingreso = sum(IPCF * PONDERA) / sum(PONDERA),
+            n = n(),
+            .groups = "drop") %>%
+  group_by(ANO4) %>% #ranking dentro de cada año
+  mutate(p = promedio_ingreso / sum(promedio_ingreso),
+         ranking = min_rank(desc(promedio_ingreso))) %>%
+  ungroup()
+
+```
+
+Nos queda así:
+
+```{r}
+eph_rank_region_time
+```
+
+Ahora, a preparar el gráfico. Como insumo para la animación, necesitamos una visualización realizada con `ggplot()`. Hay infinidad de maneras de abordar el desafío; tantas como formas de mostrar ingresos, regiones y año. En esta ocasión haremos un "facetado" mostrando el ranking de población con facetas para cada año en el dataset:
+
+```{r}
+ggplot(eph_rank_region_time,
+       aes(x = promedio_ingreso,
+           y = fct_reorder(nombre_region, promedio_ingreso),
+           fill = nombre_region)) +
+  geom_col(show.legend = FALSE) +
+  geom_text(aes(label = scales::comma(promedio_ingreso)),
+            hjust = -0.05, size = 3) +
+  scale_x_continuous(labels = scales::comma,
+                     expand = expansion(mult = c(0, 0.15))) +
+  facet_wrap(vars(ANO4)) +
+  labs(title = "Ingreso promedio (IPCF) por región – EPH (T2)",
+       subtitle = "Ranking por año (2016–2025) facetado",
+       x = "Promedio IPCF (ponderado)",
+       y = "Región") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 0))
+```
+
+Una vez que quedó como lo queremos, la animación se resuelve reemplazando el `facet_wrap()` por una de las funciones de `gganimate` que animan transiciones. Hay varias para elegir, por ejemplo:
+
+-   `transition_states()`: Anima transiciones entre "estados" diferentes (por ejemplo, de "en proceso" a "despachado")
+-   `transition_time()`: Anima transiciones entre momentos en el tiempo
+-   `transition_layers()`: Anima un gráfico en "capas", de modo que vayan apareciendo en forma gradual
+
+Y varias más. Son difíciles de describir, así que no hay mejor modo de entender la diferencia entre los métodos de animación que probarlos. Un buen punto para empezar es el tutorial de ["primeros pasos"](https://gganimate.com/articles/gganimate.html) en el sitio oficial del paquete.
+
+Con la data que tenemos entre manos, queda claro que vamos a usar `transition_states()`, con la variable "año" dictando los distintos momentos a mostrar. Para que el título del gráfico muestre un texto distinto dependiendo del año en cada momento de la animación, usaremos un truco que aporta `gganimate`: Si en el texto asignado al título incluimos *{frame_time}*, ese indicador será reemplazado por el valor de la variable de tiempo según el punto de la animación.
+
+Veanse las dos últimas líneas, que contienen el código nuevo, y el resultado:
+
+```{r}
+library(gganimate)
+
+eph_anim1 <- ggplot(
+  eph_rank_region_time,
+  aes(
+    x = promedio_ingreso,
+    y = factor(ranking),         
+    fill = nombre_region,
+    group = nombre_region        
+  )
+) +
+  geom_col(show.legend = FALSE) +
+  scale_fill_viridis_d() +
+  scale_x_continuous(
+    labels = scales::comma,
+    expand = expansion(mult = c(0, 0.15))
+  ) +
+  scale_y_discrete(
+    name = "Región",
+    labels = function(r) {
+      eph_rank_region_time %>%
+        arrange(ANO4, ranking) %>%
+        pull(nombre_region) %>%
+        unique()
+    }
+  ) +
+  theme_minimal() +
+  transition_time(ANO4) +
+  labs(
+    title = "Año: {frame_time}",
+    subtitle = "Ingreso promedio por región – EPH (T2)",
+    x = "Promedio IPCF (ponderado)",
+    y = "Región"
+  )
+
+eph_anim1
+
+```
+
+Por último, un detalle más: vean que en la primera línea agregamos `aes(group = REGION)`. Esto sirve para que `gganimate` entienda que los valores de la esa variable representan a la misma entidad a lo largo de los años, haciendo que cuando un pais gana o pierde puestos esto se refleje en un desplazamiento de su barra. Para ver lo que pasaría si no agregáramos `aes(group = REGION)`, ejecuten el código borrando esa parte y revisen los resultados.
+
+
+Y lo guardamos en formato gif
+
+```{r}
+library(gifski)
+
+anim_save("eph_carrera_ingresos.gif",
+          animate(eph_anim1,
+                  renderer = gifski_renderer()))
+
+```
+
+Y con eso terminamos esta breve introducción a las visualizaciones animadas. Para continuar explorando las muchísimas opciones disponibles con `gganimate()` el mejor mejor recurso -al momento de escribir estas líneas- es el [sitio oficial del paquete](https://gganimate.com/).
+
+Para continuar aprendiendo sobre visualizaciones interactivas, se puede acceder en forma gratuita al contenido del libro [*Interactive web-based data visualization with R, plotly, and shiny*](https://plotly-r.com)" de Carson Sievert.
+
+¡Hasta la próxima clase!

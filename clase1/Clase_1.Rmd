@@ -1,0 +1,492 @@
+---
+title: "Clase 1. Fundamentos conceptuales de la visualización de datos"
+subtitle: Diplomatura en Ciencias Sociales Computacionales y Humanidades Digitales - UNSAM
+author: 
+  - Seminario de Visualización de datos en R
+  - Florencia Piñeyrúa y Nayla Sol Garcilazo
+
+output: 
+  html_document:
+    toc: TRUE
+    toc_float: TRUE
+    theme: journal
+---
+
+# Fundamentos conceptuales       
+
+¿Por qué es importante visualizar datos?
+
+●	Actividad central en la actividad científica o profesional
+
+●	Ayuda a comunicar ideas complejas
+
+●	Aproximadamente como el 80% de la información que recibimos la captamos por el sistema visual
+
+![](./img/1.png){width="50%"}
+
+
+<br>
+
+## ¿Qué es un mal gráfico?
+<p style="font-size: 22px;"><b>MALOS DATOS</b></p>
+
+Un gráfico puede ser más persuasivo que una tabla, pero también más peligroso si está mal hecho. Visualizar es un acto de poder, podemos iluminar patrones o podemos distorsionarlos. 
+
+
+<br>
+
+
+![](./img/2.png){width="50%"}
+
+<br>
+
+![](./img/3.png){width="50%"}
+
+<br>
+
+![](./img/4.png){width="50%"}
+
+<br>
+
+![](./img/5.png){width="50%"}
+
+<br>
+
+## ¿Qué es un mal gráfico?
+<p style="font-size: 22px;"><b>MAL GUSTO</b></p>
+
+Cuando el diseño visual termina ocultando o distrayendo de lo importante. El mal gusto en los gráficos no es un problema de diseño superficial, sino que puede hacer que la gente malinterprete los datos.
+
+
+<br>
+
+> "Above all else show the data" - Edward Tufte
+
+Edward Tufte, uno de los grandes referentes en teoría de la visualización, defiende el minimalismo gráfico. 
+Su planteo es simple: cuanta menos tinta no informativa haya en un gráfico, mejor.
+
+
+Tufte llamó _chart junk_ o _basura gráfica_ a todos los elementos visuales que no aportan información:
+
+●	Rejillas excesivas.
+
+●	Sombras en 3D.
+
+●	Perspectivas que deforman proporciones.
+
+![](./img/6.png)
+
+<br>
+
+¿Qué aporta el mapa?
+
+![](./img/7.png){width="40%"}
+
+<br>
+
+¿Cuánto tardan en entender qué país está peor en este gráfico?
+
+![](./img/8.png){width="50%"}
+<br>
+
+## Data-ink ratio 
+
+Un buen gráfico maximiza la tinta dedicada a la información y minimiza la tinta desperdiciada en adornos.
+
+Tufte propusó la métrica _Data-ink ratio_ para cuantificar la proporción de la tinta que efectivamente muestra datos.
+
+![](./img/9.png){width="30%"}
+
+<br>
+
+
+¿Qué elementos podría borrar sin perder información?
+
+El objetivo es quedarnos con la mínima cantidad de elementos que transmitan los datos de forma clara. Si puedo quitar una línea, una sombra, un ícono o un mapa sin que cambie el mensaje, entonces sobra.
+
+
+![](./img/10.png)
+
+<br>
+
+Lo estético (a veces) puede ser un obstáculo para la percepción
+
+![](./img/11.png){width="50%"}
+
+<br>
+
+Cuando tenemos distintas variantes gráficas (boxplots, violin plots, etc.), ¿qué elegiría Tufte?
+
+![](./img/12.png){width="50%"}
+<br>
+
+No es un problema solo estético: la forma puede alterar la interpretación.
+
+![](./img/13.png){width="50%"}
+
+<br>
+![](./img/14.png){width="50%"}
+
+<br>
+
+## ¿Qué es un mal gráfico?
+<p style="font-size: 22px;"><b>MALA PERCEPCIÓN</b></p>
+
+Un gráfico representa visualmente la distribución de una variable a través de ciertos canales, como ser la forma, color, tamaño, transparencia, posición, etc. En otras palabras: en los datos se codifican en un gráfico a través de estos canales que se expresan en objetos visuales. El problema es que nuestro sistema visual no siempre interpreta esos canales de manera fiel: podemos caer en ilusiones visuales.
+
+<br>
+
+![](./img/15.png)
+
+<br>
+
+El tablero de Adelson
+
+![](./img/16.png)
+
+<br>
+
+Los bordes y contrastes son más efectivos para transmitir estructura que el color puro. 
+En visualización, muchas veces la posición y forma comunican mejor que el color.
+
+![](./img/17.png)
+
+<br>
+
+Algunos objetos gráficos son más visibles en nuestro campo visual que otros, independientemente de su valor real.
+
+![](./img/18.png)
+
+<br>
+
+## Búsqueda visual y efectividad de los canales
+
+![](./img/19.png)
+
+<br>
+![](./img/20.png)
+
+<br>
+![](./img/21.png)
+
+
+<br>
+
+![](./img/22.png)
+
+<br>
+![](./img/23.png)
+<br>
+![](./img/24.png)
+
+<br>
+
+En términos generales:
+
+●	El canal color parece ser el más efectivo cuando necesitamos resaltar un elemento en un conjunto grande.
+
+●	La forma es menos eficiente cuando la cantidad de elementos aumenta.
+
+●	La combinación de color y forma puede reforzar la visibilidad, pero a veces un solo canal bien elegido es suficiente.
+
+<br>
+
+## Búsqueda visual y sobrecarga de canales
+
+La percepción humana tiene un límite: demasiados canales simultáneos saturan la capacidad de lectura.
+
+![](./img/25.png)
+<br>
+Cuando reducimos la cantidad de canales, el patrón se vuelve más legible.
+![](./img/26.png)
+
+<br>
+
+## Percepción de patrones y aleatoriedad
+
+¿Cuál de las dos distribuciones es más aleatoria?
+![](./img/27.png)
+<br>
+
+## Las reglas Gestalt 
+
+●	_Proximidad_: objetos que están cerca entre sí son percibidos como relacionados.
+
+●	_Similaridad_: objetos parecidos (color, forma, tamaño) son agrupados en la percepción.
+
+●	_Conexión_: cuando los objetos están unidos visualmente (por una línea o un marco) los percibimos como parte de un mismo conjunto.
+
+●	_Continuidad_: completamos líneas u objetos parcialmente ocultos siguiendo patrones familiares.
+
+●	_Cierre_: tendemos a “cerrar” mentalmente las formas incompletas.
+
+●	_Figura y fondo_: diferenciamos lo que está en primer plano de lo que queda en el fondo.
+
+●	_Destino común_: cuando varios elementos se mueven en la misma dirección, los percibimos como una unidad.
+<br>
+
+
+
+Principios de proximidad y similaridad
+![](./img/28.png)
+
+<br>
+
+
+Principios de continuidad, conexión y cierre
+
+![](./img/29.png)
+<br>
+
+## Decodificando gráficos
+
+¿Cómo interpretamos y analizamos los gráficos?
+
+<br>
+
+Tendemos a interpretar
+Mejor: (1)	datos en una misma escala, ó (2) con una escala de referencia clara.
+Peor: cuando la comparación se da en ángulos (ejemplo: gráficos de torta).
+Mucho peor: cuando la comparación se da en áreas o volúmenes (ejemplo: burbujas o cuadrados).
+
+![](./img/47.png){width="50%"}
+
+
+
+![](./img/30.png){width="50%"}
+<br>
+
+No es lo mismo usar posición que longitud, ángulo o área. 
+
+Cleveland & McGill muestran que:
+
+●	La posición relativa de elementos alineados en una escala común es lo más preciso.
+
+●	Luego sigue la posición relativa de elementos no alineados en la misma escala (más difícil, pero aún aceptable).
+
+![](./img/31.png){width="50%"}
+<br>
+
+
+Tendemos a sobreestimar las diferencias cuando los datos están representados como áreas.
+
+![](./img/32.png){width="50%"}
+
+<br>
+
+## Problemas en la decodificación de pendientes en rectas o curvas
+
+Una misma función puede parecer más empinada o más plana según cómo ajustemos la escala de los ejes. De esta forma, se dificulta captar el cambio real, porque depende de la relación entre los ejes.
+
+
+![](./img/33.png){width="50%"}
+<br>
+
+
+## Canales para representar datos ordenados o cuantitativos
+
+●	Posición en una escala común → el canal más preciso.
+
+●	Posición en escalas no alineadas.
+
+●	Longitud de un objeto.
+
+●	Ángulo o inclinación.
+
+●	Área (2D) y Volumen (3D) → menos precisos, tienden a distorsionar.
+
+●	Brillo / luminancia y saturación de color → útiles, pero con menor exactitud.
+
+●	Curvatura o profundidad (3D) → se deben usar con cuidado.
+
+![](./img/34.png){width="40%"}
+<br>
+
+
+## Canales para representar datos cualitativos
+
+La clave es que los canales seleccionados permitan distinguir clases de manera clara y sin ambigüedad.
+
+Canales más efectivos:
+
+●	Posición en el espacio → separar categorías en distintos lugares.
+
+●	Tono de color (hue) → colores distintos para diferenciar clases.
+
+●	Movimiento → menos común en gráficos estáticos, pero muy útil en visualizaciones interactivas o animadas.
+
+●	Forma → círculos, cuadrados, triángulos, etc.
+
+
+![](./img/35.png){width="50%"}
+
+<br>
+
+●	El gráfico de barras enfatiza “masas” y magnitudes absolutas.
+
+●	El gráfico de puntos facilita la comparación relativa entre categorías.
+
+![](./img/36.png){width="50%"}
+
+<br>
+
+## Series temporales 
+
+![](./img/37.png){width="50%"}
+
+<br>
+
+# Gramática de los gráficos
+
+¿Qué es un gráfico? ¿Cómo podemos describirlo de manera simple sin perdernos en tecnicismos? ¿Cómo podemos crearlo?
+
+
+![](./img/38.png){width="50%"}
+
+<br>
+
+Wickham toma la propuesta de Wilkinson y la implementa en ggplot2 (libreria de R), con un enfoque en capas (layered grammar).
+
+![](./img/39.png){width="40%"}
+
+<br>
+![](./img/40.png){width="30%"}
+
+<br>
+![](./img/41.png){width="50%"}
+
+<br>
+
+
+
+
+Objetos producidos
+
+
+![](./img/42.png){width="50%"}
+
+<br>
+
+
+Composición completa de los objetos en un gráfico coherente
+
+![](./img/44.png){width="40%"}
+
+<br>
+
+![](./img/45.png){width="50%"}
+
+<br>
+
+![](./img/43.png){width="50%"}
+
+<br>
+
+# Uso básico de `ggplot`
+
+El paquete de R [**ggplot2**](https://ggplot2.tidyverse.org/) implementa un marco teórico para la creación de visualizaciones, ["la gramática de los gráficos"](https://www.slideshare.net/0xdata/leland-wilkinson-h2oai-the-grammar-of-graphics-and-the-future-of-big-data-visualization-h2o-world-2019-nyc), que permite expresar en forma concisa los componentes de un gráfico:
+
+
+Este paquete incluye funciones para realizar una gran variedad de visualizaciones.
+
+```{r , echo = TRUE, eval = FALSE}
+# cargar la librería que vamos a usar
+library(ggplot2)
+```
+
+Los elementos necesiarios para representar un gráfico en ggplot2 son:
+
+1. Un data frame que contiene los datos que se quieren visualizar.
+
+2. Los atributos estéticos (*aesthetics* en inglés) que especifica las relaciones entre variables y los atributos estéticos con los cuales se representar sus valores (como el color, el tamaño, la transparencia, la forma la línea, entre otros).
+
+3. Los geoms que especifican los elementos geométricos, es decir, la geométria del gráfico (puntos, líneas y/o círculos).
+
+![](./img/46.png){width="50%"}
+
+El data set con el que practicaremos contiene la temperatura promedio para cada día del 2020 en la ciudad de Beirut, Líbano:
+
+```{r, include=FALSE}
+library(tidyverse)
+library(ggplot2)
+
+# Datos de temperatura, cortesía de https://www.kaggle.com/sudalairajkumar/daily-temperature-of-major-cities
+temps <- readr::read_csv("./data/city_temperature.csv")
+
+temps_beirut <- temps %>% 
+  filter(City == "Beirut")
+```
+
+```{r}
+temps_beirut
+```
+
+Si le pasamos un dataframe a `ggplot()`, sin agregar nada más, obtenemos un gráfico vacío:
+
+```{r}
+ggplot(temps_beirut)
+```
+
+¡Vendría a ser una especie de lienzo en blanco!
+
+Esto es porque necesitamos definir al menos una geometría (el recurso visual con el que vamos a mostrar la información, como ser un gráfico de líneas, puntos, barras) y una asignación estética (una lista de relaciones entre las variables del data frame y determinados aspectos del gráfico, por ejemplo coordenadas x e y, formas o colores).
+
+
+¿Cómo funciona ésto en la práctica? 
+
+El caso de uso más simple de ggplot consiste en:
+-   una llamada a la función `ggplot()`, pasándole un dataset y una "asignación de atributos estéticos" (*aesthetic mapping* en inglés) usando `aes()`
+-   al menos una capa "geom", que define el recurso gráfico que mostrará los datos; por ejemplo `geom_line()` para dibujar líneas o `geom_point()` para dibujar puntos.
+
+A intentarlo. Asignemos la columna `day_of_year` a la posición en el eje de las $x$, la columna `temperature` a las $y$, y usemos `geom_line()` para mostrar los datos.
+
+```{r}
+temps_beirut_2020 <- temps_beirut %>%
+  filter(Year == 2020)
+
+ggplot(temps_beirut_2020, aes(x = day_of_year, y = AvgTemperature)) +
+  geom_line()
+```
+
+Ahora otra vez, pero usando `geom_point()` en vez de `geom_line()`.
+
+```{r}
+ggplot(temps_beirut_2020, aes(x = day_of_year, y = AvgTemperature)) +
+  geom_point()
+```
+
+Y ahora intercambiemos las columnas que antes asignamos a las $x$ y a las $y$:
+
+```{r}
+ggplot(temps_beirut_2020, aes(x = AvgTemperature, y = day_of_year)) +
+  geom_point()
+```
+
+## Incorporando colores a las visualizaciones
+
+Ahora vamos a trabajar con el dataset `temps` que es similar a `temps_beirut`, pero contiene registros para todo el mundo:
+
+```{r}
+temps
+```
+
+Primero seleccionemos tres ciudades para el año 2020 (último dato disponible). Luego, hagamos un gráfico de líneas mostrando `AvgTemperature` para cada `day_of_year`, usando el atributo estético *color* para diferencias las líneas según la ciudad que representan.
+
+```{r}
+temps_filtrado <- temps %>%
+  filter(City %in% c("Barcelona", "Buenos Aires", "Beirut")) %>%
+  filter(Year == 2020)
+
+ggplot(temps_filtrado, aes(x = day_of_year, y = AvgTemperature, color = City)) +
+  geom_line()
+```
+
+Vamos de nuevo, esta vez usando `City` como variable en el eje $y$, y `AvgTemperature` a representar con color. Este gráfico queda mejor usando `geom_point()`.
+
+```{r}
+ggplot(temps_filtrado, aes(x = day_of_year, y = City, color = AvgTemperature)) +
+  geom_point()
+```
+
+En estos dos ejemplos utilizamos el color como atributo estético para mostrar información. Sin embargo, lo estamos haciendo de dos formas muy distintas. En el gráfico de líneas, usamos el color como una herramienta para *distinguir* variables categóricas. 
+Mientras que en el gráfico de puntos, lo usamos para representar una escala secuencial de valores. Dicha escala permite indicar de manera clara qué valores son más grandes que otros, y qué tan distantes son los valores entre sí.

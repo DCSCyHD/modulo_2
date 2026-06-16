@@ -1,40 +1,110 @@
 ---
-title: "R Notebook"
-output: html_notebook
+title: "Práctico de la clase 3 - Visualizando colores, cantidades, proporciones y distribuciones"
+author: 
+  - Diplomatura en Ciencias Sociales Computacionales
+  - Seminario de Visualización de datos en R
+  - Florencia Piñeyrúa y Nayla Sol Garcilazo
+date: '2026-01-05'
+output: html_document
 ---
+
 ## Práctico 3
 
 Usando *ggplot2*, Vamos a explorar un set de datos para indagar sobre cantidades, proporciones y distribuciones. Como lo venimos haciendo, te dejamos un dataset con el que podés trabajar el ejercicio, pero si querés usar uno de tu interés particular lo podés hacer. 
 
-En esta ocasión vamos a trabajar con una versión "recortada" de la EPH individual del primer trimestre de 2019. Esta está guaradada en la carpeta `data` con el nombre `eph_2019_limpia.rda`. 
 
-Primero, importá las liberías `ggplot` y `dplyr`. Luego importá la base. 
+En esta ocasión vamos a trabajar con la EPH individual. Podemos descargar las bases desde la página https://www.indec.gob.ar/indec/web/Institucional-Indec-BasesDeDatos-1
 
-```{r}
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+
+#Paquetes
+
+req <- c("eph","tidyverse","survey","dplyr","stringr","srvyr","janitor","lubridate","glue","ggplot2","scales","forcats")
+if (is.null(getOption("repos")) || getOption("repos")["CRAN"] %in% c("@CRAN@", "", NA)) {
+  options(repos = c(CRAN = "https://cloud.r-project.org"))
+}
+for (pkg in req) {
+  if (!requireNamespace(pkg, quietly = TRUE)) {
+    install.packages(pkg, dependencies = TRUE)
+  }
+  suppressPackageStartupMessages(library(pkg, character.only = TRUE))
+}
 ```
 
+La función eph::get_microdata baja y armoniza las bases de INDEC.
+Los nombres de variables suelen estar armonizados (p.ej., ESTADO, CH04, CH06, PONDIIO, AGLOMERADO/NOMAGLO).
+
+En los parámetros pudes elegir:
+1) seleccionar un año o varios años como vector, por ejemplo c(2022, 2023,2024,2025)
+2) La EPH se divide en 4 trimestres, se pueden seleccionar uno o varios, usando 1:4
+3) Hay dos tipos de cuestionarios "individual" o "hogar"
+
+```{r}
+df_raw <- eph::get_microdata(year = 2025, trimester = 2, type = "individual")
+names(df_raw)    # ver todas las variables
+str(df_raw)      # estructura completa
+```
+
+
+```{r}
+library(tidyverse)
+library(scales)
+library(forcats)
+library(viridis)
+
+df <- df_raw %>%   # Filtramos menores de 10 como pide el enunciado
+  filter(CH06 >= 10) %>%
+  mutate(
+    sexo = case_when(
+      CH04 == 1 ~ "Varón",
+      CH04 == 2 ~ "Mujer",
+      TRUE ~ NA_character_
+    ),
+    # Etiquetas típicas de ESTADO (pueden variar según armonización, por eso lo hago robusto)
+    estado_ocup = case_when(
+      ESTADO == 1 ~ "Ocupado/a",
+      ESTADO == 2 ~ "Desocupado/a",
+      ESTADO == 3 ~ "Inactivo/a",
+      TRUE ~ "Otro/NS"
+    ),
+    region = as.factor(REGION)
+  ) %>%
+  filter(!is.na(sexo), !is.na(estado_ocup))
+
+```
 
 ## Ejercicio 1
 
-¿Cómo se distribuyen los estados ocupacionales por género? Realizá un gráfico de barras, utilizá colores y funciones necesarias para formatear los datos logrando su correcta visualización. Tené en cuenta que hay que filtrar aquellos casos que no corresponden (los menores de 10 años).
+¿Cómo se distribuyen los géneros entre los estados ocupacionales? Realizá un gráfico de barras, utilizá colores y funciones necesarias para formatear los datos logrando su correcta visualización. 
+
+Tené en cuenta que hay que filtrar aquellos casos que no corresponden (los menores de 10 años).
 
 ```{r}
 
 ```
+
+¿Qué participación tienen las mujeres y los varones para cada tipo de ocupación ?
+
+```{r}
+```
+
 
 ## Ejercicio 2
 
-Mostrá en un gráfico la distribución de probabilidad de la variable ingresos de asalariados (PP08D1) según región. De nuevo, tené en cuenta con filtrar aquellos casos que no corresponden (los no-asalariados).
+Mostrá en un gráfico la distribución de probabilidad de la variable ingresos de asalariados (PP08D1) según región. 
+
+De nuevo, tené en cuenta con filtrar aquellos casos que no corresponden (los no-asalariados).
 
 ```{r}
 
 ```
-
 
 
 ## Ejercicio 3
 
-Escapando a las barras: utilizá un boxplot para describir la relación entre el nivel de ingresos de los asalariados por región y sexo. Describí estas relaciones.
+Escapando a las barras: utilizá un boxplot para describir la relación entre el nivel de ingresos de los asalariados por región y sexo. 
 
 ```{r}
 
@@ -43,11 +113,4 @@ Escapando a las barras: utilizá un boxplot para describir la relación entre el
 
 
 
-## Ejercicio 4
-
-Experimentá con otros recursos: “treemaps”, “enjambres de abejas”, gráficos de waffle, gráficos de violín, “ridgeline plots”, mapas de calor o el recurso que consideres aporta insights de interés sobre nuestro conjunto de datos. 
-
-```{r}
-
-```
 

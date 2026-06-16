@@ -1,0 +1,42 @@
+---
+title: "Guía api key Stadia-maps"
+subtitle: Diplomatura en Ciencias Sociales Computacionales y Humanidades Digitales - UNSAM
+author: 
+  - Seminario de Visualización de datos en R
+  - Florencia Piñeyrúa y Nayla Sol Garcilazo
+
+output: 
+  html_document:
+    toc: TRUE
+    toc_float: TRUE
+    theme: journal
+---
+
+## Obteniendo cartografía de internet - StadiaMaps
+
+Para utilizar StadiaMaps, necesitamos crear una api key (una llave que funciona como código identificador personal).
+
+### Paso 1:
+Ingresar en el site [Stadia Maps](https://client.stadiamaps.com/accounts/login/?next=/dashboard/)
+, crear usuario (en caso de no tenerlo previamente) e iniciar sesión
+
+### Paso 2:
+Crear una property indicando el nombre en el recuadro _Property Name_ + _Create_  
+![](./img/Api key 1.png)
+
+### Paso 3:
+Añadir API Key mediante el botón _Add API Key_
+![](./img/Api key 3.png)
+
+### Paso 4:
+Copiar API Key generada
+![](./img/Api key 4.png)
+
+### Paso 5:
+Incorporar API Key en el código (entre " ")
+```{r eval = FALSE}
+register_stadiamaps(key = "XXXXXXXXXXXXXXXXXXXXXXXXXX")
+```
+
+¡Recuerden que cada API Key es de uso personal y cada usuario tiene una cantidad limitada de usos!
+

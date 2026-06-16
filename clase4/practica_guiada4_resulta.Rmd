@@ -1,0 +1,158 @@
+---
+title: "Práctico clase 4 - Escapando de las barras con interactividad y animación"
+author: 
+  - Diplomatura en Ciencias Sociales Computacionales
+  - Seminario de Visualización de datos en R
+  -  Florencia Piñeyrúa y Nayla Sol Garcilazo
+date: '2026-01-6'
+output: html_document
+---
+
+Carguemos las librerías con la que vamos a trabajar 
+
+```{r}
+library(readr)
+library(dplyr)
+library(ggplot2)
+library(forcats)
+library(scales)
+library(tidyr)
+library(treemapify)
+library(viridis)
+library(ggbeeswarm)
+```
+
+Carguemos los datos *menstru_full.csv* 
+
+```{r}
+menstru_full <- read_csv("data/menstru_full.csv")
+colnames(df)
+```
+
+
+## Ejercicio 1
+
+Construí un ranking de provincias según la mediana del precio_unitad para una categoría a elección (por ejemplo, "toallitas" o "tampones"), usando un dotplot y/o lollipop chart (segmento + punto). Para ellos, filtrá por un año (por ejemplo anio == 2025) y por una categoría; ordená las provincias de menor a mayor por la mediana y formatea el eje de precios con separador de miles.
+
+```{r}
+anio_elegido <- 2024
+cat_elegida <- "toallitas"
+rank_prov <- menstru_full %>%
+  filter(anio == anio_elegido, categoria == cat_elegida) %>%
+  group_by(provincia) %>%
+  summarise(mediana_precio = median(precio_unidad, na.rm = TRUE),
+            n = n(),
+            .groups = "drop")
+
+```
+
+```{r}
+ggplot(rank_prov,
+       aes(x = mediana_precio,
+           y = fct_reorder(provincia, mediana_precio))) +
+  geom_point(size = 2) +
+  scale_x_continuous(labels = scales::comma) +
+  labs(title = paste0("Ranking de provincias por mediana de precio unitario (", cat_elegida, ")"),
+       subtitle = paste0("Año = ", anio_elegido, " | Dotplot"),
+       x = "Mediana de precio unitario",
+       y = "Provincia") +
+  theme_minimal()
+```
+
+```{r}
+ggplot(rank_prov,
+       aes(x = mediana_precio,
+           y = fct_reorder(provincia, mediana_precio))) +
+  geom_segment(aes(x = 0,
+                   xend = mediana_precio,
+                   yend = fct_reorder(provincia, mediana_precio))) +
+  geom_point(size = 2) +
+  scale_x_continuous(labels = scales::comma,
+                     expand = expansion(mult = c(0, 0.10))) +
+  labs(title = paste0("Ranking de provincias por mediana de precio unitario (", cat_elegida, ")"),
+       subtitle = paste0("Año = ", anio_elegido, " | Lollipop chart"),
+       x = "Mediana de precio unitario",
+       y = "Provincia") +
+  theme_minimal()
+
+
+```
+
+
+
+## Ejercicio 2
+Mostrá la composición del total de registros según categoria (o marca) para un año a elección usando Treemap o Waffle.
+
+```{r}
+variable_comp <- "categoria" 
+comp <- menstru_full %>%
+filter(anio == anio_elegido) %>%
+count(.data[[variable_comp]], name = "n") %>%
+mutate(p = n / sum(n)) %>%
+arrange(desc(n))
+
+ggplot(comp,
+       aes(
+         area  = n,
+         fill  = .data[[variable_comp]],
+         label = paste0(
+           .data[[variable_comp]],
+           "\n",
+           percent(p, accuracy = 1)
+         )
+       )) +
+  geom_treemap() +
+  geom_treemap_text(colour = "white",
+                    place = "centre",
+                    grow  = TRUE,
+                    reflow = TRUE) +
+  scale_fill_viridis_d(guide = "none") +
+  labs(title = paste0("Composición por ", variable_comp, " – ", anio_elegido)) +
+  theme_minimal()
+
+```
+
+
+```{r}
+waffle <- comp %>%
+  mutate(porc = round(100 * p)) %>%
+  mutate(porc = ifelse(row_number() == n(), 100 - sum(porc[-n()]), porc)) %>%
+  tidyr::uncount(porc) %>%
+  mutate(id = row_number() - 1,
+         fila = id %/% 10,
+         col = id %% 10)
+
+ggplot(waffle, aes(x = col, y = fila, fill = .data[[variable_comp]])) +
+  geom_tile(color = "white", linewidth = 0.3) +
+  scale_fill_viridis_d(name = variable_comp) +
+  scale_y_reverse() +
+  coord_equal() +
+  labs(title = paste0("Composición de registros por ", variable_comp, " – ", anio_elegido),
+       subtitle = "Waffle: cada cuadrado ≈ 1%") +
+  theme_void() +
+  theme(legend.position = "bottom")
+```
+
+
+## Ejercicio 3
+Mostrá la distribución de precio_unidad por region con enjambre (geom_quasirandom).
+```{r}
+cat_elegido <- "tampones"  
+ggplot(menstru_full %>%
+         filter(anio == anio_elegido,
+                categoria == cat_elegida,
+                precio_unidad > 0),
+       aes(x = precio_unidad,
+           y = region)) +
+  geom_quasirandom(alpha = 0.35, size = 0.9, show.legend = FALSE) +
+  scale_x_continuous(labels = comma, name = "Precio por unidad") +
+  scale_y_discrete(name = "Región") +
+  labs(title = "Distribución de precio_unidad por región – enjambre",
+       subtitle = paste0("Categoría: ", cat_elegido, " | Año: ", anio_elegido),
+       ) caption = "Quasirandom = todas las observaciones (muestra outliers y dispersión)"+
+  theme_minimal()
+
+
+```
+
+

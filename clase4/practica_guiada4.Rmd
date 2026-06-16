@@ -1,0 +1,67 @@
+---
+title: "Clase 4 - Práctico. Escapando de las barras con interactividad y animación"
+subtitle: Diplomatura en Ciencias Sociales Computacionales y Humanidades Digitales - UNSAM
+author: 
+  - Seminario de Visualización de datos en R
+  - Florencia Piñeyrúa y Nayla Sol Garcilazo
+
+output: 
+  html_document:
+    toc: TRUE
+    toc_float: TRUE
+    theme: journal
+---
+
+
+Carguemos primero las librerías con la que vamos a trabajar 
+
+```{r}
+
+```
+
+
+Carguemos los datos *menstru_full.csv* 
+
+```{r}
+df <- read_csv("data/menstru_full.csv")
+colnames(df)
+```
+
+## Ejercicio 1
+
+Construí un ranking de provincias según la mediana del precio_unitad para una categoría a elección (por ejemplo, "toallitas" o "tampones"), usando un dotplot o lollipop chart (segmento + punto). Para ellos, filtrá por un año (por ejemplo anio == 2025) y por una categoría; ordená las provincias de menor a mayor por la mediana y formatea el eje de precios con separador de miles.
+
+```{r}
+
+```
+
+## Ejercicio 2
+Mostrá la composición del total de registros según categoria (o marca) para un año a elección usando Treemap o Waffle.
+
+```{r}
+
+```
+
+## Ejercicio 3
+Compará la distribución de precio_unidad por region para una categoria a elección, con violin plot.
+```{r}
+
+```
+
+## Ejercicio 4
+Mostrá la distribución de precio_unidad por region con enjambre (geom_quasirandom).
+```{r}
+
+```
+
+## Ejercicio 5
+Convertí a interactivo (con ggplotly) un gráfico que ya hayas hecho en los ejercicios previos.
+```{r}
+
+```
+
+## Ejercicio 5
+Hacé una animación temporal (por año) del ranking por region (o por provincia) usando transition_time(año).
+```{r}
+
+```

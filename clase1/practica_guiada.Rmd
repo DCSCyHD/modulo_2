@@ -1,15 +1,22 @@
 ---
-title: "Práctico clase 1"
-author: "Diplomatura CSSyHD"
-date: '2022-08-16'
-output: html_document
+title: "Clase 1 - Práctico. Fundamentos conceptuales de la visualización de datos"
+subtitle: Diplomatura en Ciencias Sociales Computacionales y Humanidades Digitales - UNSAM
+author: 
+  - Seminario de Visualización de datos en R
+  - Florencia Piñeyrúa y Nayla Sol Garcilazo
+
+output: 
+  html_document:
+    toc: TRUE
+    toc_float: TRUE
+    theme: journal
 ---
+
 
 Carguemos primero las librerías con la que vamos a trabajar (`ggplot2` y `tidyverse`)
 
 ```{r}
 library(tidyverse)
-library(ggplot2)
 ```
 
 Investigá el dataset *menstru_full.csv* que está en la carpeta data. ¿Cuáles son sus columnas? 
@@ -34,37 +41,19 @@ Utilizando las herramientas aprendidas en el M1 (tidyverse) y las vistas en la c
 1. La evolución de precios medios unitarios de los productos menstruales, en general. 
 
 ```{r}
-precio_medio_anual <- menstru_full %>% 
-  group_by(anio) %>% 
-  summarise(precio_medio= mean(precio_unidad), na.rm = TRUE)
-
-ggplot(precio_medio_anual, aes(x = anio, y = precio_medio)) +
-  geom_line()
 
 ```
 
 
-2. La evolución de precios medios distinguiendo toallitas y tampones.
+2. La evolución de precios distinguiendo toallitas y tampones.
 
 ```{r}
-precio_medio_anual <- menstru_full %>% 
-  group_by(anio, Categoría) %>% 
-  summarise(precio_medio= mean(precio_unidad), na.rm = TRUE)
 
-ggplot(precio_medio_anual, aes(x = anio, y = precio_medio, color = Categoría)) +
-  geom_line() + 
-  geom_point() 
 ```
 
-3. La evolución de precios por región. 
+3. La evolución de preicos por región. 
 
 ```{r}
-precio_medio_anual <- menstru_full %>% 
-  group_by(anio, Region) %>% 
-  summarise(precio_medio= mean(precio_unidad), na.rm = TRUE)
 
-ggplot(precio_medio_anual, aes(x = anio, y = precio_medio, color = Region)) +
-  geom_line() + 
-  geom_point()
 ```
 

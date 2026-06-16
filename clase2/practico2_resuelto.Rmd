@@ -1,6 +1,11 @@
 ---
-title: "R Notebook"
-output: html_notebook
+title: "Resuleto - Práctico clase 2 - Puliendo gráficos para publicar"
+author: 
+  - Diplomatura en Ciencias Sociales Computacionales
+  - Seminario de Visualización de datos en R
+  - Florencia Piñeyrúa y Nayla Sol Garcilazo
+date: '2026-01-05'
+output: html_document
 ---
 ## Práctico 2
 
@@ -12,7 +17,7 @@ Primero, importamos las librerías `ggplot` y `dplyr`. También, vamos a leer el
 library(ggplot2)
 library(tidyverse)
 
-df <- read_csv("./data/clean_gapminder.csv")
+df <- read_csv("./data/clean_gapminder_practico.csv")
 ```
 
 
