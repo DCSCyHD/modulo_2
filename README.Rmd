@@ -2,7 +2,7 @@
 title: "Módulo II"
 author: "Diplomatura en Cs. Sociales Computacionales y Humanidades Digitales"
 output:
-  md_document:
+  html_document:
     variant: markdown_github
 ---
 # Módulo II
@@ -104,4 +104,4 @@ La clase cierra con una introducción a mapas interactivos mediante leaflet. Se 
 
 - [Introduction to Modern Statistics](https://openintro-ims.netlify.app/) Este manual no forma parte del contenido de la diplomatura, pero recomendamos su lectura para quienes necesiten acompañamiento en nociones de estadística.
 
-- Cleveland, William S., & McGill, Robert. 1984. “Graphical Perception: Theory, Experimentation, and Application to the Development of Graphical Methods.” Journal of the American Statistical Association, 79(387), 531–554.
+- [Cleveland, William S., & McGill, Robert. 1984. “Graphical Perception: Theory, Experimentation, and Application to the Development of Graphical Methods.” Journal of the American Statistical Association, 79(387), 531–554.](https://faculty.washington.edu/aragon/classes/hcde511/s12/readings/cleveland84.pdf)

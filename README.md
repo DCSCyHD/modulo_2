@@ -221,7 +221,8 @@ comunicacional.
   parte del contenido de la diplomatura, pero recomendamos su lectura
   para quienes necesiten acompañamiento en nociones de estadística.
 
-- Cleveland, William S., & McGill, Robert. 1984. “Graphical Perception:
+- [Cleveland, William S., & McGill, Robert. 1984. “Graphical Perception:
   Theory, Experimentation, and Application to the Development of
   Graphical Methods.” Journal of the American Statistical Association,
-  79(387), 531–554.
+  79(387),
+  531–554.](https://faculty.washington.edu/aragon/classes/hcde511/s12/readings/cleveland84.pdf)
