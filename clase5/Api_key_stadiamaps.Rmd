@@ -22,15 +22,15 @@ Ingresar en el site [Stadia Maps](https://client.stadiamaps.com/accounts/login/?
 
 ### Paso 2:
 Crear una property indicando el nombre en el recuadro _Property Name_ + _Create_  
-![](./img/Api key 1.png)
+![](../img/Api key 1.jpeg)
 
 ### Paso 3:
 Añadir API Key mediante el botón _Add API Key_
-![](./img/Api key 3.png)
+![](../img/Api key 2.jpeg)
 
 ### Paso 4:
 Copiar API Key generada
-![](./img/Api key 4.png)
+![](../img/Api key 3.jpeg)
 
 ### Paso 5:
 Incorporar API Key en el código (entre " ")
