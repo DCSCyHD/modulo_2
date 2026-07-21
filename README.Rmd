@@ -5,7 +5,6 @@ output:
   html_document:
     variant: markdown_github
 ---
-# Módulo II
 ##### Escuela Interdisciplinaria de Altos Estudios Sociales
 ##### Universidad Nacional de San Martín
 ![](img/logo-factor-data-solo.jpg){width='200px'}
@@ -90,6 +89,9 @@ Se abordan mapas estáticos con R, combinando datos geográficos y datos sociale
 Tanto en el teórico como en la práctica se trabaja con datos georreferenciados de la Ciudad Autónoma de Buenos Aires, especialmente polígonos correspondientes a radios censales. Se utilizan herramientas del ecosistema sf y ggplot2 para leer, transformar y visualizar datos espaciales.  
 La clase cierra con una introducción a mapas interactivos mediante leaflet. Se trabaja con transformación de sistemas de coordenadas, uso de WGS84/EPSG:4326, controles de zoom, desplazamiento, popups informativos y control de capas. Se discute cuándo conviene utilizar mapas estáticos y cuándo la interactividad aporta valor analítico o comunicacional.  
 
+__Material complementario- Lubridate__  
+[![](img/Download.png)](material_complementario_fechas.rar)   
+Como material complementario se incorpora una introducción al paquete lubridate, orientada al trabajo con datos almacenados en formato fecha. Se presentan las funciones principales para convertir distintos formatos de fecha, extraer componentes temporales (año, mes, día, hora), realizar operaciones aritméticas con fechas, calcular intervalos y duraciones, y trabajar con períodos de tiempo. El objetivo es brindar herramientas prácticas y específicas para manipular información temporal de manera sencilla y consistente, facilitando tareas frecuentes de limpieza, transformación y análisis de datos.
 
 ## Bibliografía complementaria
 

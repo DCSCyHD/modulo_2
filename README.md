@@ -197,6 +197,11 @@ informativos y control de capas. Se discute cuándo conviene utilizar
 mapas estáticos y cuándo la interactividad aporta valor analítico o
 comunicacional.
 
+*__**Material complementario- Lubridate**  
+[![](img/Download.png)](material_complementario_fechas.rar)   
+Como material complementario se incorpora una introducción al paquete lubridate, orientada al trabajo con datos almacenados en formato fecha. Se presentan las funciones principales para convertir distintos formatos de fecha, extraer componentes temporales (año, mes, día, hora), realizar operaciones aritméticas con fechas, calcular intervalos y duraciones, y trabajar con períodos de tiempo. El objetivo es brindar herramientas prácticas y específicas para manipular información temporal de manera sencilla y consistente, facilitando tareas frecuentes de limpieza, transformación y análisis de datos.  
+
+
 ## Bibliografía complementaria
 
 - [Healy, Kieran (2019). Data Visualization: A Practical Introduction,
